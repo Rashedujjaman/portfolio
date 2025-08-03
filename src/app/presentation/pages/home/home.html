@@ -1,31 +1,197 @@
-<section class="hero-section">
-  <div class="container">
-    <div class="hero-content">
-      <h1>Welcome to My Portfolio</h1>
-      <p class="hero-subtitle">Software Engineer & Tech Enthusiast</p>
-      <p class="hero-description">
-        I'm passionate about creating innovative solutions and sharing my journey through code, travel, and technology.
-      </p>
-      <div class="hero-actions">
-        <button class="btn btn-primary" routerLink="/projects">View My Work</button>
-        <button class="btn btn-secondary" routerLink="/contact">Get In Touch</button>
+<div class="home-page" *ngIf="!isLoading; else loadingTemplate">
+  <!-- Hero Section with Profile Data -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-image" *ngIf="profile?.profileImage">
+          <img [src]="profile!.profileImage" [alt]="profile!.name" class="profile-image">
+        </div>
+        
+        <h1>
+          {{ profile?.name || 'Welcome to My Portfolio' }}
+        </h1>
+        
+        <p class="hero-subtitle">
+          {{ profile?.title || 'Software Engineer & Tech Enthusiast' }}
+        </p>
+        
+        <p class="hero-description">
+          {{ profile?.bio || "I'm passionate about creating innovative solutions and sharing my journey through code, travel, and technology." }}
+        </p>
+        
+        <div class="hero-actions">
+          <button class="btn btn-primary" routerLink="/projects">View My Work</button>
+          <button class="btn btn-secondary" routerLink="/contact">Get In Touch</button>
+        </div>
+
+        <!-- Social Links -->
+        <div class="social-links" *ngIf="hasSocialLinks()">
+          <a *ngFor="let social of profile!.socialLinks" 
+             [href]="social.url" 
+             target="_blank" 
+             rel="noopener noreferrer"
+             class="social-link"
+             [title]="social.platform">
+            <i class="social-icon" [attr.data-platform]="social.platform.toLowerCase()">
+              {{ getSocialIcon(social.platform) }}
+            </i>
+          </a>
+        </div>
       </div>
     </div>
-  </div>
-</section>
 
-<section class="featured-projects">
-  <div class="container">
-    <h2>Featured Projects</h2>
-    <p>Here are some of my recent and notable projects</p>
-    <!-- Projects will be loaded dynamically -->
-  </div>
-</section>
+    <!-- Animated Background -->
+    <div class="hero-animation">
+      <!-- Floating Geometric Shapes -->
+      <div class="floating-shapes">
+        <div class="shape shape-circle shape-1"></div>
+        <div class="shape shape-triangle shape-2"></div>
+        <div class="shape shape-square shape-3"></div>
+        <div class="shape shape-hexagon shape-4"></div>
+        <div class="shape shape-diamond shape-5"></div>
+        <div class="shape shape-circle shape-6"></div>
+        <div class="shape shape-triangle shape-7"></div>
+        <div class="shape shape-square shape-8"></div>
+      </div>
 
-<section class="about-preview">
-  <div class="container">
-    <h2>About Me</h2>
-    <p>A brief overview of my professional journey and interests</p>
-    <button class="btn btn-outline" routerLink="/about">Learn More</button>
+      <!-- Particle Effect -->
+      <div class="particles">
+        <div class="particle" *ngFor="let particle of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"></div>
+      </div>
+
+      <!-- Tech Icons -->
+      <div class="tech-icons">
+        <div class="tech-icon tech-icon-1">{{ '{' }} {{ '}' }}</div>
+        <div class="tech-icon tech-icon-2">&lt;/&gt;</div>
+        <div class="tech-icon tech-icon-3">⚡</div>
+        <div class="tech-icon tech-icon-4">🚀</div>
+        <div class="tech-icon tech-icon-5">💡</div>
+        <div class="tech-icon tech-icon-6">🔧</div>
+      </div>
+
+      <!-- Gradient Orbs -->
+      <div class="gradient-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="featured-projects">
+    <div class="container">
+      <h2>Featured Projects</h2>
+      <p *ngIf="featuredProjects.length > 0">Here are some of my recent and notable projects</p>
+      <p *ngIf="featuredProjects.length === 0">No featured projects available yet.</p>
+      
+      <div class="projects-grid" *ngIf="featuredProjects.length > 0">
+        <div class="project-card" *ngFor="let project of featuredProjects">
+          <div class="project-image" *ngIf="project.images && project.images.length > 0">
+            <img [src]="project.images[0]" [alt]="project.title">
+          </div>
+          <div class="project-content">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.shortDescription }}</p>
+            <div class="project-tech">
+              <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 3)">
+                {{ tech }}
+              </span>
+              <span class="tech-more" *ngIf="project.technologies.length > 3">
+                +{{ project.technologies.length - 3 }} more
+              </span>
+            </div>
+            <div class="project-links">
+              <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="btn btn-sm btn-primary">
+                Live Demo
+              </a>
+              <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" class="btn btn-sm btn-outline">
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="featured-actions" *ngIf="featuredProjects.length > 0">
+        <button class="btn btn-outline" routerLink="/projects">View All Projects</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Preview -->
+  <section class="about-preview">
+    <div class="container">
+      <h2>About Me</h2>
+      <div class="about-content">
+        <div class="about-text">
+          <p>{{ profile?.bio || 'A brief overview of my professional journey and interests' }}</p>
+          
+          <div class="skills-preview" *ngIf="profile?.skills && profile!.skills!.length > 0">
+            <h3>Core Skills</h3>
+            <div class="skills-tags">
+              <span class="skill-tag" *ngFor="let skill of profile!.skills.slice(0, 6)">
+                {{ skill }}
+              </span>
+              <span class="skills-more" *ngIf="profile!.skills.length > 6">
+                +{{ profile!.skills.length - 6 }} more
+              </span>
+            </div>
+          </div>
+
+          <div class="location-info" *ngIf="profile?.location">
+            <i class="location-icon">📍</i>
+            <span>{{ profile!.location }}</span>
+          </div>
+        </div>
+        
+        <div class="about-actions">
+          <button class="btn btn-primary" routerLink="/experience">View Experience</button>
+          <a *ngIf="profile?.resumeUrl" 
+             [href]="profile!.resumeUrl" 
+             target="_blank" 
+             class="btn btn-outline">
+            Download Resume
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Preview -->
+  <section class="contact-preview">
+    <div class="container">
+      <h2>Get In Touch</h2>
+      <p>Ready to start a conversation? I'd love to hear from you.</p>
+      
+      <div class="contact-info" *ngIf="profile">
+        <div class="contact-item" *ngIf="profile.email">
+          <i class="contact-icon">✉️</i>
+          <a [href]="'mailto:' + profile.email">{{ profile.email }}</a>
+        </div>
+        
+        <div class="contact-item" *ngIf="profile.phone">
+          <i class="contact-icon">📞</i>
+          <a [href]="'tel:' + profile.phone">{{ profile.phone }}</a>
+        </div>
+        
+        <div class="contact-item" *ngIf="profile.location">
+          <i class="contact-icon">📍</i>
+          <span>{{ profile.location }}</span>
+        </div>
+      </div>
+
+      <div class="contact-actions">
+        <button class="btn btn-primary" routerLink="/contact">Send Message</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading portfolio...</p>
   </div>
-</section>
+</ng-template>

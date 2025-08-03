@@ -1,16 +1,38 @@
 <nav class="navbar">
   <div class="nav-container">
     <a routerLink="/home" class="nav-logo">
-      MD RASHEDUJJAMAN REZA
+      <div class="logo-content">
+        <img *ngIf="profile?.profileImage" 
+             [src]="profile!.profileImage" 
+             [alt]="profile!.name" 
+             class="nav-profile-image">
+        <span class="logo-text">
+          {{ profile?.name || 'MD RASHEDUJJAMAN REZA' }}
+        </span>
+      </div>
     </a>
     
     <div class="nav-menu" [class.active]="isMenuOpen">
-      <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
-      <a routerLink="/about" routerLinkActive="active" class="nav-link">About</a>
-      <a routerLink="/experience" routerLinkActive="active" class="nav-link">Experience</a>
-      <a routerLink="/projects" routerLinkActive="active" class="nav-link">Projects</a>
-      <a routerLink="/travel" routerLinkActive="active" class="nav-link">Travel</a>
-      <a routerLink="/contact" routerLinkActive="active" class="nav-link">Contact</a>
+      <a routerLink="/home" 
+         routerLinkActive="active" 
+         class="nav-link"
+         (click)="closeMenu()">Home</a>
+      <a routerLink="/experience" 
+         routerLinkActive="active" 
+         class="nav-link"
+         (click)="closeMenu()">Experience</a>
+      <a routerLink="/projects" 
+         routerLinkActive="active" 
+         class="nav-link"
+         (click)="closeMenu()">Projects</a>
+      <a routerLink="/travel" 
+         routerLinkActive="active" 
+         class="nav-link"
+         (click)="closeMenu()">Travel</a>
+      <a routerLink="/contact" 
+         routerLinkActive="active" 
+         class="nav-link"
+         (click)="closeMenu()">Contact</a>
     </div>
     
     <div class="nav-toggle" (click)="toggleMenu()">
