@@ -24,3 +24,14 @@ export class UpdateProfileUseCase {
     return this.profileRepository.updateProfile(profile);
   }
 }
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CreateProfileUseCase {
+  constructor(private profileRepository: ProfileRepository) {}
+
+  execute(profile: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>): Observable<Profile> {
+    return this.profileRepository.createProfile(profile);
+  }
+}

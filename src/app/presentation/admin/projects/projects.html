@@ -1,0 +1,312 @@
+<div class="projects-management-container">
+  <header class="page-header">
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+    <h1>Projects Management</h1>
+    <button class="btn btn-primary" (click)="createProject()">+ Add New Project</button>
+  </header>
+
+  <div class="projects-content" *ngIf="!isLoading; else loadingTemplate">
+    <!-- Filters and Search -->
+    <div class="filters-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="filterProjects()"
+          placeholder="Search projects..." 
+          class="search-input">
+      </div>
+      
+      <div class="filter-controls">
+        <select [(ngModel)]="statusFilter" (ngModelChange)="filterProjects()" class="filter-select">
+          <option value="">All Status</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="planned">Planned</option>
+          <option value="archived">Archived</option>
+        </select>
+        
+        <select [(ngModel)]="categoryFilter" (ngModelChange)="filterProjects()" class="filter-select">
+          <option value="">All Categories</option>
+          <option value="web-application">Web Application</option>
+          <option value="mobile-app">Mobile App</option>
+          <option value="desktop-app">Desktop Application</option>
+          <option value="api">API/Backend</option>
+          <option value="library">Library</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="projects-grid" *ngIf="filteredProjects.length > 0; else noProjectsTemplate">
+      <div class="project-card" *ngFor="let project of filteredProjects">
+        <div class="project-header">
+          <h3>{{ project.title }}</h3>
+          <div class="project-actions">
+            <button class="btn-icon" (click)="editProject(project)" title="Edit">✏️</button>
+            <button class="btn-icon" (click)="toggleFeatured(project)" 
+                    [class.featured]="project.featured" 
+                    title="{{ project.featured ? 'Remove from featured' : 'Add to featured' }}">
+              ⭐
+            </button>
+            <button class="btn-icon delete" (click)="deleteProject(project)" title="Delete">🗑️</button>
+          </div>
+        </div>
+        
+        <div class="project-image" *ngIf="project.images && project.images.length > 0">
+          <img [src]="project.images[0]" [alt]="project.title" class="project-thumbnail">
+        </div>
+        
+        <div class="project-content">
+          <p class="project-description">{{ project.shortDescription }}</p>
+          
+          <div class="project-meta">
+            <span class="project-status" [class]="'status-' + project.status">
+              {{ project.status }}
+            </span>
+            <span class="project-category">{{ project.category }}</span>
+            <span class="project-featured" *ngIf="project.featured">⭐ Featured</span>
+          </div>
+          
+          <div class="project-tech" *ngIf="project.technologies && project.technologies.length > 0">
+            <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 3)">
+              {{ tech }}
+            </span>
+            <span class="tech-more" *ngIf="project.technologies.length > 3">
+              +{{ project.technologies.length - 3 }} more
+            </span>
+          </div>
+          
+          <div class="project-links">
+            <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="link-btn demo">
+              🔗 Demo
+            </a>
+            <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" class="link-btn github">
+              📂 GitHub
+            </a>
+          </div>
+        </div>
+        
+        <div class="project-footer">
+          <small class="project-date">
+            Updated: {{ project.updatedAt | date:'short' }}
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noProjectsTemplate>
+      <div class="empty-state">
+        <div class="empty-icon">📁</div>
+        <h3>No Projects Found</h3>
+        <p *ngIf="hasFilters()">Try adjusting your search or filter criteria.</p>
+        <p *ngIf="!hasFilters()">Create your first project to get started!</p>
+        <button class="btn btn-primary" (click)="createProject()">
+          Create Your First Project
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-state">
+      <p>Loading projects...</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Edit Project Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editingProject?.id ? 'Edit Project' : 'Create New Project' }}</h2>
+      <button class="modal-close" (click)="closeEditModal()">×</button>
+    </div>
+    
+    <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form">
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        
+        <div class="form-group">
+          <label for="title">Project Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            formControlName="title" 
+            class="form-control"
+            placeholder="Enter project title">
+          <div class="error" *ngIf="projectForm.get('title')?.invalid && projectForm.get('title')?.touched">
+            Title is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="shortDescription">Short Description *</label>
+          <textarea 
+            id="shortDescription" 
+            formControlName="shortDescription" 
+            class="form-control"
+            rows="2"
+            placeholder="Brief description for project cards..."></textarea>
+          <div class="error" *ngIf="projectForm.get('shortDescription')?.invalid && projectForm.get('shortDescription')?.touched">
+            Short description is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Full Description *</label>
+          <textarea 
+            id="description" 
+            formControlName="description" 
+            class="form-control"
+            rows="4"
+            placeholder="Detailed project description..."></textarea>
+          <div class="error" *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
+            Description is required
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" formControlName="category" class="form-control">
+              <option value="">Select Category</option>
+              <option value="web-application">Web Application</option>
+              <option value="mobile-app">Mobile App</option>
+              <option value="desktop-app">Desktop Application</option>
+              <option value="api">API/Backend</option>
+              <option value="library">Library</option>
+              <option value="other">Other</option>
+            </select>
+            <div class="error" *ngIf="projectForm.get('category')?.invalid && projectForm.get('category')?.touched">
+              Category is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status *</label>
+            <select id="status" formControlName="status" class="form-control">
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="planned">Planned</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Project Details</h3>
+        
+        <div class="form-group">
+          <label for="technologies">Technologies (comma-separated)</label>
+          <textarea 
+            id="technologies" 
+            formControlName="technologiesInput" 
+            class="form-control"
+            rows="2"
+            placeholder="Angular, TypeScript, Firebase, Node.js..."></textarea>
+          <small class="form-help">Enter technologies separated by commas</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="demoUrl">Demo URL</label>
+            <input 
+              type="url" 
+              id="demoUrl" 
+              formControlName="demoUrl" 
+              class="form-control"
+              placeholder="https://demo.example.com">
+          </div>
+
+          <div class="form-group">
+            <label for="githubUrl">GitHub URL</label>
+            <input 
+              type="url" 
+              id="githubUrl" 
+              formControlName="githubUrl" 
+              class="form-control"
+              placeholder="https://github.com/username/repo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" formControlName="featured"> 
+            Featured Project
+          </label>
+          <small class="form-help">Featured projects appear prominently on the portfolio</small>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Project Images</h3>
+        
+        <!-- Image Upload -->
+        <div class="form-group">
+          <label>Upload Images</label>
+          <div class="image-upload">
+            <input 
+              type="file" 
+              #fileInput 
+              (change)="onFilesSelected($event)"
+              accept="image/*"
+              multiple
+              style="display: none">
+            
+            <button 
+              type="button" 
+              class="btn btn-outline"
+              (click)="fileInput.click()"
+              [disabled]="uploadingImages">
+              📸 Add Images
+            </button>
+            <small class="form-help">Select multiple images (JPG, PNG, GIF, WebP - max 5MB each)</small>
+          </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div *ngIf="uploadingImages" class="upload-progress">
+          <h4>Uploading Images...</h4>
+          <div *ngFor="let item of uploadProgress | keyvalue" class="progress-item">
+            <span class="file-name">{{item.key}}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="item.value"></div>
+            </div>
+            <span class="progress-text">{{item.value}}%</span>
+          </div>
+        </div>
+
+        <!-- Image Previews -->
+        <div *ngIf="previewUrls.length > 0" class="image-previews">
+          <div *ngFor="let url of previewUrls; let i = index" class="image-preview">
+            <img [src]="url" [alt]="'Preview ' + (i + 1)">
+            <button 
+              type="button" 
+              class="remove-image"
+              (click)="removeImage(i)"
+              title="Remove image">
+              ×
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="projectForm.invalid || isSaving">
+          {{ isSaving ? 'Saving...' : (editingProject?.id ? 'Update Project' : 'Create Project') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Status Messages -->
+<div class="status-message" *ngIf="statusMessage">
+  <div class="alert" [class.alert-success]="!hasError" [class.alert-error]="hasError">
+    {{ statusMessage }}
+  </div>
+</div>

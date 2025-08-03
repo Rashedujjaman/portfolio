@@ -36,12 +36,18 @@ export const routes: Routes = [
         loadComponent: () => import('./presentation/admin/login/login').then(c => c.Login)
       },
       { 
-        path: 'setup', 
-        loadComponent: () => import('./presentation/admin/setup/admin-setup.component').then(c => c.AdminSetupComponent)
-      },
-      { 
         path: 'dashboard', 
         loadComponent: () => import('./presentation/admin/dashboard/dashboard').then(c => c.Dashboard),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./presentation/admin/profile/profile').then(c => c.AdminProfile),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'projects',
+        loadComponent: () => import('./presentation/admin/projects/projects').then(c => c.AdminProjects),
         canActivate: [AdminGuard]
       }
     ]

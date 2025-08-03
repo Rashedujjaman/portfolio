@@ -5,19 +5,19 @@ import { Travel } from '../domain/entities/lifestyle.entity';
 
 export const SEED_PROFILE: Partial<Profile> = {
   id: 'main-profile',
-  name: 'Your Name',
+  name: 'MD RASHEDUJJAMAN REZA',
   title: 'Software Engineer',
   bio: 'Passionate software engineer with expertise in modern web technologies and clean architecture principles.',
-  email: 'your.email@example.com',
-  phone: '+1 (555) 123-4567',
-  location: 'City, Country',
+  email: 'reza2001july@gmail.com',
+  phone: '+8801792838443',
+  location: 'Dhaka, Bangladesh',
   profileImage: '',
   resumeUrl: '',
   socialLinks: [
-    { platform: 'LinkedIn', url: 'https://linkedin.com/in/yourprofile', icon: 'linkedin' },
-    { platform: 'GitHub', url: 'https://github.com/yourusername', icon: 'github' },
-    { platform: 'Twitter', url: 'https://twitter.com/yourusername', icon: 'twitter' },
-    { platform: 'Website', url: 'https://yourwebsite.com', icon: 'web' }
+    { platform: 'LinkedIn', url: 'https://linkedin.com/in/rashedujjaman', icon: 'linkedin' },
+    { platform: 'GitHub', url: 'https://github.com/rashedujjaman', icon: 'github' },
+    { platform: 'Twitter', url: 'https://twitter.com/rashedujjaman', icon: 'twitter' },
+    { platform: 'Website', url: 'https://rashedujjaman.com', icon: 'web' }
   ],
   skills: [
     'Angular', 'TypeScript', 'Firebase', 'Node.js', 'React', 'Python',

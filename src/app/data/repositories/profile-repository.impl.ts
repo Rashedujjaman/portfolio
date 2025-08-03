@@ -16,7 +16,7 @@ export class ProfileRepositoryImpl extends ProfileRepository {
 
   getProfile(): Observable<Profile | null> {
     // For a personal portfolio, we'll assume there's only one profile with a specific ID
-    const profileId = 'main-profile';
+    const profileId = 'nEK3NNwDCT2zZ3mq5b1B';
     return this.firebaseDataSource.getById<Profile>(this.COLLECTION_NAME, profileId);
   }
 

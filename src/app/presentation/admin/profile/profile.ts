@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
+import { GetProfileUseCase, UpdateProfileUseCase, CreateProfileUseCase } from '../../../domain/use-cases/profile.use-case';
 import { Profile, SocialLink } from '../../../domain/entities/profile.entity';
 import { ProfileRepositoryImpl } from '../../../data/repositories/profile-repository.impl';
 
@@ -26,6 +26,8 @@ export class AdminProfile implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private getProfileUseCase: GetProfileUseCase,
+    private updateProfileusecase: UpdateProfileUseCase,
+    private createProfileUseCase: CreateProfileUseCase,
     private profileRepository: ProfileRepositoryImpl
   ) {
     this.profileForm = this.createForm();
@@ -169,7 +171,7 @@ export class AdminProfile implements OnInit {
           updatedAt: new Date()
         };
 
-        this.profileRepository.updateProfile(updatedProfile).subscribe({
+        this.updateProfileusecase.execute(updatedProfile).subscribe({
           next: () => {
             this.isSaving = false;
             this.showSuccess('Profile updated successfully!');
@@ -189,7 +191,7 @@ export class AdminProfile implements OnInit {
           languages: []
         };
 
-        this.profileRepository.createProfile(newProfile).subscribe({
+        this.createProfileUseCase.execute(newProfile).subscribe({
           next: () => {
             this.isSaving = false;
             this.showSuccess('Profile created successfully!');
