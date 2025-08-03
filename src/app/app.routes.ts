@@ -49,6 +49,11 @@ export const routes: Routes = [
         path: 'projects',
         loadComponent: () => import('./presentation/admin/projects/projects').then(c => c.AdminProjects),
         canActivate: [AdminGuard]
+      },
+      {
+        path: 'projects/edit/:id',
+        loadComponent: () => import('./presentation/admin/project-edit/project-edit').then(c => c.ProjectEditComponent),
+        canActivate: [AdminGuard]
       }
     ]
   },
