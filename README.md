@@ -50,6 +50,32 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## 🔥 Firebase Setup
+
+This project uses Firebase for backend services. To set up Firebase:
+
+1. **Quick Setup**: Follow the detailed guide in [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
+2. **Update Configuration**: Replace the placeholder values in `src/environments/environment.ts` with your Firebase configuration
+3. **Create Admin User**: Set up an admin user in Firebase Authentication with custom claims
+4. **Deploy Rules**: Use `firebase deploy --only firestore:rules,storage` to deploy security rules
+
+### Admin Panel Access
+
+- Navigate to `/admin/login`
+- Use your Firebase admin credentials
+- Access the dashboard to manage content dynamically
+
+## 🏗️ Project Features
+
+- **Dynamic Content Management**: Update all content through the admin panel
+- **Firebase Integration**: Real-time data synchronization
+- **Authentication**: Secure admin access with Firebase Auth
+- **File Upload**: Image and document management with Firebase Storage
+- **Responsive Design**: Optimized for all devices
+- **SEO Optimized**: Meta tags and structured data
+
+## 🔧 Development server
+
 ## 🔨 Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

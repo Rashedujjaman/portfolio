@@ -1,1 +1,100 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </header>
+
+  <!-- Data Management Section -->
+  <div class="data-management-section" *ngIf="!isLoading">
+    <h2>Data Management</h2>
+    <div class="action-buttons">
+      <button 
+        class="btn btn-success" 
+        (click)="seedData()"
+        [disabled]="isSeeding">
+        {{ isSeeding ? 'Seeding Data...' : 'Seed Initial Data' }}
+      </button>
+      
+      <button 
+        class="btn btn-warning" 
+        (click)="clearData()"
+        [disabled]="isClearing">
+        {{ isClearing ? 'Clearing Data...' : 'Clear All Data' }}
+      </button>
+      
+      <button 
+        class="btn btn-info" 
+        (click)="checkDataStatus()">
+        Check Data Status
+      </button>
+    </div>
+    
+    <div class="status-message" *ngIf="statusMessage">
+      <div class="alert">{{ statusMessage }}</div>
+    </div>
+  </div>
+
+  <div class="dashboard-content" *ngIf="!isLoading; else loadingTemplate">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Profile</h3>
+        <p class="stat-value">{{ profile ? '✓' : '✗' }}</p>
+        <p class="stat-label">{{ profile ? 'Configured' : 'Not Set' }}</p>
+        <button class="btn btn-primary" (click)="navigateToProfile()">
+          {{ profile ? 'Edit Profile' : 'Create Profile' }}
+        </button>
+      </div>
+
+      <div class="stat-card">
+        <h3>Projects</h3>
+        <p class="stat-value">{{ projects.length }}</p>
+        <p class="stat-label">Total Projects</p>
+        <button class="btn btn-primary" (click)="navigateToProjects()">
+          Manage Projects
+        </button>
+      </div>
+
+      <div class="stat-card">
+        <h3>Featured Projects</h3>
+        <p class="stat-value">{{ getFeaturedProjectsCount() }}</p>
+        <p class="stat-label">Featured</p>
+        <button class="btn btn-secondary">View Featured</button>
+      </div>
+
+      <div class="stat-card">
+        <h3>Recent Activity</h3>
+        <p class="stat-value">{{ getRecentActivityCount() }}</p>
+        <p class="stat-label">This Week</p>
+        <button class="btn btn-secondary">View Activity</button>
+      </div>
+    </div>
+
+    <div class="recent-section">
+      <h2>Recent Projects</h2>
+      <div class="recent-projects" *ngIf="projects.length > 0; else noProjectsTemplate">
+        <div class="project-item" *ngFor="let project of projects.slice(0, 5)">
+          <h4>{{ project.title }}</h4>
+          <p>{{ project.shortDescription }}</p>
+          <span class="project-status" [class]="'status-' + project.status">
+            {{ project.status }}
+          </span>
+        </div>
+      </div>
+
+      <ng-template #noProjectsTemplate>
+        <div class="empty-state">
+          <p>No projects found. Create your first project!</p>
+          <button class="btn btn-primary" (click)="navigateToProjects()">
+            Create Project
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-state">
+      <p>Loading dashboard data...</p>
+    </div>
+  </ng-template>
+</div>

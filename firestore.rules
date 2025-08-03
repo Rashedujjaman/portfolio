@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Profile collection - public read, admin write
+    match /profile/{profileId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Projects collection - public read, admin write
+    match /projects/{projectId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Experience collection - public read, admin write
+    match /experience/{experienceId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Education collection - public read, admin write
+    match /education/{educationId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Travel collection - public read, admin write
+    match /travel/{travelId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Hobbies collection - public read, admin write
+    match /hobbies/{hobbyId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Blog posts collection - public read for published, admin write
+    match /blog/{postId} {
+      allow read: if resource.data.published == true || 
+                     (request.auth != null && request.auth.token.admin == true);
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Testimonials collection - public read, admin write
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Contact messages - admin read/write only
+    match /contact/{messageId} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+      allow create: if true; // Anyone can submit contact forms
+    }
+    
+    // Admin users collection - admin only
+    match /admin/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Fallback: temporary allow all for development (REMOVE IN PRODUCTION)
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2025, 9, 2);
+    }
+  }
+}

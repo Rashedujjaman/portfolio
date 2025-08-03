@@ -1,0 +1,208 @@
+<div class="profile-management-container">
+  <header class="page-header">
+    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+    <h1>Profile Management</h1>
+  </header>
+
+  <div class="profile-form-container" *ngIf="!isLoading; else loadingTemplate">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h2>Basic Information</h2>
+        
+        <div class="form-group">
+          <label for="name">Full Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            formControlName="name" 
+            class="form-control"
+            placeholder="Enter your full name">
+          <div class="error" *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+            Name is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="title">Professional Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            formControlName="title" 
+            class="form-control"
+            placeholder="e.g., Senior Software Engineer">
+          <div class="error" *ngIf="profileForm.get('title')?.invalid && profileForm.get('title')?.touched">
+            Title is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="form-control"
+            placeholder="your.email@example.com">
+          <div class="error" *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+            Valid email is required
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              formControlName="phone" 
+              class="form-control"
+              placeholder="+1 (555) 123-4567">
+          </div>
+
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input 
+              type="text" 
+              id="location" 
+              formControlName="location" 
+              class="form-control"
+              placeholder="City, Country">
+          </div>
+        </div>
+      </div>
+
+      <!-- About Section -->
+      <div class="form-section">
+        <h2>About</h2>
+        
+        <div class="form-group">
+          <label for="bio">Bio/Summary *</label>
+          <textarea 
+            id="bio" 
+            formControlName="bio" 
+            class="form-control textarea-large"
+            rows="4"
+            placeholder="Write a brief summary about yourself..."></textarea>
+          <div class="error" *ngIf="profileForm.get('bio')?.invalid && profileForm.get('bio')?.touched">
+            Bio is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="skills">Skills (comma-separated)</label>
+          <textarea 
+            id="skills" 
+            formControlName="skillsInput" 
+            class="form-control"
+            rows="3"
+            placeholder="Angular, TypeScript, Firebase, Node.js, Python..."></textarea>
+          <small class="form-help">Enter skills separated by commas</small>
+        </div>
+      </div>
+
+      <!-- Profile Image -->
+      <div class="form-section">
+        <h2>Profile Image</h2>
+        
+        <div class="image-upload-container">
+          <div class="current-image" *ngIf="profileForm.get('profileImageUrl')?.value">
+            <img [src]="profileForm.get('profileImageUrl')?.value" alt="Current profile image" class="profile-preview">
+            <button type="button" class="btn btn-danger btn-small" (click)="removeImage()">Remove Image</button>
+          </div>
+          
+          <div class="upload-area" *ngIf="!profileForm.get('profileImageUrl')?.value">
+            <input 
+              type="file" 
+              #fileInput 
+              (change)="onFileSelected($event)"
+              accept="image/*"
+              class="file-input">
+            <div class="upload-placeholder" (click)="fileInput.click()">
+              <div class="upload-icon">📷</div>
+              <p>Click to upload profile image</p>
+              <small>JPG, PNG, GIF up to 2MB</small>
+            </div>
+          </div>
+          
+          <div class="upload-progress" *ngIf="uploadProgress > 0 && uploadProgress < 100">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+            </div>
+            <span>{{ uploadProgress }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Links -->
+      <div class="form-section">
+        <h2>Social Links</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="linkedinUrl">LinkedIn</label>
+            <input 
+              type="url" 
+              id="linkedinUrl" 
+              formControlName="linkedinUrl" 
+              class="form-control"
+              placeholder="https://linkedin.com/in/yourprofile">
+          </div>
+
+          <div class="form-group">
+            <label for="githubUrl">GitHub</label>
+            <input 
+              type="url" 
+              id="githubUrl" 
+              formControlName="githubUrl" 
+              class="form-control"
+              placeholder="https://github.com/yourusername">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="twitterUrl">Twitter</label>
+            <input 
+              type="url" 
+              id="twitterUrl" 
+              formControlName="twitterUrl" 
+              class="form-control"
+              placeholder="https://twitter.com/yourusername">
+          </div>
+
+          <div class="form-group">
+            <label for="websiteUrl">Personal Website</label>
+            <input 
+              type="url" 
+              id="websiteUrl" 
+              formControlName="websiteUrl" 
+              class="form-control"
+              placeholder="https://yourwebsite.com">
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || isSaving">
+          {{ isSaving ? 'Saving...' : (isEditing ? 'Update Profile' : 'Create Profile') }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Status Messages -->
+    <div class="status-message" *ngIf="statusMessage">
+      <div class="alert" [class.alert-success]="!hasError" [class.alert-error]="hasError">
+        {{ statusMessage }}
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-state">
+      <p>Loading profile data...</p>
+    </div>
+  </ng-template>
+</div>
