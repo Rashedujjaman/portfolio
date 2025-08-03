@@ -169,7 +169,7 @@ export class AdminProfile implements OnInit {
           updatedAt: new Date()
         };
 
-        this.profileRepository.update(this.currentProfile.id, updatedProfile).subscribe({
+        this.profileRepository.updateProfile(updatedProfile).subscribe({
           next: () => {
             this.isSaving = false;
             this.showSuccess('Profile updated successfully!');
@@ -177,20 +177,19 @@ export class AdminProfile implements OnInit {
               this.goBack();
             }, 2000);
           },
-          error: (error) => {
+          error: (error: any) => {
             this.isSaving = false;
             this.showError(`Error updating profile: ${error.message}`);
           }
         });
       } else {
         // Create new profile
-        const newProfile: Omit<Profile, 'id'> = {
+        const newProfile: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'> = {
           ...profileData as Profile,
-          createdAt: new Date(),
-          updatedAt: new Date()
+          languages: []
         };
 
-        this.profileRepository.create(newProfile).subscribe({
+        this.profileRepository.createProfile(newProfile).subscribe({
           next: () => {
             this.isSaving = false;
             this.showSuccess('Profile created successfully!');
@@ -198,7 +197,7 @@ export class AdminProfile implements OnInit {
               this.goBack();
             }, 2000);
           },
-          error: (error) => {
+          error: (error: any) => {
             this.isSaving = false;
             this.showError(`Error creating profile: ${error.message}`);
           }
@@ -220,6 +219,44 @@ export class AdminProfile implements OnInit {
   private showError(message: string) {
     this.statusMessage = message;
     this.hasError = true;
+  }
+
+  private createSocialLinks(formValue: any): SocialLink[] {
+    const socialLinks: SocialLink[] = [];
+    
+    if (formValue.linkedinUrl) {
+      socialLinks.push({
+        platform: 'linkedin',
+        url: formValue.linkedinUrl,
+        icon: 'linkedin'
+      });
+    }
+    
+    if (formValue.githubUrl) {
+      socialLinks.push({
+        platform: 'github',
+        url: formValue.githubUrl,
+        icon: 'github'
+      });
+    }
+    
+    if (formValue.twitterUrl) {
+      socialLinks.push({
+        platform: 'twitter',
+        url: formValue.twitterUrl,
+        icon: 'twitter'
+      });
+    }
+    
+    if (formValue.websiteUrl) {
+      socialLinks.push({
+        platform: 'website',
+        url: formValue.websiteUrl,
+        icon: 'website'
+      });
+    }
+    
+    return socialLinks;
   }
 
   goBack() {
