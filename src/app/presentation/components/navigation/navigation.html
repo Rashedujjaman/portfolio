@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a routerLink="/home" class="nav-logo">
+      Your Name
+    </a>
+    
+    <div class="nav-menu" [class.active]="isMenuOpen">
+      <a routerLink="/home" routerLinkActive="active" class="nav-link">Home</a>
+      <a routerLink="/about" routerLinkActive="active" class="nav-link">About</a>
+      <a routerLink="/experience" routerLinkActive="active" class="nav-link">Experience</a>
+      <a routerLink="/projects" routerLinkActive="active" class="nav-link">Projects</a>
+      <a routerLink="/travel" routerLinkActive="active" class="nav-link">Travel</a>
+      <a routerLink="/contact" routerLinkActive="active" class="nav-link">Contact</a>
+    </div>
+    
+    <div class="nav-toggle" (click)="toggleMenu()">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+  </div>
+</nav>
