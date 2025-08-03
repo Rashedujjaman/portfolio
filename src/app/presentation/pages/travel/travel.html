@@ -1,1 +1,319 @@
-<p>travel works!</p>
+<div class="travel-page" *ngIf="!isLoading; else loadingTemplate">
+  <!-- Hero Section with World Map -->
+  <section class="travel-hero">
+    <div class="hero-background">
+      <div class="parallax-bg world-map">
+        <!-- SVG World Map Silhouette -->
+        <svg class="world-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dotPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.3)"/>
+            </pattern>
+          </defs>
+          <!-- Simplified world continents -->
+          <path d="M150,200 Q200,180 250,200 Q300,190 350,210 Q400,200 450,220 Q500,210 550,230 Q600,220 650,240 Q700,230 750,250 Q800,240 850,260" 
+                stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" class="continent-line"/>
+          <path d="M100,300 Q150,280 200,300 Q250,290 300,310 Q350,300 400,320 Q450,310 500,330" 
+                stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" class="continent-line"/>
+          <rect width="100%" height="100%" fill="url(#dotPattern)" opacity="0.3"/>
+        </svg>
+      </div>
+      
+      <!-- Floating Travel Icons -->
+      <div class="floating-icons">
+        <div class="travel-icon icon-1">✈️</div>
+        <div class="travel-icon icon-2">🌍</div>
+        <div class="travel-icon icon-3">📸</div>
+        <div class="travel-icon icon-4">🗺️</div>
+        <div class="travel-icon icon-5">🎒</div>
+        <div class="travel-icon icon-6">🌅</div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-icon">🌍</span>
+          <span>Travel & Lifestyle</span>
+        </div>
+        
+        <h1 class="hero-title">
+          <span class="title-line">Exploring the</span>
+          <span class="title-line gradient-text">World</span>
+        </h1>
+        
+        <p class="hero-description">
+          A collection of adventures, cultures discovered, and memories made around the globe
+        </p>
+
+        <!-- Travel Stats -->
+        <div class="travel-stats" *ngIf="travels.length > 0">
+          <div class="stat-card">
+            <div class="stat-icon">🌍</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ getTravelStats().totalCountries }}</span>
+              <span class="stat-label">Countries</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">✈️</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ getTravelStats().totalTrips }}</span>
+              <span class="stat-label">Trips</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ getTravelStats().totalDays }}</span>
+              <span class="stat-label">Days</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ getTravelStats().featuredTrips }}</span>
+              <span class="stat-label">Featured</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Countries Visited -->
+  <section class="countries-section" *ngIf="visitedCountries.length > 0">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">Countries Visited</h2>
+        <p class="section-subtitle">Places I've been fortunate to explore</p>
+      </div>
+
+      <div class="countries-grid scroll-animate">
+        <div class="country-card" 
+             *ngFor="let country of visitedCountries; let i = index"
+             [style.animation-delay]="i * 0.1 + 's'"
+             (mouseenter)="hoveredCountry = country"
+             (mouseleave)="hoveredCountry = null">
+          
+          <div class="country-flag">
+            {{ getCountryFlag(country) }}
+          </div>
+          
+          <div class="country-name">{{ country }}</div>
+          
+          <div class="country-trips">
+            {{ getCountryTripCount(country) }} {{ getCountryTripText(country) }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Travels -->
+  <section class="featured-travels" *ngIf="featuredTravels.length > 0">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">Featured Adventures</h2>
+        <p class="section-subtitle">Highlights from my most memorable journeys</p>
+      </div>
+
+      <div class="travels-grid scroll-animate">
+        <div class="travel-card" 
+             *ngFor="let travel of featuredTravels; let i = index; trackBy: trackByTravel"
+             [style.animation-delay]="i * 0.2 + 's'"
+             (click)="selectTravel(travel)">
+          
+          <div class="travel-image">
+            <img [src]="travel.images[0]" [alt]="travel.title" *ngIf="travel.images.length > 0">
+            <div class="image-overlay">
+              <div class="travel-duration">{{ travel.duration }} days</div>
+              <div class="travel-flag">{{ getCountryFlag(travel.country) }}</div>
+            </div>
+          </div>
+
+          <div class="travel-content">
+            <div class="travel-header">
+              <h3 class="travel-title">{{ travel.title }}</h3>
+              <div class="travel-location">
+                <span class="location-icon">📍</span>
+                {{ travel.city }}, {{ travel.country }}
+              </div>
+            </div>
+
+            <p class="travel-description">{{ travel.description }}</p>
+
+            <div class="travel-highlights" *ngIf="travel.highlights && travel.highlights.length > 0">
+              <div class="highlight-item" *ngFor="let highlight of travel.highlights.slice(0, 3)">
+                <span class="highlight-icon">✨</span>
+                <span>{{ highlight }}</span>
+              </div>
+              <div class="more-highlights" *ngIf="travel.highlights.length > 3">
+                +{{ travel.highlights.length - 3 }} more
+              </div>
+            </div>
+
+            <div class="travel-meta">
+              <span class="travel-date">
+                <span class="date-icon">📅</span>
+                {{ formatDate(travel.visitDate) }}
+              </span>
+              <span class="travel-images" *ngIf="travel.images.length > 1">
+                <span class="images-icon">📸</span>
+                {{ travel.images.length }} photos
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- All Travels -->
+  <section class="all-travels" *ngIf="travels.length > 0">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">All Adventures</h2>
+        <p class="section-subtitle">Complete travel timeline</p>
+      </div>
+
+      <div class="timeline-travels scroll-animate">
+        <div class="travel-timeline-item" 
+             *ngFor="let travel of travels; let i = index; trackBy: trackByTravel"
+             [style.animation-delay]="i * 0.1 + 's'">
+          
+          <div class="timeline-dot">
+            <span>{{ getCountryFlag(travel.country) }}</span>
+          </div>
+
+          <div class="timeline-content" (click)="selectTravel(travel)">
+            <div class="timeline-date">{{ formatDate(travel.visitDate) }}</div>
+            <h4 class="timeline-title">{{ travel.title }}</h4>
+            <div class="timeline-location">{{ travel.city }}, {{ travel.country }}</div>
+            <div class="timeline-duration">{{ travel.duration }} days</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Hobbies & Interests -->
+  <section class="hobbies-section" *ngIf="hobbies.length > 0">
+    <div class="container">
+      <div class="section-header scroll-animate">
+        <h2 class="section-title">Hobbies & Interests</h2>
+        <p class="section-subtitle">What I love doing in my free time</p>
+      </div>
+
+      <div class="hobbies-grid scroll-animate">
+        <div class="hobby-card" 
+             *ngFor="let hobby of hobbies; let i = index; trackBy: trackByHobby"
+             [style.animation-delay]="i * 0.15 + 's'">
+          
+          <div class="hobby-icon">
+            {{ getHobbyIcon(hobby.category) }}
+          </div>
+
+          <div class="hobby-content">
+            <h3 class="hobby-name">{{ hobby.name }}</h3>
+            <p class="hobby-description">{{ hobby.description }}</p>
+            
+            <div class="hobby-meta">
+              <span class="hobby-category">{{ hobby.category }}</span>
+              <span class="hobby-started" *ngIf="hobby.startedDate">
+                Since {{ formatDate(hobby.startedDate) }}
+              </span>
+            </div>
+
+            <div class="hobby-achievements" *ngIf="hobby.achievements && hobby.achievements.length > 0">
+              <h5>Achievements</h5>
+              <ul>
+                <li *ngFor="let achievement of hobby.achievements.slice(0, 2)">
+                  <span class="achievement-icon">🏆</span>
+                  {{ achievement }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="hobby-images" *ngIf="hobby.images && hobby.images.length > 0">
+            <img [src]="hobby.images[0]" [alt]="hobby.name">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Travel Detail Modal -->
+<div class="travel-modal" *ngIf="selectedTravel" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeModal()">×</button>
+    
+    <div class="modal-header">
+      <h2>{{ selectedTravel.title }}</h2>
+      <div class="modal-location">
+        {{ getCountryFlag(selectedTravel.country) }} {{ selectedTravel.city }}, {{ selectedTravel.country }}
+      </div>
+    </div>
+
+    <div class="modal-gallery" *ngIf="selectedTravel.images.length > 0">
+      <div class="gallery-main">
+        <img [src]="selectedTravel.images[currentImageIndex]" [alt]="selectedTravel.title">
+        
+        <button class="gallery-nav prev" (click)="prevImage()" *ngIf="selectedTravel.images.length > 1">
+          ←
+        </button>
+        <button class="gallery-nav next" (click)="nextImage()" *ngIf="selectedTravel.images.length > 1">
+          →
+        </button>
+      </div>
+
+      <div class="gallery-thumbnails" *ngIf="selectedTravel.images.length > 1">
+        <img *ngFor="let image of selectedTravel.images; let i = index"
+             [src]="image"
+             [alt]="selectedTravel.title"
+             [class.active]="i === currentImageIndex"
+             (click)="currentImageIndex = i">
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-description">
+        <p>{{ selectedTravel.description }}</p>
+      </div>
+
+      <div class="modal-details">
+        <div class="detail-item">
+          <span class="detail-label">Duration:</span>
+          <span class="detail-value">{{ selectedTravel.duration }} days</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Visit Date:</span>
+          <span class="detail-value">{{ formatDate(selectedTravel.visitDate) }}</span>
+        </div>
+      </div>
+
+      <div class="modal-highlights" *ngIf="selectedTravel.highlights && selectedTravel.highlights.length > 0">
+        <h4>Highlights</h4>
+        <ul>
+          <li *ngFor="let highlight of selectedTravel.highlights">
+            <span class="highlight-icon">✨</span>
+            {{ highlight }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading travel adventures...</p>
+  </div>
+</ng-template>

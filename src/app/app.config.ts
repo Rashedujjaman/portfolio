@@ -13,8 +13,12 @@ import { firebaseConfig } from '../environments/firebase.config';
 // Repository providers
 import { ProfileRepository } from './domain/repositories/profile.repository';
 import { ProjectRepository } from './domain/repositories/project.repository';
+import { ExperienceRepository } from './domain/repositories/experience.repository';
+import { TravelRepository, HobbyRepository } from './domain/repositories/lifestyle.repository';
 import { ProfileRepositoryImpl } from './data/repositories/profile-repository.impl';
 import { ProjectRepositoryImpl } from './data/repositories/project-repository.impl';
+import { ExperienceRepositoryImpl } from './data/repositories/experience-repository.impl';
+import { TravelRepositoryImpl, HobbyRepositoryImpl } from './data/repositories/lifestyle-repository.impl';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,6 +36,9 @@ export const appConfig: ApplicationConfig = {
     
     // Repository implementations
     { provide: ProfileRepository, useClass: ProfileRepositoryImpl },
-    { provide: ProjectRepository, useClass: ProjectRepositoryImpl }
+    { provide: ProjectRepository, useClass: ProjectRepositoryImpl },
+    { provide: ExperienceRepository, useClass: ExperienceRepositoryImpl },
+    { provide: TravelRepository, useClass: TravelRepositoryImpl },
+    { provide: HobbyRepository, useClass: HobbyRepositoryImpl }
   ]
 };

@@ -1,1 +1,229 @@
-<p>experience works!</p>
+<div class="experience-page" *ngIf="!isLoading; else loadingTemplate">
+  <!-- Hero Section -->
+  <section class="experience-hero">
+    <div class="hero-background">
+      <div class="parallax-element floating-code-1">{{ '{' }}</div>
+      <div class="parallax-element floating-code-2">{{ '}' }}</div>
+      <div class="parallax-element floating-code-3">&lt;/&gt;</div>
+      <div class="parallax-element floating-icon-1">💼</div>
+      <div class="parallax-element floating-icon-2">🎯</div>
+      <div class="parallax-element floating-icon-3">🚀</div>
+    </div>
+    
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-icon">💼</span>
+          <span>Professional Journey</span>
+        </div>
+        
+        <h1 class="hero-title">
+          <span class="title-line">My Experience &</span>
+          <span class="title-line gradient-text">Education</span>
+        </h1>
+        
+        <p class="hero-description">
+          A timeline of my professional growth, achievements, and continuous learning journey
+        </p>
+        
+        <div class="hero-stats" *ngIf="experiences.length > 0">
+          <div class="stat-item">
+            <span class="stat-number">{{ experiences.length }}</span>
+            <span class="stat-label">Positions</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ education.length }}</span>
+            <span class="stat-label">Degrees</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalExperience() }}</span>
+            <span class="stat-label">Years</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience Timeline -->
+  <section class="timeline-section" *ngIf="experiences.length > 0">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Professional Experience</h2>
+        <p class="section-subtitle">My career journey and key achievements</p>
+      </div>
+
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+        
+        <div class="timeline-item" 
+             *ngFor="let experience of experiences; let i = index; trackBy: trackByExperience"
+             [class.active]="i === activeTimelineIndex"
+             [class.alternate]="i % 2 === 1">
+          
+          <div class="timeline-dot">
+            <div class="dot-inner">
+              <span class="company-icon">{{ getExperienceIcon(experience.company) }}</span>
+            </div>
+            <div class="dot-pulse"></div>
+          </div>
+
+          <div class="timeline-content">
+            <div class="experience-card">
+              <div class="card-header">
+                <div class="company-logo" *ngIf="experience.companyLogo">
+                  <img [src]="experience.companyLogo" [alt]="experience.company">
+                </div>
+                
+                <div class="experience-meta">
+                  <h3 class="position-title">{{ experience.position }}</h3>
+                  <h4 class="company-name">
+                    <a *ngIf="experience.companyWebsite" 
+                       [href]="experience.companyWebsite" 
+                       target="_blank"
+                       rel="noopener noreferrer">
+                      {{ experience.company }}
+                    </a>
+                    <span *ngIf="!experience.companyWebsite">{{ experience.company }}</span>
+                  </h4>
+                  
+                  <div class="experience-details">
+                    <span class="location">📍 {{ experience.location }}</span>
+                    <span class="duration">
+                      ⏱️ {{ formatDate(experience.startDate) }} - 
+                      {{ experience.current ? 'Present' : formatDate(experience.endDate!) }}
+                      ({{ calculateDuration(experience.startDate, experience.endDate) }})
+                    </span>
+                  </div>
+                </div>
+
+                <div class="current-badge" *ngIf="experience.current">
+                  <span>Current</span>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <p class="experience-description">{{ experience.description }}</p>
+                
+                <div class="achievements" *ngIf="experience.achievements && experience.achievements.length > 0">
+                  <h5 class="achievements-title">Key Achievements</h5>
+                  <ul class="achievements-list">
+                    <li *ngFor="let achievement of experience.achievements" class="achievement-item">
+                      <span class="achievement-icon">✨</span>
+                      <span>{{ achievement }}</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="technologies" *ngIf="experience.technologies && experience.technologies.length > 0">
+                  <h5 class="tech-title">Technologies Used</h5>
+                  <div class="tech-tags">
+                    <span class="tech-tag" *ngFor="let tech of experience.technologies">
+                      {{ tech }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Education Section -->
+  <section class="education-section" *ngIf="education.length > 0">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Education</h2>
+        <p class="section-subtitle">Academic background and qualifications</p>
+      </div>
+
+      <div class="education-grid">
+        <div class="education-card" 
+             *ngFor="let edu of education; let i = index"
+             [style.animation-delay]="i * 0.2 + 's'">
+          
+          <div class="education-icon">
+            <span>{{ getEducationIcon(edu.degree) }}</span>
+          </div>
+
+          <div class="education-content">
+            <h3 class="degree-title">{{ edu.degree }}</h3>
+            <h4 class="field-of-study">{{ edu.fieldOfStudy }}</h4>
+            <h5 class="institution">{{ edu.institution }}</h5>
+            
+            <div class="education-meta">
+              <span class="location">📍 {{ edu.location }}</span>
+              <span class="duration">
+                📅 {{ formatDate(edu.startDate) }} - 
+                {{ edu.endDate ? formatDate(edu.endDate) : 'Present' }}
+              </span>
+              <span class="gpa" *ngIf="edu.gpa">
+                🎯 GPA: {{ edu.gpa }}
+              </span>
+            </div>
+
+            <p class="education-description" *ngIf="edu.description">
+              {{ edu.description }}
+            </p>
+
+            <div class="education-achievements" *ngIf="edu.achievements && edu.achievements.length > 0">
+              <h6>Achievements</h6>
+              <ul>
+                <li *ngFor="let achievement of edu.achievements">
+                  <span class="achievement-icon">🏆</span>
+                  {{ achievement }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="education-logo" *ngIf="edu.logo">
+            <img [src]="edu.logo" [alt]="edu.institution">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Overview -->
+  <section class="skills-section" *ngIf="profile?.skills && profile!.skills!.length > 0">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Core Skills</h2>
+        <p class="section-subtitle">Technologies and expertise I've gained throughout my journey</p>
+      </div>
+
+      <div class="skills-cloud">
+        <div class="skill-bubble" 
+             *ngFor="let skill of profile!.skills; let i = index"
+             [style.animation-delay]="i * 0.1 + 's'"
+             [class]="'skill-bubble-' + (i % 6 + 1)">
+          {{ skill }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Ready to Work Together?</h2>
+        <p>Let's discuss how my experience can contribute to your next project</p>
+        <div class="cta-actions">
+          <button class="btn btn-primary" routerLink="/contact">Get In Touch</button>
+          <button class="btn btn-outline" routerLink="/projects">View My Work</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading experience data...</p>
+  </div>
+</ng-template>
