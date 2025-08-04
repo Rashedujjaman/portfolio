@@ -2,8 +2,8 @@
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
-      <button class="btn back-btn" (click)="goBack()">
-        ← Back to Projects
+      <button mat-icon-button class="back-button" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
       </button>
       <h1>{{ isNewProject ? 'Create New Project' : 'Edit Project' }}</h1>
       <div class="header-actions">

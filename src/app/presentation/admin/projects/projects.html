@@ -1,8 +1,11 @@
 <div class="projects-management-container">
   <header class="page-header">
-    <button class="back-btn" (click)="goBack()">← Back to Dashboard</button>
+    <button class="back-btn" (click)="goBack()">Back to Dashboard</button>
     <h1>Projects Management</h1>
-    <button class="btn btn-primary" (click)="createProject()">+ Add New Project</button>
+    <button mat-raised-button color="primary" (click)="createProject()">
+      <mat-icon>add</mat-icon>
+      Add New Project
+    </button>
   </header>
 
   <div class="projects-content" *ngIf="!isLoading; else loadingTemplate">

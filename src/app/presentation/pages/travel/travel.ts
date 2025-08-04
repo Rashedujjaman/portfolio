@@ -4,14 +4,6 @@ import { RouterModule } from '@angular/router';
 import { Travel as TravelEntity, Hobby } from '../../../domain/entities/lifestyle.entity';
 import { TravelRepository, HobbyRepository } from '../../../domain/repositories/lifestyle.repository';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
-import { 
-  GetTravelsUseCase, 
-  GetFeaturedTravelsUseCase, 
-  GetTravelStatsUseCase,
-  GetHobbiesUseCase,
-  GetFeaturedHobbiesUseCase,
-  GetHobbyStatsUseCase 
-} from '../../../domain/use-cases/lifestyle.use-case';
 import { Profile } from '../../../domain/entities/profile.entity';
 
 @Component({
@@ -24,12 +16,6 @@ export class Travel implements OnInit {
   private travelRepository = inject(TravelRepository);
   private hobbyRepository = inject(HobbyRepository);
   private getProfileUseCase = inject(GetProfileUseCase);
-  private getTravelsUseCase = inject(GetTravelsUseCase);
-  private getFeaturedTravelsUseCase = inject(GetFeaturedTravelsUseCase);
-  private getTravelStatsUseCase = inject(GetTravelStatsUseCase);
-  private getHobbiesUseCase = inject(GetHobbiesUseCase);
-  private getFeaturedHobbiesUseCase = inject(GetFeaturedHobbiesUseCase);
-  private getHobbyStatsUseCase = inject(GetHobbyStatsUseCase);
   private elementRef = inject(ElementRef);
 
   profile: Profile | null = null;
@@ -58,28 +44,20 @@ export class Travel implements OnInit {
 
   private async loadData() {
     try {
-      const [
-        profileResult, 
-        travelsResult, 
-        hobbiesResult, 
-        featuredTravelsResult,
-        travelStatsResult,
-        hobbyStatsResult
-      ] = await Promise.all([
+      const [profileResult, travelsResult, hobbiesResult] = await Promise.all([
         this.getProfileUseCase.execute().toPromise(),
-        this.getTravelsUseCase.execute().toPromise(),
-        this.getHobbiesUseCase.execute().toPromise(),
-        this.getFeaturedTravelsUseCase.execute().toPromise(),
-        this.getTravelStatsUseCase.execute().toPromise(),
-        this.getHobbyStatsUseCase.execute().toPromise()
+        this.travelRepository.getTravels().toPromise(),
+        this.hobbyRepository.getHobbies().toPromise()
       ]);
 
       this.profile = profileResult || null;
       this.travels = travelsResult || [];
       this.hobbies = hobbiesResult || [];
-      this.featuredTravels = featuredTravelsResult || [];
-      this.travelStats = travelStatsResult;
-      this.hobbyStats = hobbyStatsResult;
+      
+      // Calculate derived data from the single database calls
+      this.featuredTravels = this.travels.filter(travel => travel.featured);
+      this.travelStats = this.calculateTravelStats(this.travels);
+      this.hobbyStats = this.calculateHobbyStats(this.hobbies);
       
       // Extract visited countries
       this.visitedCountries = [...new Set(this.travels.map(travel => travel.country))];
@@ -88,6 +66,42 @@ export class Travel implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  private calculateTravelStats(travels: TravelEntity[]) {
+    const countriesVisited = [...new Set(travels.map(t => t.country))];
+    const citiesVisited = [...new Set(travels.map(t => t.city))];
+    const totalDays = travels.reduce((sum, travel) => sum + travel.duration, 0);
+    
+    return {
+      totalTravels: travels.length,
+      totalCountries: countriesVisited.length,
+      totalCities: citiesVisited.length,
+      totalDays,
+      countriesVisited,
+      citiesVisited,
+      averageTripDuration: travels.length > 0 ? Math.round(totalDays / travels.length) : 0
+    };
+  }
+
+  private calculateHobbyStats(hobbies: Hobby[]) {
+    const categories = [...new Set(hobbies.map(h => h.category))];
+    
+    const categoryBreakdown = hobbies.reduce((acc, hobby) => {
+      acc[hobby.category] = (acc[hobby.category] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    const hobbiesWithAchievements = hobbies.filter(h => h.achievements && h.achievements.length > 0);
+
+    return {
+      totalHobbies: hobbies.length,
+      categories: categories.length,
+      categoryBreakdown,
+      featuredHobbies: hobbies.filter(h => h.featured).length,
+      hobbiesWithAchievements: hobbiesWithAchievements.length,
+      totalAchievements: hobbiesWithAchievements.reduce((sum, h) => sum + (h.achievements?.length || 0), 0)
+    };
   }
 
   private updateParallaxEffects() {
@@ -160,7 +174,7 @@ export class Travel implements OnInit {
       'spain': '🇪🇸',
       'united kingdom': '🇬🇧',
       'uk': '🇬🇧',
-      'japan': '🇯🇵',
+      'japan': '🎌',
       'china': '🇨🇳',
       'india': '🇮🇳',
       'australia': '🇦🇺',

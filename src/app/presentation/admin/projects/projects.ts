@@ -2,13 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
 import { Project } from '../../../domain/entities/project.entity';
 import { ProjectRepositoryImpl } from '../../../data/repositories/project-repository.impl';
 
 @Component({
   selector: 'app-admin-projects',
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss']
 })

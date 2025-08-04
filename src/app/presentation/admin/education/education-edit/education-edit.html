@@ -1,0 +1,186 @@
+<div class="education-edit-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button mat-icon-button class="back-btton" (click)="navigateBack()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1>{{ isEditMode ? 'Edit Education' : 'Create New Education' }}</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="navigateBack()" [disabled]="isSaving">
+          Cancel
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="onSubmit()" 
+          [disabled]="isSaving || educationForm.invalid">
+          <span *ngIf="isSaving">Saving...</span>
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Update Education' : 'Create Education' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading education...</p>
+  </div>
+
+  <!-- Status Messages -->
+  <div *ngIf="statusMessage" class="status-message" [ngClass]="statusType">
+    <span>{{ statusMessage }}</span>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="main-content">
+    <form [formGroup]="educationForm" class="education-form">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h2>Basic Information</h2>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="institution">Institution *</label>
+            <input 
+              type="text" 
+              id="institution" 
+              formControlName="institution" 
+              class="form-control"
+              placeholder="e.g., Stanford University">
+            <div class="error" *ngIf="educationForm.get('institution')?.invalid && educationForm.get('institution')?.touched">
+              Institution is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="degree">Degree *</label>
+            <input 
+              type="text" 
+              id="degree" 
+              formControlName="degree" 
+              class="form-control"
+              placeholder="e.g., Bachelor of Science">
+            <div class="error" *ngIf="educationForm.get('degree')?.invalid && educationForm.get('degree')?.touched">
+              Degree is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="fieldOfStudy">Field of Study *</label>
+            <input 
+              type="text" 
+              id="fieldOfStudy" 
+              formControlName="fieldOfStudy" 
+              class="form-control"
+              placeholder="e.g., Computer Science">
+            <div class="error" *ngIf="educationForm.get('fieldOfStudy')?.invalid && educationForm.get('fieldOfStudy')?.touched">
+              Field of Study is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="location">Location</label>
+            <input 
+              type="text" 
+              id="location" 
+              formControlName="location" 
+              class="form-control"
+              placeholder="e.g., Stanford, CA">
+          </div>
+        </div>
+      </div>
+
+      <!-- Duration Section -->
+      <div class="form-section">
+        <h2>Duration</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Start Date *</label>
+            <input 
+              type="date" 
+              id="startDate" 
+              formControlName="startDate" 
+              class="form-control">
+            <div class="error" *ngIf="educationForm.get('startDate')?.invalid && educationForm.get('startDate')?.touched">
+              Start date is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="endDate">End Date</label>
+            <input 
+              type="date" 
+              id="endDate" 
+              formControlName="endDate" 
+              class="form-control">
+            <small class="help-text">Leave empty if currently studying</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Information Section -->
+      <div class="form-section">
+        <h2>Additional Information</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="gpa">GPA</label>
+            <input 
+              type="text" 
+              id="gpa" 
+              formControlName="gpa" 
+              class="form-control"
+              placeholder="e.g., 3.8/4.0">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="description">Description</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              class="form-control" 
+              rows="3"
+              placeholder="Brief description of your studies, focus areas, or relevant coursework"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <h2>Achievements & Honors</h2>
+          <button type="button" class="btn btn-outline" (click)="addAchievement()">
+            + Add Achievement
+          </button>
+        </div>
+
+        <div class="achievements-list" formArrayName="achievements">
+          <div *ngFor="let achievement of achievements.controls; let i = index" class="achievement-item form-row">
+            <div class="form-group achievement-input">
+              <label>Achievement {{ i + 1 }}</label>
+              <input 
+                type="text" 
+                [formControlName]="i" 
+                class="form-control"
+                placeholder="e.g., Dean's List, Magna Cum Laude">
+            </div>
+            <button type="button" class="btn btn-danger-outline remove-btn" (click)="removeAchievement(i)">
+              Remove
+            </button>
+          </div>
+
+          <div *ngIf="achievements.length === 0" class="empty-achievements">
+            <p>No achievements added yet. Click "Add Achievement" to get started.</p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -8,46 +8,28 @@ import { FirebaseDataSource } from '../datasources/firebase.datasource';
   providedIn: 'root'
 })
 export class ExperienceRepositoryImpl implements ExperienceRepository {
+  private readonly COLLECTION_NAME = 'experiences';
   private firebaseDataSource = inject(FirebaseDataSource);
 
   getExperiences(): Observable<ExperienceEntity[]> {
-    return this.firebaseDataSource.getAll<ExperienceEntity>('experience', [
+    return this.firebaseDataSource.getAll<ExperienceEntity>(this.COLLECTION_NAME, [
       this.firebaseDataSource.createOrderByCondition('startDate', 'desc')
     ]);
   }
 
   getExperience(id: string): Observable<ExperienceEntity | null> {
-    return this.firebaseDataSource.getById<ExperienceEntity>('experiences', id);
+    return this.firebaseDataSource.getById<ExperienceEntity>(this.COLLECTION_NAME, id);
   }
 
   createExperience(experience: Omit<ExperienceEntity, 'id' | 'createdAt' | 'updatedAt'>): Observable<ExperienceEntity> {
-    return this.firebaseDataSource.create<ExperienceEntity>('experiences', experience);
+    return this.firebaseDataSource.create<ExperienceEntity>(this.COLLECTION_NAME, experience);
   }
 
   updateExperience(id: string, experience: Partial<ExperienceEntity>): Observable<ExperienceEntity> {
-    return this.firebaseDataSource.update<ExperienceEntity>('experiences', id, experience);
+    return this.firebaseDataSource.update<ExperienceEntity>(this.COLLECTION_NAME, id, experience);
   }
 
   deleteExperience(id: string): Observable<void> {
-    return this.firebaseDataSource.delete('experiences', id);
-  }
-
-  // Education methods
-  getEducation(): Observable<Education[]> {
-    return this.firebaseDataSource.getAll<Education>('education', [
-      this.firebaseDataSource.createOrderByCondition('startDate', 'desc')
-    ]);
-  }
-
-  createEducation(education: Omit<Education, 'id' | 'createdAt' | 'updatedAt'>): Observable<Education> {
-    return this.firebaseDataSource.create<Education>('education', education);
-  }
-
-  updateEducation(id: string, education: Partial<Education>): Observable<Education> {
-    return this.firebaseDataSource.update<Education>('education', id, education);
-  }
-
-  deleteEducation(id: string): Observable<void> {
-    return this.firebaseDataSource.delete('education', id);
+    return this.firebaseDataSource.delete(this.COLLECTION_NAME, id);
   }
 }

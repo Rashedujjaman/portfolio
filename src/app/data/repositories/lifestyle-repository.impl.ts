@@ -8,35 +8,36 @@ import { FirebaseDataSource } from '../datasources/firebase.datasource';
   providedIn: 'root'
 })
 export class TravelRepositoryImpl implements TravelRepository {
+  private readonly COLLECTION_NAME = 'travel';
   private firebaseDataSource = inject(FirebaseDataSource);
 
   getTravels(): Observable<TravelEntity[]> {
-    return this.firebaseDataSource.getAll<TravelEntity>('travels', [
+    return this.firebaseDataSource.getAll<TravelEntity>(this.COLLECTION_NAME, [
       this.firebaseDataSource.createOrderByCondition('visitDate', 'desc')
     ]);
   }
 
   getTravel(id: string): Observable<TravelEntity | null> {
-    return this.firebaseDataSource.getById<TravelEntity>('travels', id);
+    return this.firebaseDataSource.getById<TravelEntity>(this.COLLECTION_NAME, id);
   }
 
   getFeaturedTravels(): Observable<TravelEntity[]> {
-    return this.firebaseDataSource.getAll<TravelEntity>('travels', [
+    return this.firebaseDataSource.getAll<TravelEntity>(this.COLLECTION_NAME, [
       this.firebaseDataSource.createWhereCondition('featured', '==', true),
       this.firebaseDataSource.createOrderByCondition('visitDate', 'desc')
     ]);
   }
 
   createTravel(travel: Omit<TravelEntity, 'id' | 'createdAt' | 'updatedAt'>): Observable<TravelEntity> {
-    return this.firebaseDataSource.create<TravelEntity>('travels', travel);
+    return this.firebaseDataSource.create<TravelEntity>(this.COLLECTION_NAME, travel);
   }
 
   updateTravel(id: string, travel: Partial<TravelEntity>): Observable<TravelEntity> {
-    return this.firebaseDataSource.update<TravelEntity>('travels', id, travel);
+    return this.firebaseDataSource.update<TravelEntity>(this.COLLECTION_NAME, id, travel);
   }
 
   deleteTravel(id: string): Observable<void> {
-    return this.firebaseDataSource.delete('travels', id);
+    return this.firebaseDataSource.delete(this.COLLECTION_NAME, id);
   }
 }
 

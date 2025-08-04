@@ -2,12 +2,11 @@
   <header class="page-header">
     <div class="header-content">
       <button class="back-btn" (click)="goBack()">
-        <i class="icon-arrow-left"></i>
         Back to Dashboard
       </button>
       <h1>Experience Management</h1>
-      <button class="btn btn-primary" (click)="createExperience()">
-        <i class="icon-plus"></i>
+      <button mat-raised-button color="primary" (click)="createExperience()">
+        <mat-icon>add</mat-icon>
         Add Experience
       </button>
     </div>

@@ -69,6 +69,21 @@ export const routes: Routes = [
         path: 'experience/edit/:id',
         loadComponent: () => import('./presentation/admin/experience/experience-edit/experience-edit').then(c => c.ExperienceEditComponent),
         canActivate: [AdminGuard]
+      },
+      {
+        path: 'education',
+        loadComponent: () => import('./presentation/admin/education/education').then(c => c.AdminEducation),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'education/new',
+        loadComponent: () => import('./presentation/admin/education/education-edit/education-edit').then(c => c.EducationEditComponent),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'education/edit/:id',
+        loadComponent: () => import('./presentation/admin/education/education-edit/education-edit').then(c => c.EducationEditComponent),
+        canActivate: [AdminGuard]
       }
     ]
   },

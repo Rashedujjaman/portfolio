@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { GetProjectsUseCase, CreateProjectUseCase, UpdateProjectUseCase } from '../../../../domain/use-cases/project.use-case';
 import { Project, ProjectStatus, ProjectCategory } from '../../../../domain/entities/project.entity';
 import { ProjectRepositoryImpl } from '../../../../data/repositories/project-repository.impl';
@@ -19,7 +21,13 @@ interface ImageState {
 
 @Component({
   selector: 'app-project-edit',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ReactiveFormsModule, 
+    MatButtonModule, 
+    MatIconModule
+  ],
   templateUrl: './project-edit.html',
   styleUrls: ['./project-edit.scss']
 })

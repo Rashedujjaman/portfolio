@@ -34,6 +34,15 @@
       </div>
 
       <div class="stat-card">
+        <h3>Education</h3>
+        <p class="stat-value">{{ educations.length }}</p>
+        <p class="stat-label">Academic Background</p>
+        <button class="btn btn-primary" (click)="navigateToEducation()">
+          Manage Education
+        </button>
+      </div>
+
+      <div class="stat-card">
         <h3>Current Role</h3>
         <p class="stat-value">{{ getCurrentExperienceCount() }}</p>
         <p class="stat-label">Active Positions</p>

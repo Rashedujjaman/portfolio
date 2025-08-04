@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { GetExperiencesUseCase, DeleteExperienceUseCase } from '../../../domain/use-cases/experience.use-case';
 import { Experience } from '../../../domain/entities/experience.entity';
 
 @Component({
   selector: 'app-admin-experience',
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule],
   templateUrl: './experience.html',
   styleUrl: './experience.scss'
 })

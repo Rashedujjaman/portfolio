@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { 
   AddExperienceUseCase, 
   UpdateExperienceUseCase, 
@@ -11,7 +13,11 @@ import { Experience } from '../../../../domain/entities/experience.entity';
 
 @Component({
   selector: 'app-experience-edit',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    MatButtonModule, 
+    MatIconModule],
   templateUrl: './experience-edit.html',
   styleUrl: './experience-edit.scss'
 })

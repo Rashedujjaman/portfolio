@@ -35,9 +35,11 @@ export class SkillSyncService {
           return of(null); // No new skills to add
         }
 
+        const updatedSkills = [...currentSkills, ...uniqueNewSkills];
+        
         const updatedProfile = {
           ...profile,
-          skills: [...currentSkills, ...uniqueNewSkills],
+          skills: updatedSkills,
           updatedAt: new Date()
         };
         

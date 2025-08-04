@@ -5,9 +5,10 @@ import { AuthService } from '../../../core/auth.service';
 import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
 import { GetExperiencesUseCase } from '../../../domain/use-cases/experience.use-case';
+import { GetEducationsUseCase } from '../../../domain/use-cases/education.use-case';
 import { Project } from '../../../domain/entities/project.entity';
 import { Profile } from '../../../domain/entities/profile.entity';
-import { Experience } from '../../../domain/entities/experience.entity';
+import { Experience, Education } from '../../../domain/entities/experience.entity';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +20,7 @@ export class Dashboard implements OnInit {
   profile: Profile | null = null;
   projects: Project[] = [];
   experiences: Experience[] = [];
+  educations: Education[] = [];
   isLoading = true;
 
   constructor(
@@ -26,7 +28,8 @@ export class Dashboard implements OnInit {
     private router: Router,
     private getProjectsUseCase: GetProjectsUseCase,
     private getProfileUseCase: GetProfileUseCase,
-    private getExperiencesUseCase: GetExperiencesUseCase
+    private getExperiencesUseCase: GetExperiencesUseCase,
+    private getEducationsUseCase: GetEducationsUseCase
   ) {}
 
   ngOnInit() {
@@ -60,11 +63,22 @@ export class Dashboard implements OnInit {
     this.getExperiencesUseCase.execute().subscribe({
       next: (experiences) => {
         this.experiences = experiences;
-        this.isLoading = false;
         console.log('Experiences loaded:', experiences);
       },
       error: (error) => {
         console.error('Error loading experiences:', error);
+      }
+    });
+
+    // Load educations data
+    this.getEducationsUseCase.execute().subscribe({
+      next: (educations) => {
+        this.educations = educations;
+        this.isLoading = false;
+        console.log('Educations loaded:', educations);
+      },
+      error: (error) => {
+        console.error('Error loading educations:', error);
         this.isLoading = false;
       }
     });
@@ -88,6 +102,10 @@ export class Dashboard implements OnInit {
 
   navigateToExperience() {
     this.router.navigate(['/admin/experience']);
+  }
+
+  navigateToEducation() {
+    this.router.navigate(['/admin/education']);
   }
 
   getFeaturedProjectsCount(): number {
