@@ -1,0 +1,125 @@
+<div class="admin-travel">
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">
+        Back to Dashboard
+    </button>
+    <h1>Travel Management</h1>
+    <button class="btn btn-primary" (click)="createTravel()">
+      + Add Travel
+    </button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ getTotalTravels() }}</div>
+      <div class="stat-label">Total Travels</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getTotalCountries() }}</div>
+      <div class="stat-label">Countries Visited</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getFeaturedTravels() }}</div>
+      <div class="stat-label">Featured</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getTotalDays() }}</div>
+      <div class="stat-label">Total Days</div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading travel data...</p>
+  </div>
+
+  <!-- Travel List -->
+  <div *ngIf="!isLoading && travels.length > 0" class="travel-grid">
+    <div *ngFor="let travel of travels; let cardIndex = index" class="travel-card">
+      <div class="travel-image">
+        <div class="image-slideshow" *ngIf="travel.images && travel.images.length > 0">
+          <img [src]="getCurrentImage(travel, cardIndex)" 
+               [alt]="travel.title"
+               (error)="handleImageError($event)">
+          <div class="slideshow-indicators" *ngIf="travel.images.length > 1">
+            <span *ngFor="let img of travel.images; let imgIndex = index" 
+                  class="indicator" 
+                  [class.active]="imgIndex === getCurrentImageIndex(cardIndex)">
+            </span>
+          </div>
+          <div class="slideshow-counter" *ngIf="travel.images.length > 1">
+            {{ getCurrentImageIndex(cardIndex) + 1 }} / {{ travel.images.length }}
+          </div>
+        </div>
+        <div class="no-image-placeholder" *ngIf="!travel.images || travel.images.length === 0">
+          <img src="https://t4.ftcdn.net/jpg/00/65/48/25/360_F_65482539_C0ZozE5gUjCafz7Xq98WB4dW6LAhqKfs.jpg" [alt]="travel.title">
+        </div>
+        <div class="featured-badge" *ngIf="travel.featured">
+          ⭐ Featured
+        </div>
+      </div>
+
+      <div class="travel-content">
+        <div class="travel-header">
+          <h3>{{ travel.title }}</h3>
+          <div class="travel-location">
+            <span class="country-flag">{{ getCountryFlag(travel.country) }}</span>
+            <span>{{ travel.city }}, {{ travel.country }}</span>
+          </div>
+        </div>
+
+        <div class="travel-details">
+          <div class="detail-row">
+            <span class="icon">📅</span>
+            <span>{{ formatDate(travel.visitDate) }}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="icon">⏱️</span>
+            <span>{{ travel.duration }} {{ travel.duration === 1 ? 'day' : 'days' }}</span>
+          </div>
+          
+          <div class="detail-row" *ngIf="travel.highlights && travel.highlights.length > 0">
+            <span class="icon">✨</span>
+            <span>{{ travel.highlights!.length }} highlights</span>
+          </div>
+        </div>
+
+        <div class="travel-description">
+          <p>{{ travel.description | slice:0:120 }}{{ travel.description.length > 120 ? '...' : '' }}</p>
+        </div>
+
+        <div *ngIf="travel.highlights && travel.highlights.length > 0" class="highlights-section">
+          <div class="highlights-preview">
+            <span *ngFor="let highlight of travel.highlights!.slice(0, 3); let last = last" class="highlight-tag">
+              {{ highlight }}{{ !last && travel.highlights!.length > 1 ? ',' : '' }}</span>
+            <span *ngIf="travel.highlights!.length > 3" class="more-highlights">
+              +{{ travel.highlights!.length - 3 }} more
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="travel-actions">
+        <button class="btn btn-outline" (click)="editTravel(travel)">
+          Edit
+        </button>
+        <button class="btn btn-danger-outline" (click)="deleteTravel(travel)">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && travels.length === 0" class="empty-state">
+    <div class="empty-icon">✈️</div>
+    <h2>No Travels Added</h2>
+    <p>Start building your travel portfolio by adding your first travel experience.</p>
+    <button class="btn btn-primary" (click)="createTravel()">
+      + Add Your First Travel
+    </button>
+  </div>
+</div>

@@ -98,4 +98,13 @@ export class StorageService {
   getProjectImagePath(projectId: string, filename: string): string {
     return `projects/${projectId}/images/${filename}`;
   }
+
+  /**
+   * Get storage path for travel images
+   * @param travelId - The travel ID
+   * @param filename - The filename
+   */
+  getTravelImagePath(travelId: string, filename: string): string {
+    return `travels/${travelId}/images/${filename}`;
+  }
 }

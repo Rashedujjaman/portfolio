@@ -6,9 +6,11 @@ import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
 import { GetExperiencesUseCase } from '../../../domain/use-cases/experience.use-case';
 import { GetEducationsUseCase } from '../../../domain/use-cases/education.use-case';
+import { GetTravelsUseCase, GetHobbiesUseCase } from '../../../domain/use-cases/lifestyle.use-case';
 import { Project } from '../../../domain/entities/project.entity';
 import { Profile } from '../../../domain/entities/profile.entity';
 import { Experience, Education } from '../../../domain/entities/experience.entity';
+import { Hobby, Travel } from '../../../domain/entities/lifestyle.entity';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +23,8 @@ export class Dashboard implements OnInit {
   projects: Project[] = [];
   experiences: Experience[] = [];
   educations: Education[] = [];
+  travels: Travel[] = [];
+  hobbies: Hobby[] = [];
   isLoading = true;
 
   constructor(
@@ -29,7 +33,9 @@ export class Dashboard implements OnInit {
     private getProjectsUseCase: GetProjectsUseCase,
     private getProfileUseCase: GetProfileUseCase,
     private getExperiencesUseCase: GetExperiencesUseCase,
-    private getEducationsUseCase: GetEducationsUseCase
+    private getEducationsUseCase: GetEducationsUseCase,
+    private getTravelsUseCase: GetTravelsUseCase,
+    private getHobbiesUseCase: GetHobbiesUseCase
   ) {}
 
   ngOnInit() {
@@ -82,6 +88,28 @@ export class Dashboard implements OnInit {
         this.isLoading = false;
       }
     });
+
+    //Load travels data
+    this.getTravelsUseCase.execute().subscribe({
+      next: (travels) => {
+        this.travels = travels;
+        console.log('Travels loaded:', travels);
+      },
+      error: (error) => {
+        console.error('Error loading travels:', error);
+      }
+    });
+
+    // Load hobbies data
+    this.getHobbiesUseCase.execute().subscribe({
+      next: (hobbies) => {
+        this.hobbies = hobbies;
+        console.log('Hobbies loaded:', hobbies);
+      },
+      error: (error) => {
+        console.error('Error loading hobbies:', error);
+      }
+    });
   }
 
   async logout() {
@@ -108,6 +136,10 @@ export class Dashboard implements OnInit {
     this.router.navigate(['/admin/education']);
   }
 
+  navigateToTravels() {
+    this.router.navigate(['/admin/travel']);
+  }
+
   getFeaturedProjectsCount(): number {
     return this.projects.filter(project => project.featured).length;
   }
@@ -122,6 +154,10 @@ export class Dashboard implements OnInit {
 
   getCurrentExperienceCount(): number {
     return this.experiences.filter(exp => exp.current).length;
+  }
+
+  getCurrentTravelCount(): number {
+    return this.travels.filter(travel => travel.featured).length;
   }
 
   getTotalExperienceYears(): number {

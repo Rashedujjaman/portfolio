@@ -4,10 +4,10 @@ export interface Travel {
   city: string;
   title: string;
   description: string;
-  images: string[];
+  images: string[] | null;
   visitDate: Date;
   duration: number; // in days
-  highlights: string[];
+  highlights: string[] | null;
   coordinates?: {
     latitude: number;
     longitude: number;

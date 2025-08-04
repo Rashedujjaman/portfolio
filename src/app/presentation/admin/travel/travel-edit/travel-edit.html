@@ -1,0 +1,297 @@
+<div class="travel-edit-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="navigateBack()">
+        ← Back to Travel
+      </button>
+      <h1>{{ isEditMode ? 'Edit Travel' : 'Create New Travel' }}</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="navigateBack()" [disabled]="isSaving">
+          Cancel
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="onSubmit()" 
+          [disabled]="isSaving || travelForm.invalid">
+          <span *ngIf="isSaving">Saving...</span>
+          <span *ngIf="!isSaving">{{ isEditMode ? 'Update Travel' : 'Create Travel' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading travel...</p>
+  </div>
+
+  <!-- Status Messages -->
+  <div *ngIf="statusMessage" class="status-message" [ngClass]="statusType">
+    <span>{{ statusMessage }}</span>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="main-content">
+    <form [formGroup]="travelForm" class="travel-form">
+      
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <h2>Basic Information</h2>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="title">Travel Title *</label>
+            <input 
+              type="text" 
+              id="title" 
+              formControlName="title" 
+              class="form-control"
+              placeholder="e.g., Amazing Weekend in Paris">
+            <div class="error" *ngIf="travelForm.get('title')?.invalid && travelForm.get('title')?.touched">
+              Title is required (minimum 2 characters)
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="country">Country *</label>
+            <input 
+              type="text" 
+              id="country" 
+              formControlName="country" 
+              class="form-control"
+              placeholder="e.g., France">
+            <div class="error" *ngIf="travelForm.get('country')?.invalid && travelForm.get('country')?.touched">
+              Country is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="city">City *</label>
+            <input 
+              type="text" 
+              id="city" 
+              formControlName="city" 
+              class="form-control"
+              placeholder="e.g., Paris">
+            <div class="error" *ngIf="travelForm.get('city')?.invalid && travelForm.get('city')?.touched">
+              City is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="description">Description *</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              class="form-control" 
+              rows="4"
+              placeholder="Describe your travel experience, what you did, what you enjoyed..."></textarea>
+            <div class="error" *ngIf="travelForm.get('description')?.invalid && travelForm.get('description')?.touched">
+              Description is required (minimum 10 characters)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Travel Details Section -->
+      <div class="form-section">
+        <h2>Travel Details</h2>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="visitDate">Visit Date *</label>
+            <input 
+              type="date" 
+              id="visitDate" 
+              formControlName="visitDate" 
+              class="form-control">
+            <div class="error" *ngIf="travelForm.get('visitDate')?.invalid && travelForm.get('visitDate')?.touched">
+              Visit date is required
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="duration">Duration (days) *</label>
+            <input 
+              type="number" 
+              id="duration" 
+              formControlName="duration" 
+              class="form-control"
+              min="1"
+              placeholder="7">
+            <div class="error" *ngIf="travelForm.get('duration')?.invalid && travelForm.get('duration')?.touched">
+              Duration must be at least 1 day
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="featured">
+              <span class="checkmark"></span>
+              Featured Travel
+            </label>
+            <small class="help-text">Mark this travel as featured to highlight it on your portfolio</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Coordinates Section -->
+      <div class="form-section">
+        <h2>Location Coordinates (Optional)</h2>
+        
+        <div class="form-row" formGroupName="coordinates">
+          <div class="form-group">
+            <label for="latitude">Latitude</label>
+            <input 
+              type="number" 
+              id="latitude" 
+              formControlName="latitude" 
+              class="form-control"
+              step="any"
+              placeholder="48.8566">
+          </div>
+          <div class="form-group">
+            <label for="longitude">Longitude</label>
+            <input 
+              type="number" 
+              id="longitude" 
+              formControlName="longitude" 
+              class="form-control"
+              step="any"
+              placeholder="2.3522">
+          </div>
+        </div>
+      </div>
+
+      <!-- Images Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <h2>Travel Images</h2>
+          <div class="image-actions">
+            <input type="file" 
+                   #fileInput 
+                   multiple 
+                   accept="image/*" 
+                   (change)="onFilesSelected($event)" 
+                   style="display: none;">
+            <button type="button" class="btn btn-outline" (click)="fileInput.click()">
+              📷 Upload Images
+            </button>
+            <button type="button" class="btn btn-outline" (click)="addImageUrl()">
+              🔗 Add URL
+            </button>
+          </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div *ngIf="uploadingImages" class="upload-progress">
+          <div class="progress-info">
+            <span>Uploading images...</span>
+          </div>
+          <div *ngFor="let item of uploadProgress | keyvalue" class="progress-item">
+            <span class="filename">{{ item.key }}</span>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="item.value"></div>
+            </div>
+            <span class="percentage">{{ item.value }}%</span>
+          </div>
+        </div>
+
+        <!-- Image List -->
+        <div class="images-list">
+          <div *ngFor="let imageState of imageStates; let i = index" 
+               class="image-item" 
+               [class.deleted]="imageState.isDeleted"
+               [class.new]="imageState.isNew">
+            
+            <!-- Image Preview -->
+            <div class="image-preview">
+              <img *ngIf="imageState.url && !imageState.isDeleted" 
+                   [src]="imageState.url" 
+                   [alt]="'Travel image ' + (i + 1)"
+                   (error)="handleImageError($event)">
+              <div *ngIf="!imageState.url || imageState.isDeleted" class="placeholder">
+                <span>No Image</span>
+              </div>
+            </div>
+
+            <!-- Image URL Input (for manual URLs) -->
+            <div *ngIf="!imageState.file" class="image-url-input">
+              <label>Image URL {{ i + 1 }}</label>
+              <input type="url" 
+                     [value]="imageState.url"
+                     (input)="updateImageUrl(i, $any($event.target).value)"
+                     class="form-control"
+                     [disabled]="imageState.isDeleted"
+                     placeholder="https://example.com/image.jpg">
+            </div>
+
+            <!-- File Info (for uploaded files) -->
+            <div *ngIf="imageState.file" class="file-info">
+              <span class="filename">{{ imageState.file.name }}</span>
+              <span class="file-size">({{ (imageState.file.size / 1024 / 1024).toFixed(2) }}MB)</span>
+              <span *ngIf="imageState.isUploaded" class="upload-status success">✓ Uploaded</span>
+              <span *ngIf="!imageState.isUploaded && !uploadingImages" class="upload-status pending">📤 Pending</span>
+            </div>
+
+            <!-- Actions -->
+            <div class="image-actions">
+              <button *ngIf="!imageState.isDeleted" 
+                      type="button" 
+                      class="btn btn-danger-outline" 
+                      (click)="removeImage(i)">
+                {{ imageState.isNew ? 'Remove' : 'Mark for Deletion' }}
+              </button>
+              <button *ngIf="imageState.isDeleted" 
+                      type="button" 
+                      class="btn btn-outline" 
+                      (click)="undoRemoveImage(i)">
+                Undo Delete
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="imageStates.length === 0" class="empty-images">
+            <p>No images added yet. Upload images or add URLs to get started.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Highlights Section -->
+      <div class="form-section">
+        <div class="section-header">
+          <h2>Travel Highlights</h2>
+          <button type="button" class="btn btn-outline" (click)="addHighlight()">
+            + Add Highlight
+          </button>
+        </div>
+
+        <div class="highlights-list" formArrayName="highlights">
+          <div *ngFor="let highlight of highlights.controls; let i = index" class="highlight-item">
+            <div class="form-group highlight-input">
+              <label>Highlight {{ i + 1 }}</label>
+              <input 
+                type="text" 
+                [formControlName]="i" 
+                class="form-control"
+                placeholder="e.g., Visited the Eiffel Tower">
+            </div>
+            <button type="button" class="btn btn-danger-outline remove-btn" (click)="removeHighlight(i)">
+              Remove
+            </button>
+          </div>
+
+          <div *ngIf="highlights.length === 0" class="empty-highlights">
+            <p>No highlights added yet. Click "Add Highlight" to get started.</p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

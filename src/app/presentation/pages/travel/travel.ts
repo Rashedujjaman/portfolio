@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Travel as TravelEntity, Hobby } from '../../../domain/entities/lifestyle.entity';
@@ -12,7 +12,7 @@ import { Profile } from '../../../domain/entities/profile.entity';
   templateUrl: './travel.html',
   styleUrl: './travel.scss'
 })
-export class Travel implements OnInit {
+export class Travel implements OnInit, OnDestroy {
   private travelRepository = inject(TravelRepository);
   private hobbyRepository = inject(HobbyRepository);
   private getProfileUseCase = inject(GetProfileUseCase);
@@ -28,12 +28,24 @@ export class Travel implements OnInit {
   selectedTravel: TravelEntity | null = null;
   currentImageIndex = 0;
 
+  // Image slideshow management
+  private currentImageIndices: { [cardIndex: number]: number } = {};
+  private slideshowIntervals: { [cardIndex: number]: any } = {};
+  private readonly SLIDESHOW_INTERVAL = 4000; // 4 seconds for user page
+
   // Map and interaction states
   hoveredCountry: string | null = null;
   visitedCountries: string[] = [];
 
   ngOnInit() {
     this.loadData();
+  }
+
+  ngOnDestroy() {
+    // Clean up all intervals
+    Object.values(this.slideshowIntervals).forEach(interval => {
+      if (interval) clearInterval(interval);
+    });
   }
 
   @HostListener('window:scroll')
@@ -61,6 +73,9 @@ export class Travel implements OnInit {
       
       // Extract visited countries
       this.visitedCountries = [...new Set(this.travels.map(travel => travel.country))];
+      
+      // Initialize slideshows after data is loaded
+      this.initializeSlideshows();
     } catch (error) {
       console.error('Error loading travel data:', error);
     } finally {
@@ -140,13 +155,13 @@ export class Travel implements OnInit {
   }
 
   nextImage() {
-    if (this.selectedTravel && this.selectedTravel.images.length > 0) {
+    if (this.selectedTravel && this.selectedTravel.images && this.selectedTravel.images.length > 0) {
       this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedTravel.images.length;
     }
   }
 
   prevImage() {
-    if (this.selectedTravel && this.selectedTravel.images.length > 0) {
+    if (this.selectedTravel && this.selectedTravel.images && this.selectedTravel.images.length > 0) {
       this.currentImageIndex = this.currentImageIndex === 0 
         ? this.selectedTravel.images.length - 1 
         : this.currentImageIndex - 1;
@@ -154,12 +169,24 @@ export class Travel implements OnInit {
   }
 
   // Helper methods
-  formatDate(date: Date): string {
-    return new Intl.DateTimeFormat('en-US', { 
-      year: 'numeric', 
-      month: 'long',
-      day: 'numeric'
-    }).format(new Date(date));
+  formatDate(date: Date | string | null | undefined): string {
+    if (!date) return 'Date not available';
+    
+    try {
+      const validDate = new Date(date);
+      if (isNaN(validDate.getTime())) {
+        return 'Invalid date';
+      }
+      
+      return new Intl.DateTimeFormat('en-US', { 
+        year: 'numeric', 
+        month: 'long',
+        day: 'numeric'
+      }).format(validDate);
+    } catch (error) {
+      console.warn('Error formatting date:', date, error);
+      return 'Date unavailable';
+    }
   }
 
   getCountryFlag(country: string): string {
@@ -233,5 +260,42 @@ export class Travel implements OnInit {
   getCountryTripText(country: string): string {
     const count = this.getCountryTripCount(country);
     return count === 1 ? 'trip' : 'trips';
+  }
+
+  // Slideshow methods
+  private initializeSlideshows() {
+    // Clear existing intervals
+    Object.values(this.slideshowIntervals).forEach(interval => {
+      if (interval) clearInterval(interval);
+    });
+    this.slideshowIntervals = {};
+    this.currentImageIndices = {};
+
+    // Initialize slideshow for each travel card
+    this.travels.forEach((travel, cardIndex) => {
+      if (travel.images && travel.images.length > 1) {
+        this.currentImageIndices[cardIndex] = 0;
+        this.startSlideshow(cardIndex, travel.images.length);
+      }
+    });
+  }
+
+  private startSlideshow(cardIndex: number, imageCount: number) {
+    this.slideshowIntervals[cardIndex] = setInterval(() => {
+      this.currentImageIndices[cardIndex] = (this.currentImageIndices[cardIndex] + 1) % imageCount;
+    }, this.SLIDESHOW_INTERVAL);
+  }
+
+  getCurrentImage(travel: TravelEntity, cardIndex: number): string {
+    if (!travel.images || travel.images.length === 0) {
+      return '/assets/images/placeholder-travel.jpg';
+    }
+    
+    const currentIndex = this.currentImageIndices[cardIndex] || 0;
+    return travel.images[currentIndex] || '/assets/images/placeholder-travel.jpg';
+  }
+
+  getCurrentImageIndex(cardIndex: number): number {
+    return this.currentImageIndices[cardIndex] || 0;
   }
 }

@@ -84,6 +84,21 @@ export const routes: Routes = [
         path: 'education/edit/:id',
         loadComponent: () => import('./presentation/admin/education/education-edit/education-edit').then(c => c.EducationEditComponent),
         canActivate: [AdminGuard]
+      },
+      {
+        path: 'travel',
+        loadComponent: () => import('./presentation/admin/travel/travel').then(c => c.AdminTravel),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'travel/new',
+        loadComponent: () => import('./presentation/admin/travel/travel-edit/travel-edit').then(c => c.TravelEditComponent),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'travel/edit/:id',
+        loadComponent: () => import('./presentation/admin/travel/travel-edit/travel-edit').then(c => c.TravelEditComponent),
+        canActivate: [AdminGuard]
       }
     ]
   },

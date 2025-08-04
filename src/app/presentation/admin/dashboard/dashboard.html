@@ -48,6 +48,13 @@
         <p class="stat-label">Active Positions</p>
         <button class="btn btn-secondary" (click)="navigateToExperience()">View Details</button>
       </div>
+
+      <div class="stat-card">
+        <h3>Manage Travels</h3>
+        <p class="stat-value">{{ getCurrentTravelCount() }}</p>
+        <p class="stat-label">Active Travels</p>
+        <button class="btn btn-primary" (click)="navigateToTravels()">View Details</button>
+      </div>
     </div>
 
     <div class="recent-section">

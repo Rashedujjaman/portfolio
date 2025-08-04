@@ -123,12 +123,26 @@
 
       <div class="travels-grid scroll-animate">
         <div class="travel-card" 
-             *ngFor="let travel of featuredTravels; let i = index; trackBy: trackByTravel"
-             [style.animation-delay]="i * 0.2 + 's'"
+             *ngFor="let travel of featuredTravels; let cardIndex = index; trackBy: trackByTravel"
+             [style.animation-delay]="cardIndex * 0.2 + 's'"
              (click)="selectTravel(travel)">
           
           <div class="travel-image">
-            <img [src]="travel.images[0]" [alt]="travel.title" *ngIf="travel.images.length > 0">
+            <div class="image-slideshow" *ngIf="travel.images && travel.images.length > 0">
+              <img [src]="getCurrentImage(travel, cardIndex)" [alt]="travel.title">
+              <div class="slideshow-indicators" *ngIf="travel.images.length > 1">
+                <span *ngFor="let img of travel.images; let imgIndex = index" 
+                      class="indicator" 
+                      [class.active]="imgIndex === getCurrentImageIndex(cardIndex)">
+                </span>
+              </div>
+              <div class="slideshow-counter" *ngIf="travel.images.length > 1">
+                {{ getCurrentImageIndex(cardIndex) + 1 }} / {{ travel.images.length }}
+              </div>
+            </div>
+            <div class="no-image-placeholder" *ngIf="!travel.images || travel.images.length === 0">
+              <img src="https://t4.ftcdn.net/jpg/00/65/48/25/360_F_65482539_C0ZozE5gUjCafz7Xq98WB4dW6LAhqKfs.jpg" [alt]="travel.title">
+            </div>
             <div class="image-overlay">
               <div class="travel-duration">{{ travel.duration }} days</div>
               <div class="travel-flag">{{ getCountryFlag(travel.country) }}</div>
@@ -161,7 +175,7 @@
                 <span class="date-icon">📅</span>
                 {{ formatDate(travel.visitDate) }}
               </span>
-              <span class="travel-images" *ngIf="travel.images.length > 1">
+              <span class="travel-images" *ngIf="travel.images && travel.images.length > 1">
                 <span class="images-icon">📸</span>
                 {{ travel.images.length }} photos
               </span>
@@ -260,7 +274,7 @@
       </div>
     </div>
 
-    <div class="modal-gallery" *ngIf="selectedTravel.images.length > 0">
+    <div class="modal-gallery" *ngIf="selectedTravel.images && selectedTravel.images.length > 0">
       <div class="gallery-main">
         <img [src]="selectedTravel.images[currentImageIndex]" [alt]="selectedTravel.title">
         
