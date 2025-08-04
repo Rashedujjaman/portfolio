@@ -6,7 +6,7 @@ import { EducationRepository } from '../repositories/experience.repository';
 @Injectable({
   providedIn: 'root'
 })
-export class GetEducationUseCase {
+export class GetEducationsUseCase {
   private educationRepository = inject(EducationRepository);
 
   execute(): Observable<Education[]> {

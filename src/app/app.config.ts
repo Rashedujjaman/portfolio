@@ -26,13 +26,8 @@ import { BlogRepositoryImpl, TestimonialRepositoryImpl } from './data/repositori
 // Use case providers
 import { GetProfileUseCase } from './domain/use-cases/profile.use-case';
 import { GetProjectsUseCase } from './domain/use-cases/project.use-case';
-import { 
-  GetExperiencesUseCase, 
-  GetAllSkillsUseCase, 
-  GetSkillsWithExperienceUseCase,
-  GetExperienceStatsUseCase 
-} from './domain/use-cases/experience.use-case';
-import { GetEducationUseCase, GetEducationStatsUseCase } from './domain/use-cases/education.use-case';
+import { GetExperiencesUseCase,} from './domain/use-cases/experience.use-case';
+import { GetEducationsUseCase, GetEducationStatsUseCase } from './domain/use-cases/education.use-case';
 import { 
   GetTravelsUseCase, 
   GetHobbiesUseCase, 
@@ -78,10 +73,7 @@ export const appConfig: ApplicationConfig = {
     GetProfileUseCase,
     GetProjectsUseCase,
     GetExperiencesUseCase,
-    GetAllSkillsUseCase,
-    GetSkillsWithExperienceUseCase,
-    GetExperienceStatsUseCase,
-    GetEducationUseCase,
+    GetEducationsUseCase,
     GetEducationStatsUseCase,
     GetTravelsUseCase,
     GetHobbiesUseCase,

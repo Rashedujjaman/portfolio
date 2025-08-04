@@ -4,36 +4,6 @@
     <button class="logout-btn" (click)="logout()">Logout</button>
   </header>
 
-  <!-- Data Management Section -->
-  <div class="data-management-section" *ngIf="!isLoading">
-    <h2>Data Management</h2>
-    <div class="action-buttons">
-      <button 
-        class="btn btn-success" 
-        (click)="seedData()"
-        [disabled]="isSeeding">
-        {{ isSeeding ? 'Seeding Data...' : 'Seed Initial Data' }}
-      </button>
-      
-      <button 
-        class="btn btn-warning" 
-        (click)="clearData()"
-        [disabled]="isClearing">
-        {{ isClearing ? 'Clearing Data...' : 'Clear All Data' }}
-      </button>
-      
-      <button 
-        class="btn btn-info" 
-        (click)="checkDataStatus()">
-        Check Data Status
-      </button>
-    </div>
-    
-    <div class="status-message" *ngIf="statusMessage">
-      <div class="alert">{{ statusMessage }}</div>
-    </div>
-  </div>
-
   <div class="dashboard-content" *ngIf="!isLoading; else loadingTemplate">
     <div class="stats-grid">
       <div class="stat-card">
@@ -55,17 +25,19 @@
       </div>
 
       <div class="stat-card">
-        <h3>Featured Projects</h3>
-        <p class="stat-value">{{ getFeaturedProjectsCount() }}</p>
-        <p class="stat-label">Featured</p>
-        <button class="btn btn-secondary">View Featured</button>
+        <h3>Experience</h3>
+        <p class="stat-value">{{ experiences.length }}</p>
+        <p class="stat-label">{{ getTotalExperienceYears() }} Years Total</p>
+        <button class="btn btn-primary" (click)="navigateToExperience()">
+          Manage Experience
+        </button>
       </div>
 
       <div class="stat-card">
-        <h3>Recent Activity</h3>
-        <p class="stat-value">{{ getRecentActivityCount() }}</p>
-        <p class="stat-label">This Week</p>
-        <button class="btn btn-secondary">View Activity</button>
+        <h3>Current Role</h3>
+        <p class="stat-value">{{ getCurrentExperienceCount() }}</p>
+        <p class="stat-label">Active Positions</p>
+        <button class="btn btn-secondary" (click)="navigateToExperience()">View Details</button>
       </div>
     </div>
 

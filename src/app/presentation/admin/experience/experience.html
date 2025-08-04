@@ -1,0 +1,123 @@
+<div class="admin-experience-container">
+  <header class="page-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="goBack()">
+        <i class="icon-arrow-left"></i>
+        Back to Dashboard
+      </button>
+      <h1>Experience Management</h1>
+      <button class="btn btn-primary" (click)="createExperience()">
+        <i class="icon-plus"></i>
+        Add Experience
+      </button>
+    </div>
+  </header>
+
+  <div class="content-section" *ngIf="!isLoading; else loadingTemplate">
+    <div class="experiences-grid" *ngIf="experiences.length > 0; else emptyTemplate">
+      <div class="experience-card" *ngFor="let experience of experiences" [class.current]="experience.current">
+        <div class="card-header">
+          <div class="title-section">
+            <h3>{{ experience.position }}</h3>
+            <h4>{{ experience.company }}</h4>
+            <span class="current-badge" *ngIf="experience.current">Current</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary btn-sm" (click)="editExperience(experience)">
+              <i class="icon-edit"></i>
+              Edit
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="confirmDelete(experience)">
+              <i class="icon-delete"></i>
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <div class="card-content">
+          <div class="date-info">
+            <div class="date-range">
+              <i class="icon-calendar"></i>
+              {{ formatDateRange(experience) }}
+            </div>
+            <div class="duration">
+              <i class="icon-clock"></i>
+              {{ getDuration(experience) }}
+            </div>
+          </div>
+
+          <div class="location" *ngIf="experience.location">
+            <i class="icon-location"></i>
+            {{ experience.location }}
+          </div>
+
+          <div class="description" *ngIf="experience.description">
+            <p>{{ experience.description }}</p>
+          </div>
+
+          <div class="highlights" *ngIf="experience.achievements && experience.achievements.length > 0">
+            <h5>Key Achievements:</h5>
+            <ul>
+              <li *ngFor="let achievement of experience.achievements">{{ achievement }}</li>
+            </ul>
+          </div>
+
+          <div class="technologies" *ngIf="experience.technologies && experience.technologies.length > 0">
+            <h5>Technologies:</h5>
+            <div class="tech-tags">
+              <span class="tech-tag" *ngFor="let tech of experience.technologies">{{ tech }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyTemplate>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="icon-briefcase"></i>
+        </div>
+        <h3>No Experiences Found</h3>
+        <p>Start building your professional timeline by adding your first work experience.</p>
+        <button class="btn btn-primary btn-lg" (click)="createExperience()">
+          <i class="icon-plus"></i>
+          Add Your First Experience
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading experiences...</p>
+    </div>
+  </ng-template>
+
+  <!-- Delete Confirmation Dialog -->
+  <div class="modal-overlay" *ngIf="deleteDialogVisible" (click)="cancelDelete()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirm Deletion</h3>
+        <button class="close-btn" (click)="cancelDelete()">×</button>
+      </div>
+      
+      <div class="modal-content">
+        <p>Are you sure you want to delete this experience?</p>
+        <div class="experience-preview" *ngIf="experienceToDelete">
+          <strong>{{ experienceToDelete.position }}</strong> at {{ experienceToDelete.company }}
+        </div>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="cancelDelete()" [disabled]="isDeleting">
+          Cancel
+        </button>
+        <button class="btn btn-danger" (click)="deleteExperience()" [disabled]="isDeleting">
+          {{ isDeleting ? 'Deleting...' : 'Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

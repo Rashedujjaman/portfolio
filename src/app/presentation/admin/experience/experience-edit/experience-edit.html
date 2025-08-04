@@ -1,0 +1,240 @@
+<div class="experience-edit-container">
+  <header class="page-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="goBack()">
+        <i class="icon-arrow-left"></i>
+        Back to Experience
+      </button>
+      <h1>{{ isEditMode ? 'Edit Experience' : 'Add New Experience' }}</h1>
+      <div class="spacer"></div>
+    </div>
+  </header>
+
+  <div class="content-section" *ngIf="!isLoading; else loadingTemplate">
+    <div class="form-container">
+      <form [formGroup]="experienceForm" (ngSubmit)="onSubmit()" class="experience-form">
+        <!-- Error Messages -->
+        <div class="error-messages" *ngIf="errors.length > 0">
+          <div class="alert alert-danger">
+            <ul>
+              <li *ngFor="let error of errors">{{ error }}</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h2>Basic Information</h2>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="company">Company *</label>
+              <input 
+                type="text" 
+                id="company" 
+                formControlName="company"
+                class="form-control"
+                [class.is-invalid]="experienceForm.get('company')?.touched && experienceForm.get('company')?.errors"
+                placeholder="Enter company name">
+              <div class="invalid-feedback" *ngIf="getFieldError('company')">
+                {{ getFieldError('company') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="position">Position *</label>
+              <input 
+                type="text" 
+                id="position" 
+                formControlName="position"
+                class="form-control"
+                [class.is-invalid]="experienceForm.get('position')?.touched && experienceForm.get('position')?.errors"
+                placeholder="Enter position title">
+              <div class="invalid-feedback" *ngIf="getFieldError('position')">
+                {{ getFieldError('position') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="location">Location</label>
+              <input 
+                type="text" 
+                id="location" 
+                formControlName="location"
+                class="form-control"
+                placeholder="City, Country">
+            </div>
+
+            <div class="form-group">
+              <label for="companyWebsite">Company Website</label>
+              <input 
+                type="url" 
+                id="companyWebsite" 
+                formControlName="companyWebsite"
+                class="form-control"
+                placeholder="https://company.com">
+            </div>
+          </div>
+        </div>
+
+        <!-- Employment Period -->
+        <div class="form-section">
+          <h2>Employment Period</h2>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="startDate">Start Date *</label>
+              <input 
+                type="date" 
+                id="startDate" 
+                formControlName="startDate"
+                class="form-control"
+                [class.is-invalid]="experienceForm.get('startDate')?.touched && experienceForm.get('startDate')?.errors">
+              <div class="invalid-feedback" *ngIf="getFieldError('startDate')">
+                {{ getFieldError('startDate') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="endDate">End Date</label>
+              <input 
+                type="date" 
+                id="endDate" 
+                formControlName="endDate"
+                class="form-control"
+                [class.is-invalid]="experienceForm.get('endDate')?.touched && experienceForm.get('endDate')?.errors"
+                [disabled]="experienceForm.get('current')?.value">
+              <div class="invalid-feedback" *ngIf="getFieldError('endDate')">
+                {{ getFieldError('endDate') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="checkbox-group">
+              <input 
+                type="checkbox" 
+                id="current" 
+                formControlName="current"
+                (change)="onCurrentChange()">
+              <label for="current">This is my current position</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-section">
+          <h2>Description</h2>
+          
+          <div class="form-group">
+            <label for="description">Job Description *</label>
+            <textarea 
+              id="description" 
+              formControlName="description"
+              class="form-control"
+              rows="4"
+              [class.is-invalid]="experienceForm.get('description')?.touched && experienceForm.get('description')?.errors"
+              placeholder="Describe your role and responsibilities..."></textarea>
+            <div class="invalid-feedback" *ngIf="getFieldError('description')">
+              {{ getFieldError('description') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="form-section">
+          <h2>Key Achievements</h2>
+          
+          <div formArrayName="achievements" class="dynamic-list">
+            <div 
+              *ngFor="let achievement of achievements.controls; let i = index" 
+              class="dynamic-item">
+              <div class="form-group">
+                <input 
+                  type="text" 
+                  [formControlName]="i"
+                  class="form-control"
+                  placeholder="Describe a key achievement..."
+                  [class.is-invalid]="achievement.touched && achievement.errors">
+                <button 
+                  type="button" 
+                  class="btn btn-danger btn-sm remove-btn"
+                  (click)="removeAchievement(i)">
+                  <i class="icon-trash"></i>
+                </button>
+              </div>
+            </div>
+            
+            <button 
+              type="button" 
+              class="btn btn-secondary add-btn"
+              (click)="addAchievement()">
+              <i class="icon-plus"></i>
+              Add Achievement
+            </button>
+          </div>
+        </div>
+
+        <!-- Technologies -->
+        <div class="form-section">
+          <h2>Technologies & Skills</h2>
+          
+          <div formArrayName="technologies" class="dynamic-list">
+            <div 
+              *ngFor="let technology of technologies.controls; let i = index" 
+              class="dynamic-item">
+              <div class="form-group">
+                <input 
+                  type="text" 
+                  [formControlName]="i"
+                  class="form-control"
+                  placeholder="Technology or skill name..."
+                  [class.is-invalid]="technology.touched && technology.errors">
+                <button 
+                  type="button" 
+                  class="btn btn-danger btn-sm remove-btn"
+                  (click)="removeTechnology(i)">
+                  <i class="icon-trash"></i>
+                </button>
+              </div>
+            </div>
+            
+            <button 
+              type="button" 
+              class="btn btn-secondary add-btn"
+              (click)="addTechnology()">
+              <i class="icon-plus"></i>
+              Add Technology
+            </button>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="goBack()"
+            [disabled]="isSaving">
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="isSaving || experienceForm.invalid">
+            {{ isSaving ? 'Saving...' : (isEditMode ? 'Update Experience' : 'Create Experience') }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading experience...</p>
+    </div>
+  </ng-template>
+</div>

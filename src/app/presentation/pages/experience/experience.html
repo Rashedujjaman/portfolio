@@ -32,7 +32,7 @@
             <span class="stat-label">Positions</span>
           </div>
           <div class="stat-item">
-            <span class="stat-number">{{ education.length }}</span>
+            <span class="stat-number">{{ educations.length }}</span>
             <span class="stat-label">Degrees</span>
           </div>
           <div class="stat-item">
@@ -135,7 +135,7 @@
   </section>
 
   <!-- Education Section -->
-  <section class="education-section" *ngIf="education.length > 0">
+  <section class="education-section" *ngIf="educations.length > 0">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">Education</h2>
@@ -144,7 +144,7 @@
 
       <div class="education-grid">
         <div class="education-card" 
-             *ngFor="let edu of education; let i = index"
+             *ngFor="let edu of educations; let i = index"
              [style.animation-delay]="i * 0.2 + 's'">
           
           <div class="education-icon">
@@ -200,10 +200,52 @@
 
       <div class="skills-cloud">
         <div class="skill-bubble" 
-              *ngFor="let skill of allSkills; let i = index"
+             *ngFor="let skill of allSkills; let i = index"
              [style.animation-delay]="i * 0.1 + 's'"
-             [class]="'skill-bubble-' + (i % 6 + 1)">
+             [class]="'skill-bubble-' + (i % 6 + 1)"
+             (mouseenter)="showSkillTooltip($event, skill)"
+             (mouseleave)="hideSkillTooltip()"
+             [attr.data-skill]="skill">
           {{ skill }}
+          
+          <!-- Enhanced Skill Tooltip -->
+          <div class="skill-tooltip" 
+               *ngIf="hoveredSkill === skill"
+               [class.tooltip-visible]="hoveredSkill === skill">
+            <div class="tooltip-header">
+              <span class="skill-name">{{ skill }}</span>
+              <span class="skill-level" [class]="getSkillLevelClass(skill)">
+                {{ getSkillLevel(skill) }}
+              </span>
+            </div>
+            
+            <div class="tooltip-stats" *ngIf="getSkillStats(skill) as stats">
+              <div class="stat-row">
+                <span class="stat-icon">💼</span>
+                <span class="stat-text">Used in {{ stats.count }} project{{ stats.count !== 1 ? 's' : '' }}</span>
+              </div>
+              <div class="stat-row" *ngIf="stats.years">
+                <span class="stat-icon">⏱️</span>
+                <span class="stat-text">{{ stats.years }} year{{ stats.years !== 1 ? 's' : '' }} of experience</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-icon">📊</span>
+                <span class="stat-text">{{ getSkillExperienceText(stats) }}</span>
+              </div>
+            </div>
+            
+            <!-- Experience Progress Bar -->
+            <div class="experience-progress" *ngIf="getSkillStats(skill) as stats">
+              <div class="progress-label">Experience Level</div>
+              <div class="progress-bar">
+                <div class="progress-fill" 
+                     [style.width.%]="getSkillProgressPercentage(stats)"
+                     [class]="getSkillLevelClass(skill)">
+                </div>
+              </div>
+              <div class="progress-text">{{ getSkillProgressText(stats) }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

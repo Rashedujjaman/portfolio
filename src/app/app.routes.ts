@@ -52,7 +52,22 @@ export const routes: Routes = [
       },
       {
         path: 'projects/edit/:id',
-        loadComponent: () => import('./presentation/admin/project-edit/project-edit').then(c => c.ProjectEditComponent),
+        loadComponent: () => import('./presentation/admin/projects/project-edit/project-edit').then(c => c.ProjectEditComponent),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'experience',
+        loadComponent: () => import('./presentation/admin/experience/experience').then(c => c.AdminExperience),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'experience/new',
+        loadComponent: () => import('./presentation/admin/experience/experience-edit/experience-edit').then(c => c.ExperienceEditComponent),
+        canActivate: [AdminGuard]
+      },
+      {
+        path: 'experience/edit/:id',
+        loadComponent: () => import('./presentation/admin/experience/experience-edit/experience-edit').then(c => c.ExperienceEditComponent),
         canActivate: [AdminGuard]
       }
     ]

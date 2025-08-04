@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Experience as ExperienceEntity, Education } from '../../../domain/entities/experience.entity';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
-import { GetEducationUseCase, GetEducationStatsUseCase } from '../../../domain/use-cases/education.use-case';
+import { GetEducationsUseCase, GetEducationStatsUseCase } from '../../../domain/use-cases/education.use-case';
 import { GetExperiencesUseCase } from '../../../domain/use-cases/experience.use-case';
 import { Profile } from '../../../domain/entities/profile.entity';
 
@@ -15,20 +15,21 @@ import { Profile } from '../../../domain/entities/profile.entity';
 })
 export class Experience implements OnInit {
   private getProfileUseCase = inject(GetProfileUseCase);
-  private getEducationUseCase = inject(GetEducationUseCase);
+  private getEducationsUseCase = inject(GetEducationsUseCase);
   private getEducationStatsUseCase = inject(GetEducationStatsUseCase);
   private getExperiencesUseCase = inject(GetExperiencesUseCase);
   private elementRef = inject(ElementRef);
 
   profile: Profile | null = null;
   experiences: ExperienceEntity[] = [];
-  education: Education[] = [];
+  educations: Education[] = [];
   educationStats: any = null;
   experienceStats: any = null;
   allSkills: string[] = [];
   skillsWithExperience: { skill: string; count: number; years?: number }[] = [];
   isLoading = true;
   activeTimelineIndex = 0;
+  hoveredSkill: string | null = null;
 
   ngOnInit() {
     this.loadData();
@@ -51,13 +52,13 @@ export class Experience implements OnInit {
       ] = await Promise.all([
         this.getProfileUseCase.execute().toPromise(),
         this.getExperiencesUseCase.execute().toPromise(),
-        this.getEducationUseCase.execute().toPromise(),
+        this.getEducationsUseCase.execute().toPromise(),
         this.getEducationStatsUseCase.execute().toPromise()
       ]);
 
       this.profile = profileResult || null;
       this.experiences = experiencesResult || [];
-      this.education = educationResult || [];
+      this.educations = educationResult || [];
       this.educationStats = educationStatsResult;
 
       // Calculate experience stats from loaded data (frontend processing)
@@ -302,6 +303,67 @@ export class Experience implements OnInit {
 
   trackByExperience(index: number, experience: ExperienceEntity): string {
     return experience.id;
+  }
+
+  // ========================================
+  // Enhanced Skills Tooltip Methods
+  // ========================================
+
+  showSkillTooltip(event: MouseEvent, skill: string): void {
+    this.hoveredSkill = skill;
+  }
+
+  hideSkillTooltip(): void {
+    this.hoveredSkill = null;
+  }
+
+  getSkillStats(skill: string): { skill: string; count: number; years?: number } | null {
+    return this.skillsWithExperience.find(s => s.skill === skill) || null;
+  }
+
+  getSkillLevel(skill: string): string {
+    const stats = this.getSkillStats(skill);
+    if (!stats || !stats.years) return 'Learning';
+    
+    if (stats.years >= 3) return 'Expert';
+    if (stats.years >= 1.5) return 'Advanced';
+    if (stats.years >= 0.5) return 'Intermediate';
+    return 'Beginner';
+  }
+
+  getSkillLevelClass(skill: string): string {
+    const level = this.getSkillLevel(skill);
+    return `skill-level-${level.toLowerCase()}`;
+  }
+
+  getSkillExperienceText(stats: { skill: string; count: number; years?: number }): string {
+    if (!stats.years) {
+      return stats.count > 0 ? 'Recently used' : 'Learning phase';
+    }
+    
+    if (stats.years >= 3) return 'Highly experienced';
+    if (stats.years >= 1.5) return 'Well experienced';
+    if (stats.years >= 0.5) return 'Good experience';
+    return 'Some experience';
+  }
+
+  getSkillProgressPercentage(stats: { skill: string; count: number; years?: number }): number {
+    if (!stats.years) return 15;
+    
+    // Calculate percentage based on years (max 5 years = 100%)
+    const maxYears = 5;
+    const percentage = Math.min((stats.years / maxYears) * 100, 100);
+    return Math.max(percentage, 15); // Minimum 15% for visibility
+  }
+
+  getSkillProgressText(stats: { skill: string; count: number; years?: number }): string {
+    const percentage = this.getSkillProgressPercentage(stats);
+    
+    if (percentage >= 80) return 'Master level';
+    if (percentage >= 60) return 'Expert level';
+    if (percentage >= 40) return 'Advanced level';
+    if (percentage >= 25) return 'Intermediate level';
+    return 'Beginner level';
   }
 }
 
