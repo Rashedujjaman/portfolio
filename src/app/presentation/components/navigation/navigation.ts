@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -18,7 +18,7 @@ export class Navigation implements OnInit, OnDestroy {
   isMenuOpen = false;
   profile: Profile | null = null;
 
-  constructor(private getProfileUseCase: GetProfileUseCase) {}
+  private getProfileUseCase = inject(GetProfileUseCase);
 
   ngOnInit() {
     this.loadProfile();

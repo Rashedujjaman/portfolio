@@ -2,8 +2,14 @@ import { Component, OnInit, inject, ElementRef, HostListener } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Experience as ExperienceEntity, Education } from '../../../domain/entities/experience.entity';
-import { ExperienceRepository } from '../../../domain/repositories/experience.repository';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
+import { GetEducationUseCase, GetEducationStatsUseCase } from '../../../domain/use-cases/education.use-case';
+import { 
+  GetExperiencesUseCase, 
+  GetAllSkillsUseCase, 
+  GetSkillsWithExperienceUseCase,
+  GetExperienceStatsUseCase 
+} from '../../../domain/use-cases/experience.use-case';
 import { Profile } from '../../../domain/entities/profile.entity';
 
 @Component({
@@ -13,13 +19,22 @@ import { Profile } from '../../../domain/entities/profile.entity';
   styleUrl: './experience.scss'
 })
 export class Experience implements OnInit {
-  private experienceRepository = inject(ExperienceRepository);
   private getProfileUseCase = inject(GetProfileUseCase);
+  private getEducationUseCase = inject(GetEducationUseCase);
+  private getEducationStatsUseCase = inject(GetEducationStatsUseCase);
+  private getExperiencesUseCase = inject(GetExperiencesUseCase);
+  private getAllSkillsUseCase = inject(GetAllSkillsUseCase);
+  private getSkillsWithExperienceUseCase = inject(GetSkillsWithExperienceUseCase);
+  private getExperienceStatsUseCase = inject(GetExperienceStatsUseCase);
   private elementRef = inject(ElementRef);
 
   profile: Profile | null = null;
   experiences: ExperienceEntity[] = [];
   education: Education[] = [];
+  educationStats: any = null;
+  experienceStats: any = null;
+  allSkills: string[] = [];
+  skillsWithExperience: { skill: string; count: number; years?: number }[] = [];
   isLoading = true;
   activeTimelineIndex = 0;
 
@@ -35,15 +50,32 @@ export class Experience implements OnInit {
 
   private async loadData() {
     try {
-      const [profileResult, experiencesResult] = await Promise.all([
+      const [
+        profileResult, 
+        experiencesResult, 
+        educationResult, 
+        educationStatsResult,
+        experienceStatsResult,
+        allSkillsResult,
+        skillsWithExperienceResult
+      ] = await Promise.all([
         this.getProfileUseCase.execute().toPromise(),
-        this.experienceRepository.getExperiences().toPromise()
+        this.getExperiencesUseCase.execute().toPromise(),
+        this.getEducationUseCase.execute().toPromise(),
+        this.getEducationStatsUseCase.execute().toPromise(),
+        this.getExperienceStatsUseCase.execute().toPromise(),
+        this.getAllSkillsUseCase.execute().toPromise(),
+        this.getSkillsWithExperienceUseCase.execute().toPromise()
       ]);
 
       this.profile = profileResult || null;
       this.experiences = experiencesResult || [];
-      // Note: Education data will be added when repository method is implemented
-      this.education = [];
+      this.education = educationResult || [];
+      this.educationStats = educationStatsResult;
+      this.experienceStats = experienceStatsResult;
+      this.allSkills = allSkillsResult || [];
+      this.skillsWithExperience = skillsWithExperienceResult || [];
+
     } catch (error) {
       console.error('Error loading experience data:', error);
     } finally {
@@ -110,16 +142,64 @@ export class Experience implements OnInit {
     return '🎓';
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | any): string {
+    if (!date) return 'N/A';
+    
+    let dateObj: Date;
+    
+    // Handle Firebase Timestamp objects
+    if (date && typeof date.toDate === 'function') {
+      dateObj = date.toDate();
+    } else if (date instanceof Date) {
+      dateObj = date;
+    } else {
+      dateObj = new Date(date);
+    }
+    
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      console.warn('Invalid date received:', date);
+      return 'Invalid Date';
+    }
+    
     return new Intl.DateTimeFormat('en-US', { 
       year: 'numeric', 
       month: 'short' 
-    }).format(new Date(date));
+    }).format(dateObj);
   }
 
-  calculateDuration(startDate: Date, endDate?: Date): string {
-    const start = new Date(startDate);
-    const end = endDate ? new Date(endDate) : new Date();
+  calculateDuration(startDate: Date | any, endDate?: Date | any): string {
+    if (!startDate) return 'N/A';
+    
+    let start: Date, end: Date;
+    
+    // Handle Firebase Timestamp objects for startDate
+    if (startDate && typeof startDate.toDate === 'function') {
+      start = startDate.toDate();
+    } else if (startDate instanceof Date) {
+      start = startDate;
+    } else {
+      start = new Date(startDate);
+    }
+    
+    // Handle Firebase Timestamp objects for endDate
+    if (endDate) {
+      if (endDate && typeof endDate.toDate === 'function') {
+        end = endDate.toDate();
+      } else if (endDate instanceof Date) {
+        end = endDate;
+      } else {
+        end = new Date(endDate);
+      }
+    } else {
+      end = new Date();
+    }
+    
+    // Check if dates are valid
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      console.warn('Invalid dates received:', { startDate, endDate });
+      return 'Invalid Duration';
+    }
     
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
@@ -134,6 +214,10 @@ export class Experience implements OnInit {
   }
 
   getTotalExperience(): string {
+    if (this.experienceStats?.yearsOfExperience) {
+      return Math.floor(this.experienceStats.yearsOfExperience).toString();
+    }
+    
     if (this.experiences.length === 0) return '0';
     
     let totalMonths = 0;
@@ -147,6 +231,10 @@ export class Experience implements OnInit {
     
     const years = Math.floor(totalMonths / 12);
     return years.toString();
+  }
+
+  getTotalSkills(): number {
+    return this.experienceStats?.totalSkills || this.allSkills.length || 0;
   }
 
   trackByExperience(index: number, experience: ExperienceEntity): string {

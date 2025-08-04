@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FirebaseDataSource } from '../data/datasources/firebase.datasource';
 import { Profile } from '../domain/entities/profile.entity';
 import { Project, ProjectCategory, ProjectStatus } from '../domain/entities/project.entity';
@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DataSeedingService {
-  constructor(private firebaseDataSource: FirebaseDataSource) {}
+  private firebaseDataSource = inject(FirebaseDataSource);
 
   seedInitialData(): Observable<any> {
     return new Observable(observer => {

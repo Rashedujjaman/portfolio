@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Profile } from '../../../domain/entities/profile.entity';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
+import { SubmitContactFormUseCase, ValidateContactFormUseCase, ContactForm } from '../../../domain/use-cases/contact.use-case';
 
 @Component({
   selector: 'app-contact',
@@ -24,7 +25,9 @@ export class Contact implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private getProfileUseCase: GetProfileUseCase
+    private getProfileUseCase: GetProfileUseCase,
+    private submitContactFormUseCase: SubmitContactFormUseCase,
+    private validateContactFormUseCase: ValidateContactFormUseCase
   ) {
     this.contactForm = this.createForm();
   }
@@ -68,16 +71,40 @@ export class Contact implements OnInit, OnDestroy {
       return;
     }
 
+    const formData: ContactForm = {
+      name: this.contactForm.value.name,
+      email: this.contactForm.value.email,
+      subject: this.contactForm.value.subject,
+      message: this.contactForm.value.message
+    };
+
+    // Validate the form data using the use case
+    const validation = this.validateContactFormUseCase.execute(formData);
+    if (!validation.isValid) {
+      this.showError(validation.errors.join(', '));
+      return;
+    }
+
     this.isSending = true;
     this.statusMessage = '';
     this.hasError = false;
 
-    // Simulate sending message (you can integrate with email service)
-    setTimeout(() => {
-      this.showSuccess('Message sent successfully! I\'ll get back to you soon.');
-      this.contactForm.reset();
-      this.isSending = false;
-    }, 2000);
+    // Submit the form using the use case
+    this.submitContactFormUseCase.execute(formData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (submission) => {
+          this.showSuccess('Message sent successfully! I\'ll get back to you soon.');
+          this.contactForm.reset();
+          this.isSending = false;
+          console.log('Contact form submitted:', submission);
+        },
+        error: (error) => {
+          this.showError('Failed to send message. Please try again.');
+          this.isSending = false;
+          console.error('Error submitting contact form:', error);
+        }
+      });
   }
 
   private markFormGroupTouched() {

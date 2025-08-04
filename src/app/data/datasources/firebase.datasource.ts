@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, runInInjectionContext, EnvironmentInjector } from '@angular/core';
 import { 
   Firestore, 
   collection, 
@@ -11,89 +11,167 @@ import {
   query, 
   where, 
   orderBy, 
-  Timestamp 
+  Timestamp,
+  increment 
 } from '@angular/fire/firestore';
-import { Observable, from, map } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirebaseDataSource {
-  constructor(private firestore: Firestore) {}
+  private firestore = inject(Firestore);
+  private injector = inject(EnvironmentInjector);
 
   // Generic CRUD operations
   create<T>(collectionName: string, data: any): Observable<T> {
-    const collectionRef = collection(this.firestore, collectionName);
-    const timestamp = Timestamp.now();
-    const docData = {
-      ...data,
-      createdAt: timestamp,
-      updatedAt: timestamp
-    };
+    return new Observable(observer => {
+      runInInjectionContext(this.injector, async () => {
+        try {
+          const collectionRef = collection(this.firestore, collectionName);
+          const timestamp = Timestamp.now();
+          const docData = {
+            ...data,
+            createdAt: timestamp,
+            updatedAt: timestamp
+          };
+          
+          const docRef = await addDoc(collectionRef, docData);
+          observer.next({ ...docData, id: docRef.id } as T);
+          observer.complete();
+        } catch (error) {
+          observer.error(error);
+        }
+      });
+    });
+  }
+
+  private convertTimestamps(data: any): any {
+    if (!data) return data;
     
-    return from(addDoc(collectionRef, docData)).pipe(
-      map(docRef => ({ ...docData, id: docRef.id } as T))
-    );
+    const converted = { ...data };
+    
+    // Convert common timestamp fields
+    const timestampFields = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date'];
+    
+    timestampFields.forEach(field => {
+      if (converted[field] && typeof converted[field].toDate === 'function') {
+        converted[field] = converted[field].toDate();
+      }
+    });
+    
+    return converted;
   }
 
   getById<T>(collectionName: string, id: string): Observable<T | null> {
-    const docRef = doc(this.firestore, collectionName, id);
-    return from(getDoc(docRef)).pipe(
-      map(snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.data();
-          return {
-            ...data,
-            id: snapshot.id,
-            createdAt: data['createdAt']?.toDate(),
-            updatedAt: data['updatedAt']?.toDate()
-          } as T;
+    return new Observable(observer => {
+      runInInjectionContext(this.injector, async () => {
+        try {
+          const docRef = doc(this.firestore, collectionName, id);
+          const snapshot = await getDoc(docRef);
+          
+          if (snapshot.exists()) {
+            const data = snapshot.data();
+            const converted = this.convertTimestamps(data);
+            observer.next({
+              ...converted,
+              id: snapshot.id
+            } as T);
+          } else {
+            observer.next(null);
+          }
+          observer.complete();
+        } catch (error) {
+          observer.error(error);
         }
-        return null;
-      })
-    );
+      });
+    });
   }
 
   getAll<T>(collectionName: string, conditions?: any[]): Observable<T[]> {
-    const collectionRef = collection(this.firestore, collectionName);
-    let q = query(collectionRef);
-    
-    if (conditions) {
-      conditions.forEach(condition => {
-        q = query(q, condition);
+    return new Observable(observer => {
+      runInInjectionContext(this.injector, async () => {
+        try {
+          const collectionRef = collection(this.firestore, collectionName);
+          let q = query(collectionRef);
+          
+          if (conditions) {
+            conditions.forEach(condition => {
+              q = query(q, condition);
+            });
+          }
+          
+          const snapshot = await getDocs(q);
+          const results = snapshot.docs.map(doc => {
+            const data = doc.data();
+            const converted = this.convertTimestamps(data);
+            return {
+              ...converted,
+              id: doc.id
+            } as T;
+          });
+          
+          observer.next(results);
+          observer.complete();
+        } catch (error) {
+          observer.error(error);
+        }
       });
-    }
-    
-    return from(getDocs(q)).pipe(
-      map(snapshot => 
-        snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            ...data,
-            id: doc.id,
-            createdAt: data['createdAt']?.toDate(),
-            updatedAt: data['updatedAt']?.toDate()
-          } as T;
-        })
-      )
-    );
+    });
   }
 
   update<T>(collectionName: string, id: string, data: Partial<T>): Observable<T> {
-    const docRef = doc(this.firestore, collectionName, id);
-    const updateData = {
-      ...data,
-      updatedAt: Timestamp.now()
-    };
-    
-    return from(updateDoc(docRef, updateData)).pipe(
-      map(() => ({ ...data, id } as T))
-    );
+    return new Observable(observer => {
+      runInInjectionContext(this.injector, async () => {
+        try {
+          const docRef = doc(this.firestore, collectionName, id);
+          const updateData = {
+            ...data,
+            updatedAt: Timestamp.now()
+          };
+          
+          await updateDoc(docRef, updateData);
+          observer.next({ ...data, id } as T);
+          observer.complete();
+        } catch (error) {
+          observer.error(error);
+        }
+      });
+    });
   }
 
   delete(collectionName: string, id: string): Observable<void> {
-    const docRef = doc(this.firestore, collectionName, id);
-    return from(deleteDoc(docRef));
+    return new Observable(observer => {
+      runInInjectionContext(this.injector, async () => {
+        try {
+          const docRef = doc(this.firestore, collectionName, id);
+          await deleteDoc(docRef);
+          observer.next();
+          observer.complete();
+        } catch (error) {
+          observer.error(error);
+        }
+      });
+    });
+  }
+
+  increment(collectionName: string, id: string, field: string, value: number): Observable<void> {
+    return new Observable(observer => {
+      runInInjectionContext(this.injector, async () => {
+        try {
+          const docRef = doc(this.firestore, collectionName, id);
+          const updateData = {
+            [field]: increment(value),
+            updatedAt: Timestamp.now()
+          };
+          await updateDoc(docRef, updateData);
+          observer.next();
+          observer.complete();
+        } catch (error) {
+          observer.error(error);
+        }
+      });
+    });
   }
 
   // Helper method to create query conditions

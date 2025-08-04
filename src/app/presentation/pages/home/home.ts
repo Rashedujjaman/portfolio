@@ -7,6 +7,7 @@ import { Profile } from '../../../domain/entities/profile.entity';
 import { Project } from '../../../domain/entities/project.entity';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
 import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
+// import { DataSeedingService } from '../../../core/data-seeding-enhanced.service';
 
 @Component({
   selector: 'app-home',
@@ -25,13 +26,28 @@ export class Home implements OnInit, OnDestroy {
   constructor(
     private getProfileUseCase: GetProfileUseCase,
     private getProjectsUseCase: GetProjectsUseCase,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    // private dataSeedingService: DataSeedingService
   ) {}
 
   ngOnInit() {
-    this.loadProfile();
-    this.loadFeaturedProjects();
+    this.seedDataAndLoad();
     this.initializeInteractiveEffects();
+  }
+
+  private async seedDataAndLoad() {
+    try {
+      // Seed data first to ensure we have experience data for skills
+      // await this.dataSeedingService.seedAllData();
+      
+      this.loadProfile();
+      this.loadFeaturedProjects();
+    } catch (error) {
+      console.error('Error seeding data or loading content:', error);
+      // Continue with loading even if seeding fails
+      this.loadProfile();
+      this.loadFeaturedProjects();
+    }
   }
 
   ngOnDestroy() {

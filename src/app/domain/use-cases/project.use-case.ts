@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Project } from '../entities/project.entity';
 import { ProjectRepository } from '../repositories/project.repository';
@@ -7,7 +7,7 @@ import { ProjectRepository } from '../repositories/project.repository';
   providedIn: 'root'
 })
 export class GetProjectsUseCase {
-  constructor(private projectRepository: ProjectRepository) {}
+  private projectRepository = inject(ProjectRepository);
 
   execute(): Observable<Project[]> {
     return this.projectRepository.getProjects();
@@ -18,7 +18,7 @@ export class GetProjectsUseCase {
   providedIn: 'root'
 })
 export class GetFeaturedProjectsUseCase {
-  constructor(private projectRepository: ProjectRepository) {}
+  private projectRepository = inject(ProjectRepository);
 
   execute(): Observable<Project[]> {
     return this.projectRepository.getFeaturedProjects();
@@ -29,7 +29,7 @@ export class GetFeaturedProjectsUseCase {
   providedIn: 'root'
 })
 export class GetProjectUseCase {
-  constructor(private projectRepository: ProjectRepository) {}
+  private projectRepository = inject(ProjectRepository);
 
   execute(id: string): Observable<Project | null> {
     return this.projectRepository.getProject(id);
@@ -40,7 +40,7 @@ export class GetProjectUseCase {
   providedIn: 'root'
 })
 export class CreateProjectUseCase {
-  constructor(private projectRepository: ProjectRepository) {}
+  private projectRepository = inject(ProjectRepository);
 
   execute(project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Observable<Project> {
     return this.projectRepository.createProject(project);
@@ -51,7 +51,7 @@ export class CreateProjectUseCase {
   providedIn: 'root'
 })
 export class UpdateProjectUseCase {
-  constructor(private projectRepository: ProjectRepository) {}
+  private projectRepository = inject(ProjectRepository);
 
   execute(id: string, project: Partial<Project>): Observable<Project> {
     return this.projectRepository.updateProject(id, project);
@@ -62,7 +62,7 @@ export class UpdateProjectUseCase {
   providedIn: 'root'
 })
 export class DeleteProjectUseCase {
-  constructor(private projectRepository: ProjectRepository) {}
+  private projectRepository = inject(ProjectRepository);
 
   execute(id: string): Observable<void> {
     return this.projectRepository.deleteProject(id);

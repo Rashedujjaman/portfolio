@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FirebaseDataSource } from '../data/datasources/firebase.datasource';
 import { SEED_PROFILE, SEED_PROJECTS, SEED_EXPERIENCE, SEED_EDUCATION, SEED_TRAVEL } from '../data/seed-data';
 import { Profile } from '../domain/entities/profile.entity';
@@ -13,7 +13,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 })
 export class DataSeedingService {
 
-  constructor(private firebaseDataSource: FirebaseDataSource) {}
+  private firebaseDataSource = inject(FirebaseDataSource);
 
   seedAllData(): Observable<boolean> {
     console.log('Starting data seeding...');

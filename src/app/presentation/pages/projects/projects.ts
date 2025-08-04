@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
 import { Project, ProjectCategory, ProjectStatus } from '../../../domain/entities/project.entity';
@@ -33,7 +33,7 @@ export class Projects implements OnInit {
     { value: 'other', label: 'Other' }
   ];
 
-  constructor(private getProjectsUseCase: GetProjectsUseCase) {}
+  private getProjectsUseCase = inject(GetProjectsUseCase);
 
   ngOnInit() {
     this.loadProjects();

@@ -39,6 +39,10 @@
             <span class="stat-number">{{ getTotalExperience() }}</span>
             <span class="stat-label">Years</span>
           </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalSkills() }}</span>
+            <span class="stat-label">Skills</span>
+          </div>
         </div>
       </div>
     </div>
@@ -187,7 +191,7 @@
   </section>
 
   <!-- Skills Overview -->
-  <section class="skills-section" *ngIf="profile?.skills && profile!.skills!.length > 0">
+  <section class="skills-section" *ngIf="allSkills && allSkills.length > 0">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">Core Skills</h2>
@@ -196,7 +200,7 @@
 
       <div class="skills-cloud">
         <div class="skill-bubble" 
-             *ngFor="let skill of profile!.skills; let i = index"
+              *ngFor="let skill of allSkills; let i = index"
              [style.animation-delay]="i * 0.1 + 's'"
              [class]="'skill-bubble-' + (i % 6 + 1)">
           {{ skill }}

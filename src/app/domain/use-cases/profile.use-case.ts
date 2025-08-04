@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Profile } from '../entities/profile.entity';
 import { ProfileRepository } from '../repositories/profile.repository';
@@ -7,7 +7,7 @@ import { ProfileRepository } from '../repositories/profile.repository';
   providedIn: 'root'
 })
 export class GetProfileUseCase {
-  constructor(private profileRepository: ProfileRepository) {}
+  private profileRepository = inject(ProfileRepository);
 
   execute(): Observable<Profile | null> {
     return this.profileRepository.getProfile();
@@ -18,7 +18,7 @@ export class GetProfileUseCase {
   providedIn: 'root'
 })
 export class UpdateProfileUseCase {
-  constructor(private profileRepository: ProfileRepository) {}
+  private profileRepository = inject(ProfileRepository);
 
   execute(profile: Profile): Observable<Profile> {
     return this.profileRepository.updateProfile(profile);
@@ -29,7 +29,7 @@ export class UpdateProfileUseCase {
   providedIn: 'root'
 })
 export class CreateProfileUseCase {
-  constructor(private profileRepository: ProfileRepository) {}
+  private profileRepository = inject(ProfileRepository);
 
   execute(profile: Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>): Observable<Profile> {
     return this.profileRepository.createProfile(profile);

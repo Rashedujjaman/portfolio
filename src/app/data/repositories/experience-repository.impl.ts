@@ -11,7 +11,7 @@ export class ExperienceRepositoryImpl implements ExperienceRepository {
   private firebaseDataSource = inject(FirebaseDataSource);
 
   getExperiences(): Observable<ExperienceEntity[]> {
-    return this.firebaseDataSource.getAll<ExperienceEntity>('experiences', [
+    return this.firebaseDataSource.getAll<ExperienceEntity>('experience', [
       this.firebaseDataSource.createOrderByCondition('startDate', 'desc')
     ]);
   }

@@ -4,6 +4,14 @@ import { RouterModule } from '@angular/router';
 import { Travel as TravelEntity, Hobby } from '../../../domain/entities/lifestyle.entity';
 import { TravelRepository, HobbyRepository } from '../../../domain/repositories/lifestyle.repository';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
+import { 
+  GetTravelsUseCase, 
+  GetFeaturedTravelsUseCase, 
+  GetTravelStatsUseCase,
+  GetHobbiesUseCase,
+  GetFeaturedHobbiesUseCase,
+  GetHobbyStatsUseCase 
+} from '../../../domain/use-cases/lifestyle.use-case';
 import { Profile } from '../../../domain/entities/profile.entity';
 
 @Component({
@@ -16,12 +24,20 @@ export class Travel implements OnInit {
   private travelRepository = inject(TravelRepository);
   private hobbyRepository = inject(HobbyRepository);
   private getProfileUseCase = inject(GetProfileUseCase);
+  private getTravelsUseCase = inject(GetTravelsUseCase);
+  private getFeaturedTravelsUseCase = inject(GetFeaturedTravelsUseCase);
+  private getTravelStatsUseCase = inject(GetTravelStatsUseCase);
+  private getHobbiesUseCase = inject(GetHobbiesUseCase);
+  private getFeaturedHobbiesUseCase = inject(GetFeaturedHobbiesUseCase);
+  private getHobbyStatsUseCase = inject(GetHobbyStatsUseCase);
   private elementRef = inject(ElementRef);
 
   profile: Profile | null = null;
   travels: TravelEntity[] = [];
   hobbies: Hobby[] = [];
   featuredTravels: TravelEntity[] = [];
+  travelStats: any = null;
+  hobbyStats: any = null;
   isLoading = true;
   selectedTravel: TravelEntity | null = null;
   currentImageIndex = 0;
@@ -42,18 +58,30 @@ export class Travel implements OnInit {
 
   private async loadData() {
     try {
-      const [profileResult, travelsResult, hobbiesResult] = await Promise.all([
+      const [
+        profileResult, 
+        travelsResult, 
+        hobbiesResult, 
+        featuredTravelsResult,
+        travelStatsResult,
+        hobbyStatsResult
+      ] = await Promise.all([
         this.getProfileUseCase.execute().toPromise(),
-        this.travelRepository.getTravels().toPromise(),
-        this.hobbyRepository.getHobbies().toPromise()
+        this.getTravelsUseCase.execute().toPromise(),
+        this.getHobbiesUseCase.execute().toPromise(),
+        this.getFeaturedTravelsUseCase.execute().toPromise(),
+        this.getTravelStatsUseCase.execute().toPromise(),
+        this.getHobbyStatsUseCase.execute().toPromise()
       ]);
 
       this.profile = profileResult || null;
       this.travels = travelsResult || [];
       this.hobbies = hobbiesResult || [];
+      this.featuredTravels = featuredTravelsResult || [];
+      this.travelStats = travelStatsResult;
+      this.hobbyStats = hobbyStatsResult;
       
-      // Extract featured travels and visited countries
-      this.featuredTravels = this.travels.filter(travel => travel.featured);
+      // Extract visited countries
       this.visitedCountries = [...new Set(this.travels.map(travel => travel.country))];
     } catch (error) {
       console.error('Error loading travel data:', error);

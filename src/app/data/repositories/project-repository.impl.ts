@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Project } from '../../domain/entities/project.entity';
 import { ProjectRepository } from '../../domain/repositories/project.repository';
@@ -9,8 +9,9 @@ import { FirebaseDataSource } from '../datasources/firebase.datasource';
 })
 export class ProjectRepositoryImpl extends ProjectRepository {
   private readonly COLLECTION_NAME = 'projects';
+  private firebaseDataSource = inject(FirebaseDataSource);
 
-  constructor(private firebaseDataSource: FirebaseDataSource) {
+  constructor() {
     super();
   }
 
