@@ -1,269 +1,292 @@
 <div class="project-edit-container">
-  <header class="page-header">
+  <!-- Header -->
+  <div class="page-header">
     <div class="header-content">
-      <button class="back-btn" (click)="goBack()">
-        <i class="icon-arrow-left"></i>
-        Back to Projects
+      <button class="btn back-btn" (click)="goBack()">
+        ← Back to Projects
       </button>
-      <h1>{{ isNewProject ? 'Add New Project' : 'Edit Project' }}</h1>
-      <div class="spacer"></div>
-    </div>
-  </header>
-
-  <div class="content-section" *ngIf="!isLoading; else loadingTemplate">
-    <div class="form-container">
-      <!-- Status Message -->
-      <div class="status-message" *ngIf="statusMessage">
-        <div class="alert" [class.alert-error]="hasError" [class.alert-success]="!hasError">
-          {{ statusMessage }}
-        </div>
+      <h1>{{ isNewProject ? 'Create New Project' : 'Edit Project' }}</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="cancel()" [disabled]="isSaving">
+          Cancel
+        </button>
+        <button 
+          class="btn btn-primary" 
+          (click)="saveProject()" 
+          [disabled]="isSaving || uploadingImages">
+          <span *ngIf="isSaving">{{ uploadingImages ? 'Uploading...' : 'Saving...' }}</span>
+          <span *ngIf="!isSaving">{{ isNewProject ? 'Create Project' : 'Update Project' }}</span>
+        </button>
       </div>
-
-      <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="project-form">
-        <!-- Basic Information -->
-        <div class="form-section">
-          <h2>Basic Information</h2>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="title">Project Title *</label>
-              <input 
-                type="text" 
-                id="title" 
-                formControlName="title"
-                class="form-control"
-                [class.is-invalid]="projectForm.get('title')?.touched && projectForm.get('title')?.errors"
-                placeholder="Enter project title">
-              <div class="invalid-feedback" *ngIf="projectForm.get('title')?.touched && projectForm.get('title')?.errors">
-                Project title is required
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="status">Status *</label>
-              <select 
-                id="status" 
-                formControlName="status"
-                class="form-control"
-                [class.is-invalid]="projectForm.get('status')?.touched && projectForm.get('status')?.errors">
-                <option value="planning">Planning</option>
-                <option value="in-progress">In Progress</option>
-                <option value="completed">Completed</option>
-                <option value="on-hold">On Hold</option>
-                <option value="archived">Archived</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="projectForm.get('status')?.touched && projectForm.get('status')?.errors">
-                Status is required
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="category">Category *</label>
-              <select 
-                id="category" 
-                formControlName="category"
-                class="form-control"
-                [class.is-invalid]="projectForm.get('category')?.touched && projectForm.get('category')?.errors">
-                <option value="">Select category</option>
-                <option value="web">Web Application</option>
-                <option value="mobile">Mobile Application</option>
-                <option value="desktop">Desktop Application</option>
-                <option value="api">API/Backend</option>
-                <option value="library">Library/Framework</option>
-                <option value="tool">Development Tool</option>
-                <option value="other">Other</option>
-              </select>
-              <div class="invalid-feedback" *ngIf="projectForm.get('category')?.touched && projectForm.get('category')?.errors">
-                Category is required
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="checkbox-group">
-                <input 
-                  type="checkbox" 
-                  id="featured" 
-                  formControlName="featured">
-                <label for="featured">Featured Project</label>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Descriptions -->
-        <div class="form-section">
-          <h2>Descriptions</h2>
-          
-          <div class="form-group">
-            <label for="shortDescription">Short Description *</label>
-            <textarea 
-              id="shortDescription" 
-              formControlName="shortDescription"
-              class="form-control"
-              rows="2"
-              [class.is-invalid]="projectForm.get('shortDescription')?.touched && projectForm.get('shortDescription')?.errors"
-              placeholder="Brief description for project cards..."></textarea>
-            <div class="invalid-feedback" *ngIf="projectForm.get('shortDescription')?.touched && projectForm.get('shortDescription')?.errors">
-              Short description is required
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="description">Detailed Description *</label>
-            <textarea 
-              id="description" 
-              formControlName="description"
-              class="form-control"
-              rows="6"
-              [class.is-invalid]="projectForm.get('description')?.touched && projectForm.get('description')?.errors"
-              placeholder="Detailed description of the project..."></textarea>
-            <div class="invalid-feedback" *ngIf="projectForm.get('description')?.touched && projectForm.get('description')?.errors">
-              Detailed description is required
-            </div>
-          </div>
-        </div>
-
-        <!-- Technical Details -->
-        <div class="form-section">
-          <h2>Technical Details</h2>
-          
-          <div class="form-group">
-            <label for="technologiesInput">Technologies Used</label>
-            <textarea 
-              id="technologiesInput" 
-              formControlName="technologiesInput"
-              class="form-control"
-              rows="2"
-              placeholder="Enter technologies separated by commas (e.g., Angular, TypeScript, Firebase, SCSS)"></textarea>
-            <small class="form-text">Separate multiple technologies with commas</small>
-          </div>
-        </div>
-
-        <!-- Links -->
-        <div class="form-section">
-          <h2>Project Links</h2>
-          
-          <div class="form-row">
-            <div class="form-group">
-              <label for="demoUrl">Live Demo URL</label>
-              <input 
-                type="url" 
-                id="demoUrl" 
-                formControlName="demoUrl"
-                class="form-control"
-                placeholder="https://project-demo.com">
-            </div>
-
-            <div class="form-group">
-              <label for="githubUrl">GitHub URL</label>
-              <input 
-                type="url" 
-                id="githubUrl" 
-                formControlName="githubUrl"
-                class="form-control"
-                placeholder="https://github.com/username/repo">
-            </div>
-          </div>
-        </div>
-
-        <!-- Images -->
-        <div class="form-section">
-          <h2>Project Images</h2>
-          
-          <!-- File Upload -->
-          <div class="form-group">
-            <label>Upload Images</label>
-            <div class="upload-area" (click)="fileInput.click()">
-              <i class="icon-upload"></i>
-              <p>Click to upload project images</p>
-              <small>Recommended: JPG, PNG, WebP (max 5MB each)</small>
-            </div>
-            
-            <input 
-              #fileInput
-              type="file" 
-              accept="image/*" 
-              multiple
-              (change)="onFilesSelected($event)"
-              style="display: none;">
-          </div>
-
-          <!-- Upload Progress -->
-          <div class="upload-progress" *ngIf="uploadingImages">
-            <div class="progress-bar" *ngFor="let progress of uploadProgress | keyvalue">
-              <span>{{ progress.key }}</span>
-              <div class="progress">
-                <div class="progress-fill" [style.width.%]="progress.value"></div>
-              </div>
-              <span>{{ progress.value }}%</span>
-            </div>
-          </div>
-
-          <!-- Current Images -->
-          <div class="images-grid" *ngIf="visibleImages.length > 0">
-            <div 
-              *ngFor="let imageState of visibleImages; let i = index" 
-              class="image-item">
-              <img [src]="imageState.url" alt="Project image" class="image-preview">
-              <div class="image-overlay">
-                <button 
-                  type="button" 
-                  class="btn btn-danger btn-sm"
-                  (click)="removeImage(i)">
-                  <i class="icon-trash"></i>
-                </button>
-              </div>
-              <div class="image-status" *ngIf="imageState.isNew">
-                <span class="badge badge-new">New</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Deleted Images (with undo option) -->
-          <div class="deleted-images" *ngIf="deletedImages.length > 0">
-            <h4>Deleted Images (will be removed on save)</h4>
-            <div class="deleted-images-grid">
-              <div 
-                *ngFor="let imageState of deletedImages; let i = index" 
-                class="deleted-image-item">
-                <img [src]="imageState.url" alt="Deleted image" class="deleted-image-preview">
-                <button 
-                  type="button" 
-                  class="btn btn-secondary btn-sm"
-                  (click)="undoRemoveImage(i)">
-                  Undo
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button 
-            type="button" 
-            class="btn btn-secondary"
-            (click)="cancel()"
-            [disabled]="isSaving">
-            Cancel
-          </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary"
-            [disabled]="isSaving || projectForm.invalid">
-            {{ isSaving ? 'Saving...' : (isNewProject ? 'Create Project' : 'Update Project') }}
-          </button>
-        </div>
-      </form>
     </div>
   </div>
 
-  <ng-template #loadingTemplate>
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading project...</p>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading project...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="main-content">
+    <form [formGroup]="projectForm" class="project-form">
+      
+      <!-- Project Information Section -->
+      <div class="form-section">
+        <h2>Project Information</h2>
+        
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="title">Project Title *</label>
+            <input 
+              type="text" 
+              id="title" 
+              formControlName="title" 
+              class="form-control"
+              placeholder="Enter project title">
+            <div class="error" *ngIf="projectForm.get('title')?.invalid && projectForm.get('title')?.touched">
+              Title is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="shortDescription">Short Description *</label>
+            <textarea 
+              id="shortDescription" 
+              formControlName="shortDescription" 
+              class="form-control"
+              rows="2"
+              placeholder="Brief description for project cards..."></textarea>
+            <div class="error" *ngIf="projectForm.get('shortDescription')?.invalid && projectForm.get('shortDescription')?.touched">
+              Short description is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="description">Full Description *</label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              class="form-control"
+              rows="6"
+              placeholder="Detailed project description..."></textarea>
+            <div class="error" *ngIf="projectForm.get('description')?.invalid && projectForm.get('description')?.touched">
+              Description is required
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select id="category" formControlName="category" class="form-control">
+              <option value="">Select Category</option>
+              <option value="web-application">Web Application</option>
+              <option value="mobile-app">Mobile App</option>
+              <option value="desktop-app">Desktop Application</option>
+              <option value="api">API/Backend</option>
+              <option value="library">Library</option>
+              <option value="other">Other</option>
+            </select>
+            <div class="error" *ngIf="projectForm.get('category')?.invalid && projectForm.get('category')?.touched">
+              Category is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status *</label>
+            <select id="status" formControlName="status" class="form-control">
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="planned">Planned</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="technologies">Technologies</label>
+            <textarea 
+              id="technologies" 
+              formControlName="technologiesInput" 
+              class="form-control"
+              rows="2"
+              placeholder="Angular, TypeScript, Firebase, Node.js..."></textarea>
+            <small class="form-help">Enter technologies separated by commas</small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="demoUrl">Demo URL</label>
+            <input 
+              type="url" 
+              id="demoUrl" 
+              formControlName="demoUrl" 
+              class="form-control"
+              placeholder="https://demo.example.com">
+          </div>
+
+          <div class="form-group">
+            <label for="githubUrl">GitHub URL</label>
+            <input 
+              type="url" 
+              id="githubUrl" 
+              formControlName="githubUrl" 
+              class="form-control"
+              placeholder="https://github.com/username/repo">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" formControlName="featured"> 
+              <span class="checkmark"></span>
+              Featured Project
+            </label>
+            <small class="form-help">Featured projects appear prominently on the portfolio</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Management Section -->
+      <div class="form-section">
+        <h2>Project Images</h2>
+        
+        <!-- Image Upload Area -->
+        <div class="image-upload-area">
+          <input 
+            type="file" 
+            #fileInput 
+            (change)="onFilesSelected($event)"
+            accept="image/*"
+            multiple
+            style="display: none">
+          
+          <div class="upload-zone" (click)="fileInput.click()">
+            <div class="upload-content">
+              <div class="upload-icon">📸</div>
+              <h3>Add Project Images</h3>
+              <p>Click to select images or drag and drop</p>
+              <small>Supported formats: JPG, PNG, GIF, WebP (max 5MB each)</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div *ngIf="uploadingImages" class="upload-progress-section">
+          <h3>Uploading Images...</h3>
+          <div *ngFor="let item of uploadProgress | keyvalue" class="progress-item">
+            <div class="progress-info">
+              <span class="file-name">{{item.key}}</span>
+              <span class="progress-percentage">{{item.value}}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="item.value"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current Images -->
+        <div class="images-section">
+          <h3 *ngIf="visibleImages.length > 0">Current Images ({{ visibleImages.length }})</h3>
+          
+          <div class="images-grid" *ngIf="visibleImages.length > 0">
+            <div 
+              *ngFor="let imageState of visibleImages; let i = index" 
+              class="image-item"
+              [class.new-image]="imageState.isNew"
+              [class.uploading]="imageState.isNew && !imageState.isUploaded">
+              
+              <div class="image-preview">
+                <img [src]="imageState.url" [alt]="'Project image ' + (i + 1)">
+                <div class="image-overlay">
+                  <button 
+                    type="button" 
+                    class="remove-btn"
+                    (click)="removeImage(i)"
+                    title="Remove image">
+                    ×
+                  </button>
+                </div>
+                <div class="image-status" *ngIf="imageState.isNew">
+                  <span *ngIf="!imageState.isUploaded" class="status-badge new">New</span>
+                  <span *ngIf="imageState.isUploaded" class="status-badge uploaded">Uploaded</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="empty-images" *ngIf="visibleImages.length === 0">
+            <p>No images added yet. Use the upload area above to add project images.</p>
+          </div>
+        </div>
+
+        <!-- Deleted Images (for undo) -->
+        <div class="deleted-images-section" *ngIf="deletedImages.length > 0">
+          <h3>Recently Removed ({{ deletedImages.length }})</h3>
+          <p class="deleted-help">These images will be permanently deleted when you save the project.</p>
+          
+          <div class="deleted-images-grid">
+            <div 
+              *ngFor="let imageState of deletedImages; let i = index" 
+              class="deleted-image-item">
+              
+              <div class="deleted-image-preview">
+                <img [src]="imageState.url" [alt]="'Deleted image'">
+                <div class="deleted-overlay">
+                  <button 
+                    type="button" 
+                    class="undo-btn"
+                    (click)="undoRemoveImage(i)"
+                    title="Restore image">
+                    ↶ Undo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Management Tips -->
+        <div class="image-tips" *ngIf="hasNewImages">
+          <div class="tip-box">
+            <h4>💡 Image Management Tips</h4>
+            <ul>
+              <li>Images are uploaded to Firebase Storage when you save the project</li>
+              <li>If project creation fails, uploaded images will be automatically cleaned up</li>
+              <li>You can remove and restore images before saving</li>
+              <li>First image will be used as the project thumbnail</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Status Messages -->
+  <div class="status-message" *ngIf="statusMessage">
+    <div class="alert" [class.alert-success]="!hasError" [class.alert-error]="hasError">
+      {{ statusMessage }}
     </div>
-  </ng-template>
+  </div>
+
+  <!-- Save Confirmation -->
+  <div class="save-indicator" *ngIf="isSaving">
+    <div class="save-overlay"></div>
+    <div class="save-modal">
+      <div class="save-content">
+        <div class="save-spinner"></div>
+        <h3 *ngIf="!uploadingImages">Saving Project...</h3>
+        <h3 *ngIf="uploadingImages">Uploading Images...</h3>
+        <p>Please don't close this page.</p>
+      </div>
+    </div>
+  </div>
 </div>
