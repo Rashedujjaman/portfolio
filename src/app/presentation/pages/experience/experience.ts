@@ -4,12 +4,7 @@ import { RouterModule } from '@angular/router';
 import { Experience as ExperienceEntity, Education } from '../../../domain/entities/experience.entity';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
 import { GetEducationUseCase, GetEducationStatsUseCase } from '../../../domain/use-cases/education.use-case';
-import { 
-  GetExperiencesUseCase, 
-  GetAllSkillsUseCase, 
-  GetSkillsWithExperienceUseCase,
-  GetExperienceStatsUseCase 
-} from '../../../domain/use-cases/experience.use-case';
+import { GetExperiencesUseCase } from '../../../domain/use-cases/experience.use-case';
 import { Profile } from '../../../domain/entities/profile.entity';
 
 @Component({
@@ -23,9 +18,6 @@ export class Experience implements OnInit {
   private getEducationUseCase = inject(GetEducationUseCase);
   private getEducationStatsUseCase = inject(GetEducationStatsUseCase);
   private getExperiencesUseCase = inject(GetExperiencesUseCase);
-  private getAllSkillsUseCase = inject(GetAllSkillsUseCase);
-  private getSkillsWithExperienceUseCase = inject(GetSkillsWithExperienceUseCase);
-  private getExperienceStatsUseCase = inject(GetExperienceStatsUseCase);
   private elementRef = inject(ElementRef);
 
   profile: Profile | null = null;
@@ -50,31 +42,32 @@ export class Experience implements OnInit {
 
   private async loadData() {
     try {
+      // Load core data only once
       const [
         profileResult, 
         experiencesResult, 
         educationResult, 
-        educationStatsResult,
-        experienceStatsResult,
-        allSkillsResult,
-        skillsWithExperienceResult
+        educationStatsResult
       ] = await Promise.all([
         this.getProfileUseCase.execute().toPromise(),
         this.getExperiencesUseCase.execute().toPromise(),
         this.getEducationUseCase.execute().toPromise(),
-        this.getEducationStatsUseCase.execute().toPromise(),
-        this.getExperienceStatsUseCase.execute().toPromise(),
-        this.getAllSkillsUseCase.execute().toPromise(),
-        this.getSkillsWithExperienceUseCase.execute().toPromise()
+        this.getEducationStatsUseCase.execute().toPromise()
       ]);
 
       this.profile = profileResult || null;
       this.experiences = experiencesResult || [];
       this.education = educationResult || [];
       this.educationStats = educationStatsResult;
-      this.experienceStats = experienceStatsResult;
-      this.allSkills = allSkillsResult || [];
-      this.skillsWithExperience = skillsWithExperienceResult || [];
+
+      // Calculate experience stats from loaded data (frontend processing)
+      this.experienceStats = this.calculateExperienceStats(this.experiences);
+      
+      // Use skills from profile (centralized approach)
+      this.allSkills = this.profile?.skills || [];
+      
+      // Calculate skills with experience count from loaded experiences (frontend processing)
+      this.skillsWithExperience = this.calculateSkillsWithExperience(this.experiences, this.allSkills);
 
     } catch (error) {
       console.error('Error loading experience data:', error);
@@ -234,7 +227,77 @@ export class Experience implements OnInit {
   }
 
   getTotalSkills(): number {
-    return this.experienceStats?.totalSkills || this.allSkills.length || 0;
+    return this.allSkills.length || 0;
+  }
+
+  // Frontend calculation methods to avoid redundant Firebase calls
+  private calculateExperienceStats(experiences: ExperienceEntity[]): any {
+    if (!experiences.length) {
+      return {
+        totalExperience: 0,
+        totalCompanies: 0,
+        totalAchievements: 0,
+        yearsOfExperience: 0,
+        totalSkills: 0
+      };
+    }
+
+    const companies = new Set(experiences.map(exp => exp.company));
+    const totalAchievements = experiences.reduce((sum, exp) => sum + (exp.achievements?.length || 0), 0);
+    
+    // Calculate total years of experience
+    let totalMonths = 0;
+    experiences.forEach(exp => {
+      const start = new Date(exp.startDate);
+      const end = exp.endDate ? new Date(exp.endDate) : new Date();
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const months = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+      totalMonths += months;
+    });
+
+    const yearsOfExperience = totalMonths / 12;
+
+    return {
+      totalExperience: experiences.length,
+      totalCompanies: companies.size,
+      totalAchievements,
+      yearsOfExperience,
+      totalSkills: this.allSkills.length
+    };
+  }
+
+  private calculateSkillsWithExperience(experiences: ExperienceEntity[], profileSkills: string[]): { skill: string; count: number; years?: number }[] {
+    const skillStats = new Map<string, { count: number; totalMonths: number }>();
+
+    // Initialize with profile skills
+    profileSkills.forEach(skill => {
+      skillStats.set(skill, { count: 0, totalMonths: 0 });
+    });
+
+    // Count usage in experiences
+    experiences.forEach(exp => {
+      const start = new Date(exp.startDate);
+      const end = exp.endDate ? new Date(exp.endDate) : new Date();
+      const diffTime = Math.abs(end.getTime() - start.getTime());
+      const months = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30));
+
+      (exp.technologies || []).forEach(tech => {
+        if (skillStats.has(tech)) {
+          const current = skillStats.get(tech)!;
+          skillStats.set(tech, {
+            count: current.count + 1,
+            totalMonths: current.totalMonths + months
+          });
+        }
+      });
+    });
+
+    // Convert to array format
+    return Array.from(skillStats.entries()).map(([skill, stats]) => ({
+      skill,
+      count: stats.count,
+      years: stats.totalMonths > 0 ? Math.round((stats.totalMonths / 12) * 10) / 10 : undefined
+    }));
   }
 
   trackByExperience(index: number, experience: ExperienceEntity): string {
