@@ -68,8 +68,8 @@ export class TravelEditComponent implements OnInit {
       country: ['', [Validators.required, Validators.minLength(2)]],
       city: ['', [Validators.required, Validators.minLength(2)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      visitDate: ['', Validators.required],
-      duration: [1, [Validators.required, Validators.min(1)]],
+      visitDate: [''],
+      duration: [''],
       featured: [false],
       coordinates: this.fb.group({
         latitude: [''],
@@ -84,6 +84,7 @@ export class TravelEditComponent implements OnInit {
     this.isLoading = true;
     this.getTravelByIdUseCase.execute(id).subscribe({
       next: (travel) => {
+        console.log('Loaded travel:', travel);
         if (travel) {
           this.populateForm(travel);
         } else {
@@ -106,8 +107,8 @@ export class TravelEditComponent implements OnInit {
       country: travel.country,
       city: travel.city,
       description: travel.description,
-      visitDate: new Date(travel.visitDate).toISOString().split('T')[0],
-      duration: travel.duration,
+      visitDate: travel.visitDate ? new Date(travel.visitDate).toISOString().split('T')[0] : '',
+      duration: travel.duration || '',
       featured: travel.featured,
       coordinates: {
         latitude: travel.coordinates?.latitude || '',
@@ -296,8 +297,8 @@ export class TravelEditComponent implements OnInit {
       country: formValue.country.trim(),
       city: formValue.city.trim(),
       description: formValue.description.trim(),
-      visitDate: new Date(formValue.visitDate),
-      duration: parseInt(formValue.duration),
+      ...(formValue.visitDate && { visitDate: new Date(formValue.visitDate) }),
+      ...(formValue.duration && formValue.duration !== '' && { duration: parseInt(formValue.duration) }),
       featured: formValue.featured,
       coordinates: formValue.coordinates.latitude && formValue.coordinates.longitude ? {
         latitude: parseFloat(formValue.coordinates.latitude),
@@ -360,8 +361,8 @@ export class TravelEditComponent implements OnInit {
       country: formValue.country.trim(),
       city: formValue.city.trim(),
       description: formValue.description.trim(),
-      visitDate: new Date(formValue.visitDate),
-      duration: parseInt(formValue.duration),
+      ...(formValue.visitDate && { visitDate: new Date(formValue.visitDate) }),
+      ...(formValue.duration && formValue.duration !== '' && { duration: parseInt(formValue.duration) }),
       featured: formValue.featured,
       coordinates: formValue.coordinates.latitude && formValue.coordinates.longitude ? {
         latitude: parseFloat(formValue.coordinates.latitude),

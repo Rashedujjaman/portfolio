@@ -23,6 +23,29 @@ export class FirebaseDataSource {
   private firestore = inject(Firestore);
   private injector = inject(EnvironmentInjector);
 
+  // Helper method to remove undefined values from objects
+  private cleanUndefinedValues(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return null;
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.cleanUndefinedValues(item));
+    }
+    
+    if (typeof obj === 'object' && obj.constructor === Object) {
+      const cleaned: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (value !== undefined) {
+          cleaned[key] = this.cleanUndefinedValues(value);
+        }
+      }
+      return cleaned;
+    }
+    
+    return obj;
+  }
+
   // Generic CRUD operations
   create<T>(collectionName: string, data: any): Observable<T> {
     return new Observable(observer => {
@@ -30,8 +53,9 @@ export class FirebaseDataSource {
         try {
           const collectionRef = collection(this.firestore, collectionName);
           const timestamp = Timestamp.now();
+          const cleanedData = this.cleanUndefinedValues(data);
           const docData = {
-            ...data,
+            ...cleanedData,
             createdAt: timestamp,
             updatedAt: timestamp
           };
@@ -52,7 +76,7 @@ export class FirebaseDataSource {
     const converted = { ...data };
     
     // Convert common timestamp fields
-    const timestampFields = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date'];
+    const timestampFields = ['createdAt', 'updatedAt', 'startDate', 'endDate', 'date', 'visitDate'];
     
     timestampFields.forEach(field => {
       if (converted[field] && typeof converted[field].toDate === 'function') {
@@ -125,8 +149,9 @@ export class FirebaseDataSource {
       runInInjectionContext(this.injector, async () => {
         try {
           const docRef = doc(this.firestore, collectionName, id);
+          const cleanedData = this.cleanUndefinedValues(data);
           const updateData = {
-            ...data,
+            ...cleanedData,
             updatedAt: Timestamp.now()
           };
           

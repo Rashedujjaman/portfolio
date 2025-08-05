@@ -86,8 +86,8 @@ export class Travel implements OnInit, OnDestroy {
   private calculateTravelStats(travels: TravelEntity[]) {
     const countriesVisited = [...new Set(travels.map(t => t.country))];
     const citiesVisited = [...new Set(travels.map(t => t.city))];
-    const totalDays = travels.reduce((sum, travel) => sum + travel.duration, 0);
-    
+    const totalDays = travels.reduce((sum, travel) => sum + (travel.duration || 0), 0);
+
     return {
       totalTravels: travels.length,
       totalCountries: countriesVisited.length,
@@ -222,7 +222,7 @@ export class Travel implements OnInit, OnDestroy {
     return {
       totalCountries: this.visitedCountries.length,
       totalTrips: this.travels.length,
-      totalDays: this.travels.reduce((sum, travel) => sum + travel.duration, 0),
+      totalDays: this.travels.reduce((sum, travel) => sum + (travel.duration || 0), 0),
       featuredTrips: this.featuredTravels.length
     };
   }

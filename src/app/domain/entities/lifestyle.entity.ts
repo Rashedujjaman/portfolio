@@ -5,12 +5,12 @@ export interface Travel {
   title: string;
   description: string;
   images: string[] | null;
-  visitDate: Date;
-  duration: number; // in days
+  visitDate?: Date;
+  duration?: number; // in days
   highlights: string[] | null;
   coordinates?: {
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
   };
   featured: boolean;
   createdAt: Date;

@@ -8,12 +8,12 @@ import { FirebaseDataSource } from '../datasources/firebase.datasource';
   providedIn: 'root'
 })
 export class TravelRepositoryImpl implements TravelRepository {
-  private readonly COLLECTION_NAME = 'travel';
+  private readonly COLLECTION_NAME = 'travels';
   private firebaseDataSource = inject(FirebaseDataSource);
 
   getTravels(): Observable<TravelEntity[]> {
     return this.firebaseDataSource.getAll<TravelEntity>(this.COLLECTION_NAME, [
-      this.firebaseDataSource.createOrderByCondition('visitDate', 'desc')
+      // this.firebaseDataSource.createOrderByCondition('createdAt', 'desc')
     ]);
   }
 
@@ -24,7 +24,7 @@ export class TravelRepositoryImpl implements TravelRepository {
   getFeaturedTravels(): Observable<TravelEntity[]> {
     return this.firebaseDataSource.getAll<TravelEntity>(this.COLLECTION_NAME, [
       this.firebaseDataSource.createWhereCondition('featured', '==', true),
-      this.firebaseDataSource.createOrderByCondition('visitDate', 'desc')
+      // this.firebaseDataSource.createOrderByCondition('createdAt', 'desc')
     ]);
   }
 

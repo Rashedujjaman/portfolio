@@ -90,7 +90,7 @@ export class GetTravelStatsUseCase {
       map(travels => {
         const countries = new Set(travels.map(t => t.country));
         const cities = new Set(travels.map(t => `${t.city}, ${t.country}`));
-        const totalDays = travels.reduce((sum, travel) => sum + travel.duration, 0);
+        const totalDays = travels.reduce((sum, travel) => sum + (travel.duration || 0), 0);
 
         return {
           totalTravels: travels.length,

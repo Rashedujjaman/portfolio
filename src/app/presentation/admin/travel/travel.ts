@@ -142,7 +142,7 @@ export class AdminTravel implements OnInit, OnDestroy {
   }
 
   getTotalDays(): number {
-    return this.travels.reduce((total, travel) => total + travel.duration, 0);
+    return this.travels.reduce((total, travel) => total + (travel.duration || 0), 0);
   }
 
   getCountryFlag(country: string): string {
