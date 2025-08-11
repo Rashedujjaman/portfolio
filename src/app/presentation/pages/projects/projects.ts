@@ -1,15 +1,16 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
 import { Project, ProjectCategory, ProjectStatus } from '../../../domain/entities/project.entity';
 
 @Component({
   selector: 'app-projects',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './projects.html',
   styleUrl: './projects.scss'
 })
-export class Projects implements OnInit {
+export class Projects implements OnInit, OnDestroy {
   projects: Project[] = [];
   featuredProjects: Project[] = [];
   filteredProjects: Project[] = [];
@@ -38,8 +39,16 @@ export class Projects implements OnInit {
 
   private getProjectsUseCase = inject(GetProjectsUseCase);
 
+  private autoSlideDelay = 5000; // 5s per slide
+  private slideIntervals: { [key: number]: any } = {};
+  dotDisplayLimit = 12;
+
   ngOnInit() {
     this.loadProjects();
+  }
+
+  ngOnDestroy() {
+    Object.values(this.slideIntervals).forEach(id => clearInterval(id));
   }
 
   private loadProjects() {
@@ -49,12 +58,44 @@ export class Projects implements OnInit {
         this.featuredProjects = projects.filter(p => p.featured);
         this.filteredProjects = [...projects];
         this.isLoading = false;
+        this.initializeAutoSlides();
       },
       error: (error) => {
         console.error('Error loading projects:', error);
         this.isLoading = false;
       }
     });
+  }
+
+  private initializeAutoSlides() {
+    this.filteredProjects.forEach((p, idx) => {
+      if (p.images && p.images.length > 1) {
+        this.startAutoSlide(idx);
+      }
+    });
+  }
+
+  private startAutoSlide(projectIndex: number) {
+    this.clearAutoSlide(projectIndex);
+    this.slideIntervals[projectIndex] = setInterval(() => {
+      this.nextSlide(projectIndex, true);
+    }, this.autoSlideDelay);
+  }
+
+  private clearAutoSlide(projectIndex: number) {
+    if (this.slideIntervals[projectIndex]) {
+      clearInterval(this.slideIntervals[projectIndex]);
+      delete this.slideIntervals[projectIndex];
+    }
+  }
+
+  pauseAutoSlide(projectIndex: number) {
+    this.clearAutoSlide(projectIndex);
+  }
+
+  resumeAutoSlide(projectIndex: number) {
+    const project = this.filteredProjects[projectIndex];
+    if (project?.images?.length > 1) this.startAutoSlide(projectIndex);
   }
 
   filterProjects(category: string) {
@@ -79,12 +120,54 @@ export class Projects implements OnInit {
     }
 
     this.filteredProjects = filtered;
+
+    // restart intervals after filtering
+    Object.values(this.slideIntervals).forEach(id => clearInterval(id));
+    this.slideIntervals = {};
+    this.initializeAutoSlides();
   }
 
   // Slideshow methods
   setActiveSlide(projectIndex: number, slideIndex: number) {
     this.currentSlides[projectIndex] = slideIndex;
-    this.updateSlideDisplay(projectIndex, slideIndex);
+  }
+
+  previousSlide(projectIndex: number, silent?: boolean) {
+    const project = this.filteredProjects[projectIndex];
+    if (!project?.images || project.images.length <= 1) return;
+    
+    const currentSlide = this.currentSlides[projectIndex] ?? 0;
+    const newSlide = currentSlide === 0 ? project.images.length - 1 : currentSlide - 1;
+    this.setActiveSlide(projectIndex, newSlide);
+    if (!silent) this.restartSlideTimer(projectIndex);
+  }
+
+  nextSlide(projectIndex: number, silent?: boolean) {
+    const project = this.filteredProjects[projectIndex];
+    if (!project?.images || project.images.length <= 1) return;
+    
+    const currentSlide = this.currentSlides[projectIndex] ?? 0;
+    const newSlide = currentSlide === project.images.length - 1 ? 0 : currentSlide + 1;
+    this.setActiveSlide(projectIndex, newSlide);
+    if (!silent) this.restartSlideTimer(projectIndex);
+  }
+
+  private restartSlideTimer(projectIndex: number) {
+    this.startAutoSlide(projectIndex);
+  }
+
+  getSlideProgress(projectIndex: number, project: Project): number {
+    const total = project.images?.length || 1;
+    const current = (this.currentSlides[projectIndex] ?? 0) + 1;
+    return (current / total) * 100;
+  }
+
+  shouldShowDots(project: Project): boolean {
+    return !!project.images && project.images.length > 1 && project.images.length <= this.dotDisplayLimit;
+  }
+
+  shouldShowProgressBar(project: Project): boolean {
+    return !!project.images && project.images.length > this.dotDisplayLimit;
   }
 
   // Image layout detection methods
@@ -157,6 +240,13 @@ export class Projects implements OnInit {
     // Update image class
     img.classList.remove('mobile-image', 'web-image', 'adaptive-image');
     img.classList.add(this.getImageClass(project));
+
+    img.classList.remove('is-portrait', 'is-landscape');
+    if (aspectRatio < 0.9) {
+      img.classList.add('is-portrait');
+    } else {
+      img.classList.add('is-landscape');
+    }
   }
 
   private adjustDeviceFrameSize(img: HTMLImageElement, project: Project) {
@@ -233,24 +323,6 @@ export class Projects implements OnInit {
     img.style.maxHeight = `${displayHeight}px`;
   }
 
-  previousSlide(projectIndex: number) {
-    const project = this.filteredProjects[projectIndex];
-    if (!project.images || project.images.length <= 1) return;
-    
-    const currentSlide = this.currentSlides[projectIndex] || 0;
-    const newSlide = currentSlide === 0 ? project.images.length - 1 : currentSlide - 1;
-    this.setActiveSlide(projectIndex, newSlide);
-  }
-
-  nextSlide(projectIndex: number) {
-    const project = this.filteredProjects[projectIndex];
-    if (!project.images || project.images.length <= 1) return;
-    
-    const currentSlide = this.currentSlides[projectIndex] || 0;
-    const newSlide = currentSlide === project.images.length - 1 ? 0 : currentSlide + 1;
-    this.setActiveSlide(projectIndex, newSlide);
-  }
-
   private updateSlideDisplay(projectIndex: number, activeSlideIndex: number) {
     // This method would update the DOM to show the active slide
     // For simplicity, we'll handle this with CSS classes
@@ -314,6 +386,34 @@ export class Projects implements OnInit {
         return 'Other';
       default:
         return category;
+    }
+  }
+
+  getCategoryClass(category: ProjectCategory): string {
+    switch (category) {
+      case ProjectCategory.MOBILE_APP:
+        return 'mobile';
+      case ProjectCategory.WEB_APPLICATION:
+        return 'web';
+      case ProjectCategory.DESKTOP_APP:
+        return 'desktop';
+      case ProjectCategory.API:
+        return 'api';
+      default:
+        return 'web';
+    }
+  }
+
+  getStatusClass(status: ProjectStatus): string {
+    switch (status) {
+      case ProjectStatus.COMPLETED:
+        return 'completed';
+      case ProjectStatus.IN_PROGRESS:
+        return 'in-progress';
+      case ProjectStatus.PLANNED:
+        return 'planned';
+      default:
+        return 'completed';
     }
   }
 }

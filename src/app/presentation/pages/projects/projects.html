@@ -1,331 +1,224 @@
 <div class="projects-page">
-  <!-- Hero Section -->
+  <!-- Modern Hero Section -->
   <section class="hero-section">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h1 class="hero-title">My Projects</h1>
-        <p class="hero-subtitle">Showcasing innovative solutions and creative implementations</p>
+    <!-- Animated Background -->
+    <div class="hero-animation">
+      <div class="floating-shapes">
+        <div class="shape shape-circle shape-1"></div>
+        <div class="shape shape-triangle shape-2"></div>
+        <div class="shape shape-square shape-3"></div>
+        <div class="shape shape-hexagon shape-4"></div>
+        <div class="shape shape-diamond shape-5"></div>
+        <div class="shape shape-circle shape-6"></div>
+        <div class="shape shape-triangle shape-7"></div>
+        <div class="shape shape-square shape-8"></div>
       </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-number">{{ projects.length }}</span>
-          <span class="stat-label">Projects</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">{{ featuredProjects.length }}</span>
-          <span class="stat-label">Featured</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">{{ getCompletedProjectsCount() }}</span>
-          <span class="stat-label">Completed</span>
-        </div>
+      <div class="particles">
+        <div class="particle" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"></div>
       </div>
     </div>
-    <div class="hero-decoration">
-      <div class="floating-element" *ngFor="let item of [1,2,3,4,5]"></div>
-    </div>
-  </section>
 
-  <!-- Featured Projects Carousel -->
-  <section class="featured-section" *ngIf="featuredProjects.length > 0">
     <div class="container">
-      <h2 class="section-title">Featured Projects</h2>
-      <div class="featured-carousel">
-        <div class="featured-project" *ngFor="let project of featuredProjects; let i = index">
-          <div class="project-image-container" [class]="detectImageLayout(project)">
-            <!-- Mobile App Frame -->
-            <div class="device-frame" *ngIf="detectImageLayout(project) === 'mobile-layout'">
-              <div class="image-slideshow" *ngIf="project.images && project.images.length > 0">
-                <img 
-                  *ngFor="let image of project.images; let imageIndex = index" 
-                  [src]="image" 
-                  [alt]="project.title"
-                  [class]="'slide-image ' + getImageClass(project)"
-                  [class.active]="imageIndex === 0"
-                  (load)="onImageLoad($event, project)">
-                <div class="slideshow-controls" *ngIf="project.images.length > 1">
-                  <button 
-                    *ngFor="let img of project.images; let idx = index"
-                    class="slide-dot"
-                    [class.active]="idx === 0"
-                    (click)="setActiveSlide(i, idx)">
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Web App Frame -->
-            <div class="browser-frame" *ngIf="detectImageLayout(project) === 'web-layout'">
-              <div class="image-slideshow" *ngIf="project.images && project.images.length > 0">
-                <img 
-                  *ngFor="let image of project.images; let imageIndex = index" 
-                  [src]="image" 
-                  [alt]="project.title"
-                  [class]="'slide-image ' + getImageClass(project)"
-                  [class.active]="imageIndex === 0"
-                  (load)="onImageLoad($event, project)">
-                <div class="slideshow-controls" *ngIf="project.images.length > 1">
-                  <button 
-                    *ngFor="let img of project.images; let idx = index"
-                    class="slide-dot"
-                    [class.active]="idx === 0"
-                    (click)="setActiveSlide(i, idx)">
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Adaptive Layout -->
-            <div class="image-slideshow" *ngIf="detectImageLayout(project) === 'adaptive-layout' && project.images && project.images.length > 0">
-              <img 
-                *ngFor="let image of project.images; let imageIndex = index" 
-                [src]="image" 
-                [alt]="project.title"
-                [class]="'slide-image ' + getImageClass(project)"
-                [class.active]="imageIndex === 0"
-                (load)="onImageLoad($event, project)">
-              <div class="slideshow-controls" *ngIf="project.images.length > 1">
-                <button 
-                  *ngFor="let img of project.images; let idx = index"
-                  class="slide-dot"
-                  [class.active]="idx === 0"
-                  (click)="setActiveSlide(i, idx)">
-                </button>
-              </div>
-            </div>
-
-            <div class="project-overlay">
-              <span class="featured-badge">★ Featured</span>
-            </div>
+      <div class="hero-content">
+        <h1 class="hero-title">Projects</h1>
+        <p class="hero-description">Exploring ideas through code and design</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="number">{{ projects.length }}</span>
+            <span class="label">Projects</span>
           </div>
-          <div class="project-content">
-            <div class="project-header">
-              <h3 class="project-title">{{ project.title }}</h3>
-              <div class="project-meta">
-                <span class="project-category">{{ getCategoryLabel(project.category) }}</span>
-                <span class="project-status" [class]="'status-' + project.status">
-                  {{ getStatusLabel(project.status) }}
-                </span>
-              </div>
-            </div>
-            <p class="project-description">{{ project.shortDescription }}</p>
-            <div class="project-tech">
-              <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 4)">
-                {{ tech }}
-              </span>
-              <span class="tech-more" *ngIf="project.technologies.length > 4">
-                +{{ project.technologies.length - 4 }} more
-              </span>
-            </div>
-            <div class="project-actions">
-              <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="btn btn-primary">
-                <span class="btn-icon">🚀</span>
-                Live Demo
-              </a>
-              <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" class="btn btn-secondary">
-                <span class="btn-icon">📂</span>
-                View Code
-              </a>
-            </div>
+          <div class="stat">
+            <span class="number">{{ getCompletedProjectsCount() }}</span>
+            <span class="label">Completed</span>
+          </div>
+          <div class="stat">
+            <span class="number">{{ featuredProjects.length }}</span>
+            <span class="label">Featured</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Filter Section -->
-  <section class="filter-section">
+  <!-- Filter Bar -->
+  <section class="filter-bar">
     <div class="container">
-      <div class="filter-controls">
+      <div class="filter-content">
         <div class="filter-group">
-          <label class="filter-label">Category:</label>
-          <div class="filter-buttons">
-            <button 
-              *ngFor="let category of categories"
-              class="filter-btn"
-              [class.active]="selectedCategory === category.value"
-              (click)="filterProjects(category.value)">
+          <label>Category</label>
+          <select [(ngModel)]="selectedCategory" (change)="applyFilters()">
+            <option value="all">All Categories</option>
+            <option *ngFor="let category of categories" [value]="category.value">
               {{ category.label }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Status</label>
+          <div class="status-filters">
+            <button 
+              *ngFor="let status of ['all', 'completed', 'in-progress', 'planned']"
+              class="status-btn"
+              [class.active]="selectedStatus === status"
+              (click)="filterByStatus(status)">
+              {{ status === 'all' ? 'All' : (status | titlecase) }}
             </button>
           </div>
         </div>
-        <div class="filter-group">
-          <label class="filter-label">Status:</label>
-          <div class="filter-buttons">
-            <button 
-              class="filter-btn"
-              [class.active]="selectedStatus === 'all'"
-              (click)="filterByStatus('all')">
-              All Status
-            </button>
-            <button 
-              class="filter-btn"
-              [class.active]="selectedStatus === 'completed'"
-              (click)="filterByStatus('completed')">
-              Completed
-            </button>
-            <button 
-              class="filter-btn"
-              [class.active]="selectedStatus === 'in-progress'"
-              (click)="filterByStatus('in-progress')">
-              In Progress
-            </button>
-          </div>
+        <div class="results-info">
+          {{ filteredProjects.length }} project{{ filteredProjects.length !== 1 ? 's' : '' }}
         </div>
       </div>
     </div>
   </section>
 
-  <!-- All Projects Grid -->
-  <section class="projects-grid-section">
+  <!-- Projects Grid -->
+  <section class="projects-section">
     <div class="container">
-      <div class="section-header">
-        <h2 class="section-title">All Projects</h2>
-        <div class="project-count">
-          <span>{{ filteredProjects.length }} project{{ filteredProjects.length !== 1 ? 's' : '' }}</span>
+      
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="loading-animation">
+          <div class="spinner"></div>
         </div>
-      </div>
-
-      <div class="projects-grid" *ngIf="!isLoading && filteredProjects.length > 0">
-        <div class="project-card" *ngFor="let project of filteredProjects; let i = index">
-          <div class="card-image-container" [class]="detectImageLayout(project)">
-            <!-- Mobile App Frame -->
-            <div class="device-frame" *ngIf="detectImageLayout(project) === 'mobile-layout' && project.images && project.images.length > 0">
-              <div class="image-slideshow">
-                <img 
-                  *ngFor="let image of project.images; let imageIndex = index" 
-                  [src]="image" 
-                  [alt]="project.title"
-                  [class]="'slide-image ' + getImageClass(project)"
-                  [class.active]="imageIndex === 0"
-                  (load)="onImageLoad($event, project)">
-                <div class="slideshow-nav" *ngIf="project.images.length > 1">
-                  <button class="nav-btn prev" (click)="previousSlide(i)">‹</button>
-                  <button class="nav-btn next" (click)="nextSlide(i)">›</button>
-                </div>
-                <div class="slide-indicators" *ngIf="project.images.length > 1">
-                  <span 
-                    *ngFor="let img of project.images; let idx = index"
-                    class="indicator"
-                    [class.active]="idx === 0"
-                    (click)="setActiveSlide(i, idx)">
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Web App Frame -->
-            <div class="browser-frame" *ngIf="detectImageLayout(project) === 'web-layout' && project.images && project.images.length > 0">
-              <div class="image-slideshow">
-                <img 
-                  *ngFor="let image of project.images; let imageIndex = index" 
-                  [src]="image" 
-                  [alt]="project.title"
-                  [class]="'slide-image ' + getImageClass(project)"
-                  [class.active]="imageIndex === 0"
-                  (load)="onImageLoad($event, project)">
-                <div class="slideshow-nav" *ngIf="project.images.length > 1">
-                  <button class="nav-btn prev" (click)="previousSlide(i)">‹</button>
-                  <button class="nav-btn next" (click)="nextSlide(i)">›</button>
-                </div>
-                <div class="slide-indicators" *ngIf="project.images.length > 1">
-                  <span 
-                    *ngFor="let img of project.images; let idx = index"
-                    class="indicator"
-                    [class.active]="idx === 0"
-                    (click)="setActiveSlide(i, idx)">
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Adaptive Layout -->
-            <div class="image-slideshow" *ngIf="detectImageLayout(project) === 'adaptive-layout' && project.images && project.images.length > 0">
-              <img 
-                *ngFor="let image of project.images; let imageIndex = index" 
-                [src]="image" 
-                [alt]="project.title"
-                [class]="'slide-image ' + getImageClass(project)"
-                [class.active]="imageIndex === 0"
-                (load)="onImageLoad($event, project)">
-              <div class="slideshow-nav" *ngIf="project.images.length > 1">
-                <button class="nav-btn prev" (click)="previousSlide(i)">‹</button>
-                <button class="nav-btn next" (click)="nextSlide(i)">›</button>
-              </div>
-              <div class="slide-indicators" *ngIf="project.images.length > 1">
-                <span 
-                  *ngFor="let img of project.images; let idx = index"
-                  class="indicator"
-                  [class.active]="idx === 0"
-                  (click)="setActiveSlide(i, idx)">
-                </span>
-              </div>
-            </div>
-
-            <div class="placeholder-image" *ngIf="!project.images || project.images.length === 0">
-              <div class="placeholder-content">
-                <span class="placeholder-icon">📁</span>
-                <span class="placeholder-text">{{ project.title }}</span>
-              </div>
-            </div>
-            <div class="card-overlay">
-              <span class="featured-indicator" *ngIf="project.featured">★</span>
-            </div>
-          </div>
-
-          <div class="card-content">
-            <div class="card-header">
-              <h3 class="card-title">{{ project.title }}</h3>
-              <div class="card-meta">
-                <span class="card-category">{{ getCategoryLabel(project.category) }}</span>
-                <span class="card-status" [class]="'status-' + project.status">
-                  {{ getStatusLabel(project.status) }}
-                </span>
-              </div>
-            </div>
-
-            <p class="card-description">{{ project.shortDescription }}</p>
-
-            <div class="card-tech">
-              <span class="tech-chip" *ngFor="let tech of project.technologies.slice(0, 3)">
-                {{ tech }}
-              </span>
-              <span class="tech-overflow" *ngIf="project.technologies.length > 3">
-                +{{ project.technologies.length - 3 }}
-              </span>
-            </div>
-
-            <div class="card-footer">
-              <div class="card-date">
-                <small>{{ project.startDate | date:'MMM yyyy' }}</small>
-              </div>
-              <div class="card-actions">
-                <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="action-btn primary">
-                  Demo
-                </a>
-                <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" class="action-btn secondary">
-                  Code
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p>Loading projects...</p>
       </div>
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="!isLoading && filteredProjects.length === 0">
-        <div class="empty-icon">🔍</div>
-        <h3>No Projects Found</h3>
-        <p>Try adjusting your filters to see more projects.</p>
-        <button class="btn btn-primary" (click)="selectedCategory = 'all'; selectedStatus = 'all'; applyFilters()">>
-          Show All Projects
-        </button>
+        <div class="empty-content">
+          <div class="empty-icon">🔍</div>
+          <h3>No projects found</h3>
+          <p>Try adjusting your filters or check back later for new projects.</p>
+          <!-- <button class="reset-btn" (click)="resetFilters()">Reset Filters</button> -->
+        </div>
       </div>
 
-      <!-- Loading State -->
-      <div class="loading-state" *ngIf="isLoading">
-        <div class="loading-spinner"></div>
-        <p>Loading amazing projects...</p>
+      <!-- Projects List -->
+      <div class="projects-list" *ngIf="!isLoading && filteredProjects.length > 0">
+        <article class="project-item" *ngFor="let project of filteredProjects; let i = index">
+          
+          <div>
+          <!-- Project Header -->
+          <header class="project-header">
+            <div class="project-meta">
+              <span class="category-tag" [attr.data-category]="project.category">
+                {{ getCategoryLabel(project.category) }}
+              </span>
+              <span class="featured-badge" *ngIf="project.featured">Featured</span>
+            </div>
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-description">{{ project.shortDescription }}</p>
+          </header>
+
+          <!-- Project Details -->
+          <div class="project-details">
+            <div class="tech-stack">
+              <div class="tech-label">Tech Stack</div>
+              <div class="tech-tags">
+                <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 6)">
+                  {{ tech }}
+                </span>
+                <span class="tech-more" *ngIf="project.technologies.length > 6">
+                  +{{ project.technologies.length - 6 }}
+                </span>
+              </div>
+            </div>
+
+            <div class="project-info">
+              <div class="info-item">
+                <span class="info-label">Status</span>
+                <span class="status-badge" [attr.data-status]="project.status">
+                  {{ getStatusLabel(project.status) }}
+                </span>
+              </div>
+              <div class="info-item" *ngIf="project.startDate">
+                <span class="info-label">Date</span>
+                <span class="info-value">{{ project.startDate | date:'MMM yyyy' }}</span>
+              </div>
+            </div>
+
+            <div class="project-actions">
+              <a *ngIf="project.liveUrl" 
+                 [href]="project.liveUrl" 
+                 target="_blank" 
+                 class="action-btn primary"
+                 rel="noopener">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <polyline points="15,3 21,3 21,9" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Live Demo
+              </a>
+              
+              <a *ngIf="project.githubUrl" 
+                 [href]="project.githubUrl" 
+                 target="_blank" 
+                 class="action-btn secondary"
+                 rel="noopener">
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                Source Code
+              </a>
+
+              <button *ngIf="!project.liveUrl && !project.githubUrl" 
+                      class="action-btn secondary" 
+                      disabled>
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                Coming Soon
+              </button>
+            </div>
+          </div>
+          </div>
+                    <!-- Project Visual -->
+          <div class="project-visual" [attr.data-category]="project.category" *ngIf="project.images && project.images.length > 0">
+            <div class="image-container"
+                 (mouseenter)="pauseAutoSlide(i)"
+                 (mouseleave)="resumeAutoSlide(i)">
+              <img 
+                *ngFor="let image of project.images; let imageIndex = index"
+                [src]="image"
+                [alt]="project.title + ' screenshot ' + (imageIndex + 1)"
+                [attr.data-category]="project.category"
+                class="project-image"
+                [class.active]="imageIndex === (currentSlides[i] || 0)"
+                (load)="onImageLoad($event, project)"
+                loading="lazy">
+              
+              <!-- Edge Navigation Buttons -->
+              <button class="edge-nav prev" *ngIf="project.images.length > 1" (click)="previousSlide(i)" aria-label="Previous image">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="edge-nav next" *ngIf="project.images.length > 1" (click)="nextSlide(i)" aria-label="Next image">
+                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+
+              <!-- Compact Dots -->
+              <div class="image-dots compact" *ngIf="shouldShowDots(project)">
+                <button 
+                  *ngFor="let img of project.images; let idx = index"
+                  class="dot"
+                  [class.active]="idx === (currentSlides[i] || 0)"
+                  (click)="setActiveSlide(i, idx)"
+                  [attr.aria-label]="'View image ' + (idx + 1)">
+                </button>
+              </div>
+
+              <!-- Progress Bar for many images -->
+              <div class="image-progress" *ngIf="shouldShowProgressBar(project)">
+                <div class="bar">
+                  <div class="fill" [style.width.%]="getSlideProgress(i, project)"></div>
+                </div>
+                <div class="count">{{ (currentSlides[i] || 0) + 1 }}/{{ project.images.length }}</div>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </section>
