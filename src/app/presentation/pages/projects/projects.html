@@ -32,14 +32,58 @@
       <h2 class="section-title">Featured Projects</h2>
       <div class="featured-carousel">
         <div class="featured-project" *ngFor="let project of featuredProjects; let i = index">
-          <div class="project-image-container">
-            <div class="image-slideshow" *ngIf="project.images && project.images.length > 0">
+          <div class="project-image-container" [class]="detectImageLayout(project)">
+            <!-- Mobile App Frame -->
+            <div class="device-frame" *ngIf="detectImageLayout(project) === 'mobile-layout'">
+              <div class="image-slideshow" *ngIf="project.images && project.images.length > 0">
+                <img 
+                  *ngFor="let image of project.images; let imageIndex = index" 
+                  [src]="image" 
+                  [alt]="project.title"
+                  [class]="'slide-image ' + getImageClass(project)"
+                  [class.active]="imageIndex === 0"
+                  (load)="onImageLoad($event, project)">
+                <div class="slideshow-controls" *ngIf="project.images.length > 1">
+                  <button 
+                    *ngFor="let img of project.images; let idx = index"
+                    class="slide-dot"
+                    [class.active]="idx === 0"
+                    (click)="setActiveSlide(i, idx)">
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Web App Frame -->
+            <div class="browser-frame" *ngIf="detectImageLayout(project) === 'web-layout'">
+              <div class="image-slideshow" *ngIf="project.images && project.images.length > 0">
+                <img 
+                  *ngFor="let image of project.images; let imageIndex = index" 
+                  [src]="image" 
+                  [alt]="project.title"
+                  [class]="'slide-image ' + getImageClass(project)"
+                  [class.active]="imageIndex === 0"
+                  (load)="onImageLoad($event, project)">
+                <div class="slideshow-controls" *ngIf="project.images.length > 1">
+                  <button 
+                    *ngFor="let img of project.images; let idx = index"
+                    class="slide-dot"
+                    [class.active]="idx === 0"
+                    (click)="setActiveSlide(i, idx)">
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adaptive Layout -->
+            <div class="image-slideshow" *ngIf="detectImageLayout(project) === 'adaptive-layout' && project.images && project.images.length > 0">
               <img 
                 *ngFor="let image of project.images; let imageIndex = index" 
                 [src]="image" 
                 [alt]="project.title"
-                class="slide-image"
-                [class.active]="imageIndex === 0">
+                [class]="'slide-image ' + getImageClass(project)"
+                [class.active]="imageIndex === 0"
+                (load)="onImageLoad($event, project)">
               <div class="slideshow-controls" *ngIf="project.images.length > 1">
                 <button 
                   *ngFor="let img of project.images; let idx = index"
@@ -49,6 +93,7 @@
                 </button>
               </div>
             </div>
+
             <div class="project-overlay">
               <span class="featured-badge">★ Featured</span>
             </div>
@@ -143,14 +188,66 @@
 
       <div class="projects-grid" *ngIf="!isLoading && filteredProjects.length > 0">
         <div class="project-card" *ngFor="let project of filteredProjects; let i = index">
-          <div class="card-image-container">
-            <div class="image-slideshow" *ngIf="project.images && project.images.length > 0">
+          <div class="card-image-container" [class]="detectImageLayout(project)">
+            <!-- Mobile App Frame -->
+            <div class="device-frame" *ngIf="detectImageLayout(project) === 'mobile-layout' && project.images && project.images.length > 0">
+              <div class="image-slideshow">
+                <img 
+                  *ngFor="let image of project.images; let imageIndex = index" 
+                  [src]="image" 
+                  [alt]="project.title"
+                  [class]="'slide-image ' + getImageClass(project)"
+                  [class.active]="imageIndex === 0"
+                  (load)="onImageLoad($event, project)">
+                <div class="slideshow-nav" *ngIf="project.images.length > 1">
+                  <button class="nav-btn prev" (click)="previousSlide(i)">‹</button>
+                  <button class="nav-btn next" (click)="nextSlide(i)">›</button>
+                </div>
+                <div class="slide-indicators" *ngIf="project.images.length > 1">
+                  <span 
+                    *ngFor="let img of project.images; let idx = index"
+                    class="indicator"
+                    [class.active]="idx === 0"
+                    (click)="setActiveSlide(i, idx)">
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Web App Frame -->
+            <div class="browser-frame" *ngIf="detectImageLayout(project) === 'web-layout' && project.images && project.images.length > 0">
+              <div class="image-slideshow">
+                <img 
+                  *ngFor="let image of project.images; let imageIndex = index" 
+                  [src]="image" 
+                  [alt]="project.title"
+                  [class]="'slide-image ' + getImageClass(project)"
+                  [class.active]="imageIndex === 0"
+                  (load)="onImageLoad($event, project)">
+                <div class="slideshow-nav" *ngIf="project.images.length > 1">
+                  <button class="nav-btn prev" (click)="previousSlide(i)">‹</button>
+                  <button class="nav-btn next" (click)="nextSlide(i)">›</button>
+                </div>
+                <div class="slide-indicators" *ngIf="project.images.length > 1">
+                  <span 
+                    *ngFor="let img of project.images; let idx = index"
+                    class="indicator"
+                    [class.active]="idx === 0"
+                    (click)="setActiveSlide(i, idx)">
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adaptive Layout -->
+            <div class="image-slideshow" *ngIf="detectImageLayout(project) === 'adaptive-layout' && project.images && project.images.length > 0">
               <img 
                 *ngFor="let image of project.images; let imageIndex = index" 
                 [src]="image" 
                 [alt]="project.title"
-                class="slide-image"
-                [class.active]="imageIndex === 0">
+                [class]="'slide-image ' + getImageClass(project)"
+                [class.active]="imageIndex === 0"
+                (load)="onImageLoad($event, project)">
               <div class="slideshow-nav" *ngIf="project.images.length > 1">
                 <button class="nav-btn prev" (click)="previousSlide(i)">‹</button>
                 <button class="nav-btn next" (click)="nextSlide(i)">›</button>
@@ -164,6 +261,7 @@
                 </span>
               </div>
             </div>
+
             <div class="placeholder-image" *ngIf="!project.images || project.images.length === 0">
               <div class="placeholder-content">
                 <span class="placeholder-icon">📁</span>

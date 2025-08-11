@@ -18,6 +18,9 @@ export class Projects implements OnInit {
   // Slideshow tracking
   currentSlides: { [key: number]: number } = {};
   
+  // Image layout detection
+  imageLayouts: { [key: string]: string } = {};
+  
   // Filters
   selectedCategory: string = 'all';
   selectedStatus: string = 'all';
@@ -84,6 +87,152 @@ export class Projects implements OnInit {
     this.updateSlideDisplay(projectIndex, slideIndex);
   }
 
+  // Image layout detection methods
+  detectImageLayout(project: Project): string {
+    // Check if we already determined the layout for this project
+    if (this.imageLayouts[project.id]) {
+      return this.imageLayouts[project.id];
+    }
+
+    // Default to adaptive layout
+    let detectedLayout = 'adaptive-layout';
+
+    // Check project category first
+    if (project.category === ProjectCategory.MOBILE_APP) {
+      detectedLayout = 'mobile-layout';
+    } else if (project.category === ProjectCategory.WEB_APPLICATION) {
+      detectedLayout = 'web-layout';
+    }
+
+    // Store the detected layout
+    this.imageLayouts[project.id] = detectedLayout;
+    return detectedLayout;
+  }
+
+  getImageClass(project: Project): string {
+    const layout = this.detectImageLayout(project);
+    
+    switch (layout) {
+      case 'mobile-layout':
+        return 'mobile-image';
+      case 'web-layout':
+        return 'web-image';
+      default:
+        return 'adaptive-image';
+    }
+  }
+
+  onImageLoad(event: Event, project: Project) {
+    const img = event.target as HTMLImageElement;
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    
+    // Determine layout based on aspect ratio
+    let layout: string;
+    if (aspectRatio < 0.8) {
+      // Portrait/mobile images (height > width)
+      layout = 'mobile-layout';
+    } else if (aspectRatio > 1.5) {
+      // Landscape/web images (width significantly > height)
+      layout = 'web-layout';
+    } else {
+      // Square-ish images or adaptive
+      layout = 'adaptive-layout';
+    }
+
+    // Update the stored layout
+    this.imageLayouts[project.id] = layout;
+
+    // Update the container class dynamically
+    const container = img.closest('.project-image-container, .card-image-container');
+    if (container) {
+      container.classList.remove('mobile-layout', 'web-layout', 'adaptive-layout');
+      container.classList.add(layout);
+    }
+
+    // For mobile layout, dynamically adjust device frame size
+    if (layout === 'mobile-layout') {
+      this.adjustDeviceFrameSize(img, project);
+    }
+
+    // Update image class
+    img.classList.remove('mobile-image', 'web-image', 'adaptive-image');
+    img.classList.add(this.getImageClass(project));
+  }
+
+  private adjustDeviceFrameSize(img: HTMLImageElement, project: Project) {
+    const deviceFrame = img.closest('.device-frame');
+    if (!deviceFrame) return;
+
+    const naturalWidth = img.naturalWidth;
+    const naturalHeight = img.naturalHeight;
+    const aspectRatio = naturalWidth / naturalHeight;
+
+    // Constants for device frame padding
+    const FRAME_PADDING_X = 24; // 12px left + 12px right
+    const FRAME_PADDING_Y = 40; // 20px top + 20px bottom
+    const MIN_FRAME_WIDTH = 200;
+    const MAX_FRAME_WIDTH = 300;
+    const MIN_FRAME_HEIGHT = 350;
+    const MAX_FRAME_HEIGHT = 550;
+
+    // For card containers (smaller)
+    const isCard = img.closest('.card-image-container');
+    const CARD_FRAME_PADDING_X = 16; // 8px left + 8px right  
+    const CARD_FRAME_PADDING_Y = 24; // 12px top + 12px bottom
+    const CARD_MIN_FRAME_WIDTH = 120;
+    const CARD_MAX_FRAME_WIDTH = 180;
+    const CARD_MIN_FRAME_HEIGHT = 220;
+    const CARD_MAX_FRAME_HEIGHT = 350;
+
+    const paddingX = isCard ? CARD_FRAME_PADDING_X : FRAME_PADDING_X;
+    const paddingY = isCard ? CARD_FRAME_PADDING_Y : FRAME_PADDING_Y;
+    const minWidth = isCard ? CARD_MIN_FRAME_WIDTH : MIN_FRAME_WIDTH;
+    const maxWidth = isCard ? CARD_MAX_FRAME_WIDTH : MAX_FRAME_WIDTH;
+    const minHeight = isCard ? CARD_MIN_FRAME_HEIGHT : MIN_FRAME_HEIGHT;
+    const maxHeight = isCard ? CARD_MAX_FRAME_HEIGHT : MAX_FRAME_HEIGHT;
+
+    // Calculate optimal display size while maintaining aspect ratio
+    let displayWidth, displayHeight;
+
+    // Start with a base width and calculate height
+    const baseDisplayWidth = isCard ? 140 : 220;
+    displayWidth = baseDisplayWidth;
+    displayHeight = displayWidth / aspectRatio;
+
+    // Ensure we don't exceed maximum dimensions
+    if (displayWidth > (maxWidth - paddingX)) {
+      displayWidth = maxWidth - paddingX;
+      displayHeight = displayWidth / aspectRatio;
+    }
+
+    if (displayHeight > (maxHeight - paddingY)) {
+      displayHeight = maxHeight - paddingY;
+      displayWidth = displayHeight * aspectRatio;
+    }
+
+    // Ensure we meet minimum dimensions
+    if (displayWidth < (minWidth - paddingX)) {
+      displayWidth = minWidth - paddingX;
+      displayHeight = displayWidth / aspectRatio;
+    }
+
+    if (displayHeight < (minHeight - paddingY)) {
+      displayHeight = minHeight - paddingY;
+      displayWidth = displayHeight * aspectRatio;
+    }
+
+    // Apply the calculated frame size
+    const frameWidth = Math.round(displayWidth + paddingX);
+    const frameHeight = Math.round(displayHeight + paddingY);
+
+    (deviceFrame as HTMLElement).style.width = `${frameWidth}px`;
+    (deviceFrame as HTMLElement).style.height = `${frameHeight}px`;
+
+    // Update image size to fit within the frame
+    img.style.maxWidth = `${displayWidth}px`;
+    img.style.maxHeight = `${displayHeight}px`;
+  }
+
   previousSlide(projectIndex: number) {
     const project = this.filteredProjects[projectIndex];
     if (!project.images || project.images.length <= 1) return;
@@ -113,6 +262,14 @@ export class Projects implements OnInit {
         
         slides.forEach((slide, index) => {
           slide.classList.toggle('active', index === activeSlideIndex);
+          
+          // For mobile images, adjust frame size when slide becomes active
+          if (index === activeSlideIndex && slide.classList.contains('mobile-image')) {
+            const project = this.filteredProjects[projectIndex] || this.featuredProjects[projectIndex];
+            if (project) {
+              this.adjustDeviceFrameSize(slide as HTMLImageElement, project);
+            }
+          }
         });
         
         indicators.forEach((indicator, index) => {
