@@ -6,6 +6,18 @@ import { TravelRepository, HobbyRepository } from '../../../domain/repositories/
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
 import { Profile } from '../../../domain/entities/profile.entity';
 
+/**
+ * Travel (public) page component
+ * ------------------------------------------------------------
+ * Responsibilities:
+ *  - Fetch profile, travel and hobby lifestyle data in parallel
+ *  - Derive stats & featured subsets from a single load pass
+ *  - Provide slideshow rotation for travel image sets
+ *  - Drive scroll / parallax animations (lightweight custom logic)
+ *  - Expose helpers for flags, formatting, counts & icons
+ *  - Coordinate page-level loading state consumed by skeleton UI
+ */
+
 @Component({
   selector: 'app-travel',
   imports: [CommonModule, RouterModule],
@@ -13,48 +25,50 @@ import { Profile } from '../../../domain/entities/profile.entity';
   styleUrl: './travel.scss'
 })
 export class Travel implements OnInit, OnDestroy {
-  private travelRepository = inject(TravelRepository);
-  private hobbyRepository = inject(HobbyRepository);
-  private getProfileUseCase = inject(GetProfileUseCase);
-  private elementRef = inject(ElementRef);
+  // Data layer dependencies (DI)
+  private readonly travelRepository = inject(TravelRepository);
+  private readonly hobbyRepository = inject(HobbyRepository);
+  private readonly getProfileUseCase = inject(GetProfileUseCase);
+  private readonly elementRef = inject(ElementRef);
 
+  // ---- Public state exposed to template ----
   profile: Profile | null = null;
   travels: TravelEntity[] = [];
   hobbies: Hobby[] = [];
   featuredTravels: TravelEntity[] = [];
-  travelStats: any = null;
-  hobbyStats: any = null;
-  isLoading = true;
-  selectedTravel: TravelEntity | null = null;
-  currentImageIndex = 0;
-
-  // Image slideshow management
-  private currentImageIndices: { [cardIndex: number]: number } = {};
-  private slideshowIntervals: { [cardIndex: number]: any } = {};
-  private readonly SLIDESHOW_INTERVAL = 4000; // 4 seconds for user page
-
-  // Map and interaction states
-  hoveredCountry: string | null = null;
+  travelStats: TravelStats | null = null;
+  hobbyStats: HobbyStats | null = null;
   visitedCountries: string[] = [];
+  hoveredCountry: string | null = null;
+  isLoading = true;                // Drives skeleton visibility
+  selectedTravel: TravelEntity | null = null; // Modal selection
+  currentImageIndex = 0;           // Active image inside modal gallery
 
-  ngOnInit() {
-    this.loadData();
-  }
+  // ---- Internal slideshow state ----
+  private currentImageIndices: Record<number, number> = {};  // Per-card current image index
+  private slideshowIntervals: Record<number, ReturnType<typeof setInterval>> = {};
 
-  ngOnDestroy() {
-    // Clean up all intervals
-    Object.values(this.slideshowIntervals).forEach(interval => {
-      if (interval) clearInterval(interval);
-    });
-  }
+  // ---- Constants (tweakable) ----
+  private static readonly SLIDESHOW_INTERVAL_MS = 4000;       // Rotation interval for card slideshows
+  private static readonly SCROLL_VISIBILITY_OFFSET = 100;     // Trigger threshold for scroll animations
 
+  // Lifecycle ------------------------------------------------
+  ngOnInit(): void { this.loadData(); }
+
+  ngOnDestroy(): void { this.clearSlideshows(); }
+
+  // Listen to scroll to update parallax & reveal animations
   @HostListener('window:scroll')
-  onWindowScroll() {
+  onWindowScroll(): void {
     this.updateParallaxEffects();
     this.updateScrollAnimations();
   }
 
-  private async loadData() {
+  /**
+   * Fetch all required data concurrently, then derive secondary state.
+   * Uses Promise.all over RxJS to simplify single-fire load for this route.
+   */
+  private async loadData(): Promise<void> {
     try {
       const [profileResult, travelsResult, hobbiesResult] = await Promise.all([
         this.getProfileUseCase.execute().toPromise(),
@@ -62,31 +76,33 @@ export class Travel implements OnInit, OnDestroy {
         this.hobbyRepository.getHobbies().toPromise()
       ]);
 
-      this.profile = profileResult || null;
-      this.travels = travelsResult || [];
-      this.hobbies = hobbiesResult || [];
-      
-      // Calculate derived data from the single database calls
-      this.featuredTravels = this.travels.filter(travel => travel.featured);
+      // Primary datasets
+      this.profile = profileResult ?? null;
+      this.travels = travelsResult ?? [];
+      this.hobbies = hobbiesResult ?? [];
+
+      // Derived subsets & stats (computed once)
+      this.featuredTravels = this.travels.filter(t => t.featured);
       this.travelStats = this.calculateTravelStats(this.travels);
       this.hobbyStats = this.calculateHobbyStats(this.hobbies);
-      
-      // Extract visited countries
-      this.visitedCountries = [...new Set(this.travels.map(travel => travel.country))];
-      
-      // Initialize slideshows after data is loaded
+      this.visitedCountries = [...new Set(this.travels.map(t => t.country))];
+
+      // Initialize per-card slideshows after data is present
       this.initializeSlideshows();
     } catch (error) {
-      console.error('Error loading travel data:', error);
+      console.error('[Travel] Error loading data', error);
     } finally {
       this.isLoading = false;
+      // Defer scroll reveal to next tick to ensure DOM has rendered
+      setTimeout(() => this.updateScrollAnimations(), 50);
     }
   }
 
-  private calculateTravelStats(travels: TravelEntity[]) {
+  // ---- Derivation helpers ----------------------------------
+  private calculateTravelStats(travels: TravelEntity[]): TravelStats {
     const countriesVisited = [...new Set(travels.map(t => t.country))];
     const citiesVisited = [...new Set(travels.map(t => t.city))];
-    const totalDays = travels.reduce((sum, travel) => sum + (travel.duration || 0), 0);
+    const totalDays = travels.reduce((sum, t) => sum + (t.duration || 0), 0);
 
     return {
       totalTravels: travels.length,
@@ -95,98 +111,73 @@ export class Travel implements OnInit, OnDestroy {
       totalDays,
       countriesVisited,
       citiesVisited,
-      averageTripDuration: travels.length > 0 ? Math.round(totalDays / travels.length) : 0
+      averageTripDuration: travels.length ? Math.round(totalDays / travels.length) : 0
     };
   }
 
-  private calculateHobbyStats(hobbies: Hobby[]) {
+  private calculateHobbyStats(hobbies: Hobby[]): HobbyStats {
     const categories = [...new Set(hobbies.map(h => h.category))];
-    
-    const categoryBreakdown = hobbies.reduce((acc, hobby) => {
-      acc[hobby.category] = (acc[hobby.category] || 0) + 1;
+    const categoryBreakdown = hobbies.reduce<Record<string, number>>((acc, h) => {
+      acc[h.category] = (acc[h.category] || 0) + 1;
       return acc;
-    }, {} as { [key: string]: number });
-
-    const hobbiesWithAchievements = hobbies.filter(h => h.achievements && h.achievements.length > 0);
+    }, {});
+    const withAchievements = hobbies.filter(h => (h.achievements?.length || 0) > 0);
 
     return {
       totalHobbies: hobbies.length,
       categories: categories.length,
       categoryBreakdown,
       featuredHobbies: hobbies.filter(h => h.featured).length,
-      hobbiesWithAchievements: hobbiesWithAchievements.length,
-      totalAchievements: hobbiesWithAchievements.reduce((sum, h) => sum + (h.achievements?.length || 0), 0)
+      hobbiesWithAchievements: withAchievements.length,
+      totalAchievements: withAchievements.reduce((sum, h) => sum + (h.achievements?.length || 0), 0)
     };
   }
 
-  private updateParallaxEffects() {
+  // ---- Visual & interaction helpers ------------------------
+  private updateParallaxEffects(): void {
     const scrolled = window.pageYOffset;
     const parallaxElements = this.elementRef.nativeElement.querySelectorAll('.parallax-bg');
-    
-    parallaxElements.forEach((element: HTMLElement, index: number) => {
-      const speed = 0.1 + (index * 0.02);
-      const yPos = -(scrolled * speed);
-      element.style.transform = `translateY(${yPos}px)`;
+    parallaxElements.forEach((el: HTMLElement, idx: number) => {
+      const speed = 0.1 + (idx * 0.02);
+      el.style.transform = `translateY(${-(scrolled * speed)}px)`;
     });
   }
 
-  private updateScrollAnimations() {
+  private updateScrollAnimations(): void {
     const elements = this.elementRef.nativeElement.querySelectorAll('.scroll-animate');
-    const windowHeight = window.innerHeight;
-    
-    elements.forEach((element: HTMLElement) => {
-      const elementTop = element.getBoundingClientRect().top;
-      
-      if (elementTop < windowHeight - 100) {
-        element.classList.add('visible');
+    const winH = window.innerHeight;
+    elements.forEach((el: HTMLElement) => {
+      if (el.getBoundingClientRect().top < winH - Travel.SCROLL_VISIBILITY_OFFSET) {
+        el.classList.add('visible');
       }
     });
   }
 
   // Travel interaction methods
-  selectTravel(travel: TravelEntity) {
-    this.selectedTravel = travel;
-    this.currentImageIndex = 0;
+  // ---- Modal interaction -----------------------------------
+  selectTravel(travel: TravelEntity): void { this.selectedTravel = travel; this.currentImageIndex = 0; }
+
+  closeModal(): void { this.selectedTravel = null; this.currentImageIndex = 0; }
+
+  nextImage(): void {
+    if (!this.selectedTravel?.images?.length) return;
+    this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedTravel.images.length;
   }
 
-  closeModal() {
-    this.selectedTravel = null;
-    this.currentImageIndex = 0;
-  }
-
-  nextImage() {
-    if (this.selectedTravel && this.selectedTravel.images && this.selectedTravel.images.length > 0) {
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.selectedTravel.images.length;
-    }
-  }
-
-  prevImage() {
-    if (this.selectedTravel && this.selectedTravel.images && this.selectedTravel.images.length > 0) {
-      this.currentImageIndex = this.currentImageIndex === 0 
-        ? this.selectedTravel.images.length - 1 
-        : this.currentImageIndex - 1;
-    }
+  prevImage(): void {
+    if (!this.selectedTravel?.images?.length) return;
+    this.currentImageIndex = this.currentImageIndex === 0
+      ? this.selectedTravel.images.length - 1
+      : this.currentImageIndex - 1;
   }
 
   // Helper methods
+  // ---- Formatting & mapping helpers ------------------------
   formatDate(date: Date | string | null | undefined): string {
     if (!date) return 'Date not available';
-    
-    try {
-      const validDate = new Date(date);
-      if (isNaN(validDate.getTime())) {
-        return 'Invalid date';
-      }
-      
-      return new Intl.DateTimeFormat('en-US', { 
-        year: 'numeric', 
-        month: 'long',
-        day: 'numeric'
-      }).format(validDate);
-    } catch (error) {
-      console.warn('Error formatting date:', date, error);
-      return 'Date unavailable';
-    }
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return 'Invalid date';
+    return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
   }
 
   getCountryFlag(country: string): string {
@@ -220,13 +211,22 @@ export class Travel implements OnInit, OnDestroy {
     return flagMap[lowerCountry] || flagMap['default'];
   }
 
-  getTravelStats() {
-    return {
-      totalCountries: this.visitedCountries.length,
-      totalTrips: this.travels.length,
-      totalDays: this.travels.reduce((sum, travel) => sum + (travel.duration || 0), 0),
-      featuredTrips: this.featuredTravels.length
-    };
+  /**
+   * Backwards compatibility helper for template bindings still using getTravelStats().
+   * Prefer accessing travelStats directly where feasible.
+   */
+  getTravelStats(): { totalCountries: number; totalTrips: number; totalDays: number; featuredTrips: number } {
+    if (!this.travelStats) {
+      // Defensive: compute minimal subset on demand
+      return {
+        totalCountries: this.visitedCountries.length,
+        totalTrips: this.travels.length,
+        totalDays: this.travels.reduce((s, t) => s + (t.duration || 0), 0),
+        featuredTrips: this.featuredTravels.length
+      };
+    }
+    const { totalCountries, totalTravels, totalDays } = this.travelStats;
+    return { totalCountries, totalTrips: totalTravels, totalDays, featuredTrips: this.featuredTravels.length };
   }
 
   getHobbyIcon(category: string): string {
@@ -247,57 +247,63 @@ export class Travel implements OnInit, OnDestroy {
     return categoryMap[category.toLowerCase()] || categoryMap['default'];
   }
 
-  trackByTravel(index: number, travel: TravelEntity): string {
-    return travel.id;
-  }
+  trackByTravel(_: number, travel: TravelEntity): string { return travel.id; }
 
-  trackByHobby(index: number, hobby: Hobby): string {
-    return hobby.id;
-  }
+  trackByHobby(_: number, hobby: Hobby): string { return hobby.id; }
 
-  getCountryTripCount(country: string): number {
-    return this.travels.filter(travel => travel.country === country).length;
-  }
+  getCountryTripCount(country: string): number { return this.travels.filter(t => t.country === country).length; }
 
-  getCountryTripText(country: string): string {
-    const count = this.getCountryTripCount(country);
-    return count === 1 ? 'trip' : 'trips';
-  }
+  getCountryTripText(country: string): string { return this.getCountryTripCount(country) === 1 ? 'trip' : 'trips'; }
 
   // Slideshow methods
-  private initializeSlideshows() {
-    // Clear existing intervals
-    Object.values(this.slideshowIntervals).forEach(interval => {
-      if (interval) clearInterval(interval);
-    });
-    this.slideshowIntervals = {};
-    this.currentImageIndices = {};
-
-    // Initialize slideshow for each travel card
-    this.travels.forEach((travel, cardIndex) => {
-      if (travel.images && travel.images.length > 1) {
-        this.currentImageIndices[cardIndex] = 0;
-        this.startSlideshow(cardIndex, travel.images.length);
+  // ---- Slideshow logic -------------------------------------
+  private initializeSlideshows(): void {
+    this.clearSlideshows();
+    this.travels.forEach((t, idx) => {
+      if ((t.images?.length || 0) > 1) {
+        this.currentImageIndices[idx] = 0;
+        this.startSlideshow(idx, t.images!.length);
       }
     });
   }
 
-  private startSlideshow(cardIndex: number, imageCount: number) {
+  private clearSlideshows(): void {
+    Object.values(this.slideshowIntervals).forEach(interval => interval && clearInterval(interval));
+    this.slideshowIntervals = {};
+    this.currentImageIndices = {};
+  }
+
+  private startSlideshow(cardIndex: number, imageCount: number): void {
     this.slideshowIntervals[cardIndex] = setInterval(() => {
       this.currentImageIndices[cardIndex] = (this.currentImageIndices[cardIndex] + 1) % imageCount;
-    }, this.SLIDESHOW_INTERVAL);
+    }, Travel.SLIDESHOW_INTERVAL_MS);
   }
 
   getCurrentImage(travel: TravelEntity, cardIndex: number): string {
-    if (!travel.images || travel.images.length === 0) {
-      return '/assets/images/placeholder-travel.jpg';
-    }
-    
-    const currentIndex = this.currentImageIndices[cardIndex] || 0;
-    return travel.images[currentIndex] || '/assets/images/placeholder-travel.jpg';
+    if (!travel.images?.length) return '/assets/images/placeholder-travel.jpg';
+    const idx = this.currentImageIndices[cardIndex] ?? 0;
+    return travel.images[idx] || '/assets/images/placeholder-travel.jpg';
   }
 
-  getCurrentImageIndex(cardIndex: number): number {
-    return this.currentImageIndices[cardIndex] || 0;
-  }
+  getCurrentImageIndex(cardIndex: number): number { return this.currentImageIndices[cardIndex] ?? 0; }
+}
+
+// ---- Internal Interfaces ------------------------------------
+interface TravelStats {
+  totalTravels: number;
+  totalCountries: number;
+  totalCities: number;
+  totalDays: number;
+  countriesVisited: string[];
+  citiesVisited: string[];
+  averageTripDuration: number;
+}
+
+interface HobbyStats {
+  totalHobbies: number;
+  categories: number; // count of unique categories
+  categoryBreakdown: Record<string, number>;
+  featuredHobbies: number;
+  hobbiesWithAchievements: number;
+  totalAchievements: number;
 }

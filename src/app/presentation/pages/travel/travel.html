@@ -1,5 +1,21 @@
-<div class="travel-page" *ngIf="!isLoading; else loadingTemplate">
-  <!-- Hero Section with World Map -->
+<!--
+  Travel Page Template
+  -------------------------------------------------------------------
+  Sections:
+    1. Hero (map + stats / skeleton)
+    2. Countries visited grid
+    3. Featured travels (image cards + slideshow indicators)
+    4. Timeline (all travels)
+    5. Hobbies & interests
+    6. Detail modal (selected travel)
+    7. Skeleton templates (ng-template fallbacks per section)
+  Notes:
+    - Loading state handled per section via *ngIf + skeleton template
+    - Avoids full-page flash and ensures perceived performance
+    - getTravelStats() kept for backward template compatibility; prefer travelStats direct.
+-->
+<div class="travel-page" role="main">
+  <!-- Hero Section / World Map Background -->
   <section class="travel-hero">
     <div class="hero-background">
       <div class="parallax-bg world-map">
@@ -10,11 +26,11 @@
               <circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.3)"/>
             </pattern>
           </defs>
-          <!-- Simplified world continents -->
+          <!-- Simplified world continents (animated line drawing) -->
           <path d="M150,200 Q200,180 250,200 Q300,190 350,210 Q400,200 450,220 Q500,210 550,230 Q600,220 650,240 Q700,230 750,250 Q800,240 850,260" 
-                stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" class="continent-line"/>
+            stroke="rgba(255,255,255,0.65)" stroke-width="2" fill="none" class="continent-line line-1" pathLength="1000"/>
           <path d="M100,300 Q150,280 200,300 Q250,290 300,310 Q350,300 400,320 Q450,310 500,330" 
-                stroke="rgba(255,255,255,0.4)" stroke-width="2" fill="none" class="continent-line"/>
+            stroke="rgba(255,255,255,0.55)" stroke-width="2" fill="none" class="continent-line line-2" pathLength="1000"/> 
           <rect width="100%" height="100%" fill="url(#dotPattern)" opacity="0.3"/>
         </svg>
       </div>
@@ -47,7 +63,7 @@
           <span>Travel & Lifestyle</span>
         </div>
         
-        <h1 class="hero-title">
+        <h1 class="hero-title" aria-label="Travel and lifestyle experiences">
           <span class="title-line">Exploring the</span>
           <span class="title-line gradient-text">World</span>
         </h1>
@@ -56,45 +72,45 @@
           A collection of adventures, cultures discovered, and memories made around the globe
         </p>
 
-        <!-- Travel Stats -->
-        <div class="travel-stats" *ngIf="travels.length > 0">
-          <div class="stat-card">
-            <div class="stat-icon">🌍</div>
-            <div class="stat-content">
-              <span class="stat-number">{{ getTravelStats().totalCountries }}</span>
-              <span class="stat-label">Countries</span>
+        <!-- Travel Stats (uses derived travelStats; fallback skeleton) -->
+        <div class="travel-stats" *ngIf="travelStats as stats" aria-label="Travel statistics">
+            <div class="stat-card">
+              <div class="stat-icon">🌍</div>
+              <div class="stat-content">
+                <span class="stat-number">{{ stats.totalCountries }}</span>
+                <span class="stat-label">Countries</span>
+              </div>
             </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon">✈️</div>
-            <div class="stat-content">
-              <span class="stat-number">{{ getTravelStats().totalTrips }}</span>
-              <span class="stat-label">Trips</span>
+                
+            <div class="stat-card" aria-label="Total trips">
+              <div class="stat-icon">✈️</div>
+              <div class="stat-content">
+                <span class="stat-number">{{ stats.totalTravels }}</span>
+                <span class="stat-label">Trips</span>
+              </div>
             </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon">📅</div>
-            <div class="stat-content">
-              <span class="stat-number">{{ getTravelStats().totalDays }}</span>
-              <span class="stat-label">Days</span>
+                
+            <div class="stat-card" aria-label="Total days traveled">
+              <div class="stat-icon">📅</div>
+              <div class="stat-content">
+                <span class="stat-number">{{ stats.totalDays }}</span>
+                <span class="stat-label">Days</span>
+              </div>
             </div>
-          </div>
-          
-          <div class="stat-card">
-            <div class="stat-icon">⭐</div>
-            <div class="stat-content">
-              <span class="stat-number">{{ getTravelStats().featuredTrips }}</span>
-              <span class="stat-label">Featured</span>
+                
+            <div class="stat-card" aria-label="Featured trips count">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-content">
+                <span class="stat-number">{{ featuredTravels.length }}</span>
+                <span class="stat-label">Featured</span>
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Countries Visited -->
+  <!-- Countries Visited -------------------------------------------------- -->
   <section class="countries-section" *ngIf="visitedCountries.length > 0">
     <div class="container">
       <div class="section-header scroll-animate">
@@ -123,7 +139,7 @@
     </div>
   </section>
 
-  <!-- Featured Travels -->
+  <!-- Featured Travels -------------------------------------------------- -->
   <section class="featured-travels" *ngIf="featuredTravels.length > 0">
     <div class="container">
       <div class="section-header scroll-animate">
@@ -196,7 +212,7 @@
     </div>
   </section>
 
-  <!-- All Travels -->
+  <!-- All Travels Timeline --------------------------------------------- -->
   <section class="all-travels" *ngIf="travels.length > 0">
     <div class="container">
       <div class="section-header scroll-animate">
@@ -224,7 +240,7 @@
     </div>
   </section>
 
-  <!-- Hobbies & Interests -->
+  <!-- Hobbies & Interests ---------------------------------------------- -->
   <section class="hobbies-section" *ngIf="hobbies.length > 0">
     <div class="container">
       <div class="section-header scroll-animate">
@@ -272,7 +288,7 @@
   </section>
 </div>
 
-<!-- Travel Detail Modal -->
+<!-- Travel Detail Modal (conditional overlay) -->
 <div class="travel-modal" *ngIf="selectedTravel" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="closeModal()">×</button>
@@ -334,10 +350,4 @@
   </div>
 </div>
 
-<!-- Loading Template -->
-<ng-template #loadingTemplate>
-  <div class="loading-container">
-    <div class="loading-spinner"></div>
-    <p>Loading travel adventures...</p>
-  </div>
-</ng-template>
+<!-- Skeleton templates removed -->

@@ -1,168 +1,63 @@
-// Travel Page Styles
+// Travel Page Styles (skeleton system removed)
 
 .travel-page { min-height: 100vh; color: var(--text); }
 
-// Hero Section with World Map
+// Hero Section
 .travel-hero {
   position: relative;
-  background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
-  color: white;
   padding: 6rem 0 4rem;
+  background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+  color: #fff;
   overflow: hidden;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
 
   .hero-background {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 1;
 
-    .world-map {
+    .parallax-bg.world-map {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 120%;
-      height: 120%;
-      opacity: 0.1;
+      inset: 0;
+      width: 110%;
+      height: 110%;
+      left: -5%;
+      top: -5%;
+      opacity: .35;
+      filter: blur(2px);
 
-      .world-svg {
-        width: 100%;
-        height: 100%;
-
-        .continent-line {
-          animation: drawPath 8s ease-in-out infinite;
-        }
-      }
+      .world-svg { width: 100%; height: 100%; }
     }
 
     .floating-icons {
       position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
 
       .travel-icon {
         position: absolute;
         font-size: 2rem;
-        opacity: 0.3;
+        opacity: 0.30;
         animation: floatAround 12s ease-in-out infinite;
 
-        &.icon-1 {
-          top: 15%;
-          left: 10%;
-          animation-delay: 0s;
-          font-size: 5rem;
-        }
-
-        &.icon-2 {
-          top: 25%;
-          right: 10%;
-          animation-delay: 1s;
-          font-size: 3rem;
-        }
-
-        &.icon-3 {
-          top: 30%;
-          left: 20%;
-          animation-delay: 2s;
-          font-size: 2rem;
-        }
-
-        &.icon-4 {
-          top: 20%;
-          right: 25%;
-          animation-delay: 3s;
-          font-size: 2rem;
-        }
-
-        &.icon-5 {
-          bottom: 10%;
-          right: 5%;
-          animation-delay: 3s;
-          font-size: 4rem;
-        }
-
-        &.icon-6 {
-          bottom: 15%;
-          left: 15%;
-          animation-delay: 2s;
-          font-size: 4rem;
-        }
-
-        &.icon-7 {
-          top: 50%;
-          right: 25%;
-          animation-delay: 1s;
-          font-size: 1.5rem;
-        }
-
-        &.icon-8 {
-          bottom: 40%;
-          left: 5%;
-          animation-delay: 0s;
-          font-size: 1.5rem;
-        }
-
-        &.icon-9 {
-          bottom: 20%;
-          right: 15%;
-          animation-delay: 2s;
-          font-size: 3.5rem;
-        }
-
-        &.icon-10 {
-          top: 20%;
-          left: 50%;
-          animation-delay: 6s;
-          font-size: 3.5rem;
-        }
-
-        &.icon-11 {
-          top: 40%;
-          right: 35%;
-          animation-delay: 0s;
-          font-size: 3rem;
-        }
-
-        &.icon-12 {
-          top: 40%;
-          left: 35%;
-          animation-delay: 0s;
-          font-size: 4.5rem;
-        }
-
-        &.icon-13 {
-          top: 50%;
-          left: 50%;
-          animation-delay: 8s;
-          font-size: 3rem;
-        }
-
-        &.icon-14 {
-          bottom: 1%;
-          left: 25%;
-          animation-delay: 5s;
-          font-size: 3.5rem;
-        }
-
-        &.icon-15 {
-          bottom: 1%;
-          right: 25%;
-          animation-delay: 2s;
-          font-size: 3rem;
-        }
-
-        &.icon-16 {
-          top: 5px;
-          right: 50%;
-          animation-delay: 3s;
-          font-size: 1.5rem;
-        }
+        &.icon-1 { top: 15%; left: 10%; animation-delay: 0s; font-size: 5rem; }
+        &.icon-2 { top: 25%; right: 10%; animation-delay: 1s; font-size: 3rem; }
+        &.icon-3 { top: 30%; left: 20%; animation-delay: 2s; font-size: 2rem; }
+        &.icon-4 { top: 20%; right: 25%; animation-delay: 3s; font-size: 2rem; }
+        &.icon-5 { bottom: 10%; right: 5%; animation-delay: 3s; font-size: 4rem; }
+        &.icon-6 { bottom: 15%; left: 15%; animation-delay: 2s; font-size: 4rem; }
+        &.icon-7 { top: 50%; right: 25%; animation-delay: 1s; font-size: 1.5rem; }
+        &.icon-8 { bottom: 40%; left: 5%; animation-delay: 0s; font-size: 1.5rem; }
+        &.icon-9 { bottom: 20%; right: 15%; animation-delay: 2s; font-size: 3.5rem; }
+        &.icon-10 { top: 20%; left: 50%; animation-delay: 6s; font-size: 3.5rem; }
+        &.icon-11 { top: 40%; right: 35%; animation-delay: 0s; font-size: 3rem; }
+        &.icon-12 { top: 40%; left: 35%; animation-delay: 0s; font-size: 4.5rem; }
+        &.icon-13 { top: 50%; left: 50%; animation-delay: 8s; font-size: 3rem; }
+        &.icon-14 { bottom: 1%; left: 25%; animation-delay: 5s; font-size: 3.5rem; }
+        &.icon-15 { bottom: 1%; right: 25%; animation-delay: 2s; font-size: 3rem; }
+        &.icon-16 { top: 5px; right: 50%; animation-delay: 3s; font-size: 1.5rem; }
       }
     }
   }
@@ -195,16 +90,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.10);
     backdrop-filter: blur(10px);
     padding: 0.75rem 1.5rem;
     border-radius: 50px;
     margin-bottom: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.20);
 
-    .badge-icon {
-      font-size: 1.2rem;
-    }
+    .badge-icon { font-size: 1.2rem; }
   }
 
   .hero-title {
@@ -213,9 +106,7 @@
     margin-bottom: 1.5rem;
     line-height: 1.2;
 
-    .title-line {
-      display: block;
-    }
+    .title-line { display: block; }
 
     .gradient-text {
       background: linear-gradient(45deg, #ffd700, #ffb347);
@@ -224,9 +115,7 @@
       background-clip: text;
     }
 
-    @media (max-width: 768px) {
-      font-size: 2.5rem;
-    }
+    @media (max-width: 768px) { font-size: 2.5rem; }
   }
 
   .hero-description {
@@ -254,42 +143,46 @@
       border: 1px solid rgba(255, 255, 255, 0.2);
       text-align: center;
       transition: all 0.3s ease;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
 
-      &:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.15);
-      }
+      &:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.15); }
 
-      .stat-icon {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
+      .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
 
       .stat-content {
         .stat-number {
           display: block;
+          opacity: 0;
+          transform: translateY(30px);
+          animation: travelStatRise .7s cubic-bezier(.21,.8,.35,1) forwards;
           font-size: 2rem;
           font-weight: 700;
           color: #ffd700;
           margin-bottom: 0.25rem;
         }
 
-        .stat-label {
-          display: block;
-          font-size: 0.9rem;
-          opacity: 0.8;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
+        .stat-label { display: block; font-size: 0.9rem; opacity: .8; text-transform: uppercase; letter-spacing: 1px; }
       }
     }
 
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-    }
+    @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   }
 }
+
+// Animated world map lines (placed outside so it targets actual SVG paths inside .parallax-bg)
+.travel-hero .parallax-bg.world-map .continent-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawErase 14s linear infinite;
+}
+.travel-hero .parallax-bg.world-map .continent-line.line-2 { animation-delay: 3s; }
+
+// Stagger stat-number rise (first four only)
+.travel-hero .travel-stats .stat-card:nth-child(1) .stat-number { animation-delay: .05s; }
+.travel-hero .travel-stats .stat-card:nth-child(2) .stat-number { animation-delay: .15s; }
+.travel-hero .travel-stats .stat-card:nth-child(3) .stat-number { animation-delay: .25s; }
+.travel-hero .travel-stats .stat-card:nth-child(4) .stat-number { animation-delay: .35s; }
+// Section Headers
 
 // Section Headers
 .section-header {
@@ -1096,6 +989,23 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+// Travel hero stat rise animation
+@keyframes travelStatRise {
+  0% { opacity: 0; transform: translateY(30px) scale(.97); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// Draw then erase effect for map lines
+@keyframes drawErase {
+  0% { stroke-dashoffset: 1000; opacity: 0; }
+  5% { opacity: .9; }
+  40% { stroke-dashoffset: 0; opacity: 1; }
+  60% { stroke-dashoffset: 0; opacity: 1; }
+  85% { stroke-dashoffset: 1000; opacity: .9; }
+  100% { stroke-dashoffset: 1000; opacity: 0; }
 }
 
 @keyframes spin {

@@ -1,7 +1,7 @@
 <div class="projects-page">
-  <!-- Modern Hero Section -->
-  <section class="hero-section">
-    <!-- Animated Background -->
+  <!-- Projects Hero Section (enhanced to mirror travel page aesthetics) -->
+  <section class="hero-section" aria-labelledby="projects-hero-title">
+    <!-- Animated Background / existing geometric shapes retained -->
     <div class="hero-animation">
       <div class="floating-shapes">
         <div class="shape shape-circle shape-1"></div>
@@ -20,20 +20,42 @@
 
     <div class="container">
       <div class="hero-content">
-        <h1 class="hero-title">Projects</h1>
-        <p class="hero-description">Exploring ideas through code and design</p>
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="number">{{ projects.length }}</span>
-            <span class="label">Projects</span>
+        <div class="hero-badge" aria-label="Projects overview">
+          <span class="badge-icon">🛠️</span>
+          <span>Projects & Builds</span>
+        </div>
+
+        <h1 id="projects-hero-title" class="hero-title" aria-label="Projects portfolio">
+          <span class="title-line">Crafting</span>
+          <span class="title-line gradient-text">Digital Solutions</span>
+        </h1>
+
+        <p class="hero-description">
+          Exploring ideas through code, design, experimentation & continuous iteration
+        </p>
+
+        <!-- Stats Grid -->
+        <div class="hero-stats" aria-label="Project statistics" *ngIf="projects">
+          <div class="stat-card">
+            <div class="stat-icon">📦</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ projects.length }}</span>
+              <span class="stat-label">Projects</span>
+            </div>
           </div>
-          <div class="stat">
-            <span class="number">{{ getCompletedProjectsCount() }}</span>
-            <span class="label">Completed</span>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ getCompletedProjectsCount() }}</span>
+              <span class="stat-label">Completed</span>
+            </div>
           </div>
-          <div class="stat">
-            <span class="number">{{ featuredProjects.length }}</span>
-            <span class="label">Featured</span>
+          <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+              <span class="stat-number">{{ featuredProjects.length }}</span>
+              <span class="stat-label">Featured</span>
+            </div>
           </div>
         </div>
       </div>
