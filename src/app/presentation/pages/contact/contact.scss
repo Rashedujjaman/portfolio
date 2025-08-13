@@ -182,7 +182,7 @@
     .form-group {
       margin-bottom: 1.5rem;
 
-  label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text); font-size: 0.95rem; }
+      label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text); font-size: 0.95rem; }
 
       .form-control {
         width: 100%;
@@ -192,6 +192,8 @@
         font-size: 1rem;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
         box-sizing: border-box;
+        background-color: var(--bg);
+        color: var(--text-muted);
 
         &:focus {
           outline: none;
@@ -199,9 +201,9 @@
           box-shadow: 0 0 0 3px var(--ring);
         }
 
-  &.ng-invalid.ng-touched { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25); }
+        &.ng-invalid.ng-touched { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25); }
 
-  &::placeholder { color: var(--text-muted); }
+        &::placeholder { color: var(--text-muted); }
       }
 
       textarea.form-control {
@@ -221,7 +223,7 @@
     .form-actions {
       margin-top: 2rem;
 
-  .btn {
+      .btn {
         width: 100%;
         padding: 1rem 2rem;
         border: none;
@@ -233,7 +235,7 @@
 
         &.btn-primary {
           background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2));
-          color: var(--on-primary);
+          color: var(--primary);
 
           &:hover:not(:disabled) {
             filter: brightness(1.05);
@@ -260,9 +262,9 @@
       border-radius: 8px;
       font-weight: 500;
 
-  &.alert-success { background-color: rgba(34,197,94,.12); color: var(--on-success); border: 1px solid rgba(34,197,94,.35); }
+  &.alert-success { background-color: var(--success); color: var(--on-success); border: 1px solid rgba(34,197,94,.35); }
 
-  &.alert-error { background-color: rgba(239,68,68,.12); color: var(--on-danger); border: 1px solid rgba(239,68,68,.35); }
+  &.alert-error { background-color: var(--danger); color: var(--on-danger); border: 1px solid rgba(239,68,68,.35); }
     }
   }
 }

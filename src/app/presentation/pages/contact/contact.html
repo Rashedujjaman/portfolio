@@ -1,4 +1,4 @@
-<div class="contact-page" *ngIf="!isLoading; else loadingTemplate">
+<div class="contact-page">
   <!-- Hero Section -->
   <section class="contact-hero">
     <div class="container">
@@ -162,11 +162,3 @@
     </div>
   </section>
 </div>
-
-<!-- Loading Template -->
-<ng-template #loadingTemplate>
-  <div class="loading-container">
-    <div class="loading-spinner"></div>
-    <p>Loading contact information...</p>
-  </div>
-</ng-template>

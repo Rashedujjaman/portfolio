@@ -5,6 +5,9 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "functions": {
+    "source": "functions"
+  },
   "storage": {
     "rules": "storage.rules"
   },
@@ -16,6 +19,10 @@
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/sendContactEmail",
+        "function": "sendContactEmail"
+      },
       {
         "source": "**",
         "destination": "/index.html"

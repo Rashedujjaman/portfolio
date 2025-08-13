@@ -27,7 +27,8 @@ export class Experience implements OnInit {
   experienceStats: any = null;
   allSkills: string[] = [];
   skillsWithExperience: { skill: string; count: number; years?: number }[] = [];
-  isLoading = true;
+  // Removed full-page loading state; page renders immediately and sections guard themselves with *ngIf
+  // isLoading = true; // deprecated
   activeTimelineIndex = 0;
   hoveredSkill: string | null = null;
 
@@ -73,7 +74,7 @@ export class Experience implements OnInit {
     } catch (error) {
       console.error('Error loading experience data:', error);
     } finally {
-      this.isLoading = false;
+      // no-op: we no longer toggle a page-level isLoading flag
     }
   }
 

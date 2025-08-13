@@ -1,5 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface ContactForm {
   name: string;
@@ -22,6 +25,16 @@ export interface ContactSubmission extends ContactForm {
   providedIn: 'root'
 })
 export class SubmitContactFormUseCase {
+  private http = inject(HttpClient);
+
+  // Cloud Function endpoint path (adjust region if deployed elsewhere)
+  // Endpoint: for local dev hitting emulator or deployed function via Hosting rewrite.
+  // Adjust if using region; consider moving to environment config.
+  // Use relative path for proxy during development, absolute URL for production
+  private endpoint = environment.production 
+    ? (environment.api?.contactEmailUrl || 'https://us-central1-rdjportfolio.cloudfunctions.net/sendContactEmail')
+    : '/sendContactEmail';
+
   execute(contactForm: ContactForm): Observable<ContactSubmission> {
     // Validate form data
     if (!contactForm.name?.trim()) {
@@ -45,15 +58,10 @@ export class SubmitContactFormUseCase {
       status: 'pending'
     };
 
-    // In a real implementation, this would send to an API or email service
-    // For now, we'll simulate success
-    return new Observable(observer => {
-      setTimeout(() => {
-        console.log('Contact form submitted:', submission);
-        observer.next(submission);
-        observer.complete();
-      }, 1000);
-    });
+    // Send to backend email function with error handling
+    return this.http.post<{ success?: boolean; id?: string }>(this.endpoint, contactForm).pipe(
+      map(resp => ({ ...submission, id: resp.id || submission.id }))
+    );
   }
 
   private isValidEmail(email: string): boolean {

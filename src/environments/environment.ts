@@ -10,6 +10,10 @@ export const environment = {
     authDomain: 'rdjportfolio.firebaseapp.com',
     messagingSenderId: '993787135973',
     measurementId: 'your-actual-measurement-id'
+  },
+  api: {
+    // Direct Cloud Function URL (default region us-central1 unless changed)
+    contactEmailUrl: 'https://us-central1-rdjportfolio.cloudfunctions.net/sendContactEmail'
   }
 };
 

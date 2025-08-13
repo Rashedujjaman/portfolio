@@ -11,5 +11,8 @@ export const environment = {
     authDomain: 'rdjportfolio.firebaseapp.com',
     messagingSenderId: 'your-actual-sender-id', // Replace with your actual sender ID
     measurementId: 'your-actual-measurement-id' // Replace with your actual measurement ID (optional)
+  },
+  api: {
+    contactEmailUrl: 'https://us-central1-rdjportfolio.cloudfunctions.net/sendContactEmail'
   }
 };

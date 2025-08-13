@@ -144,7 +144,5 @@ export class Contact implements OnInit, OnDestroy {
     return iconMap[platform.toLowerCase()] || '🔗';
   }
 
-  get isLoading(): boolean {
-    return this.isLoadingProfile;
-  }
+  // Removed isLoading getter; page content now always renders with inline fallbacks
 }

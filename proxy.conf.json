@@ -1,0 +1,8 @@
+{
+  "/sendContactEmail": {
+    "target": "https://us-central1-rdjportfolio.cloudfunctions.net",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

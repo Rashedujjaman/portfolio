@@ -1,7 +1,79 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const nodemailer = require('nodemailer');
 
 admin.initializeApp();
+
+// SMTP transporter (using environment variables instead of deprecated functions.config())
+let transporter;
+function getTransporter() {
+  if (transporter) return transporter;
+  
+  // Use environment variables for SMTP config
+  const smtpConfig = {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for 587
+    auth: {
+      user: process.env.SMTP_USER || 'reza2001july@gmail.com',
+      pass: process.env.SMTP_PASS || 'lhos qptu ereb leod'
+    }
+  };
+  
+  if (!process.env.SMTP_PASS) {
+    console.warn('SMTP_PASS environment variable not set. Email sending may fail.');
+  }
+  
+  transporter = nodemailer.createTransport(smtpConfig);
+  return transporter;
+}
+
+// HTTP endpoint to send contact form email
+exports.sendContactEmail = functions.https.onRequest(async (req, res) => {
+  // Enhanced CORS headers
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.set('Access-Control-Max-Age', '86400');
+  
+  if (req.method === 'OPTIONS') { 
+    res.status(204).send(''); 
+    return; 
+  }
+  if (req.method !== 'POST') { 
+    res.status(405).json({ error: 'Method Not Allowed' }); 
+    return; 
+  }
+
+  try {
+    const { name, email, subject, message, phone, company } = req.body || {};
+    if (!name || !email || !subject || !message) {
+      res.status(400).json({ error: 'Missing required fields' });
+      return;
+    }
+
+    const mailOptions = {
+      from: `Portfolio Contact <${process.env.SMTP_FROM || process.env.SMTP_USER || 'reza2001july@gmail.com'}>`,
+      to: process.env.SMTP_TO || process.env.SMTP_USER || 'rashedujjaman.reza@gmail.com',
+      replyTo: email,
+      subject: `[Portfolio] ${subject}`,
+      text: `New contact form submission\n\nName: ${name}\nEmail: ${email}${phone ? '\nPhone: '+phone : ''}${company ? '\nCompany: '+company : ''}\n\nMessage:\n${message}`,
+      html: `<h2>New Contact Submission</h2>
+             <p><strong>Name:</strong> ${name}</p>
+             <p><strong>Email:</strong> ${email}</p>
+             ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
+             ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
+             <p><strong>Subject:</strong> ${subject}</p>
+             <p><strong>Message:</strong><br>${message.replace(/\n/g,'<br>')}</p>`
+    };
+
+    const info = await getTransporter().sendMail(mailOptions);
+    res.json({ success: true, id: info.messageId });
+  } catch (err) {
+    console.error('sendContactEmail error', err);
+    res.status(500).json({ error: 'Failed to send email', details: err.message });
+  }
+});
 
 // HTTP Cloud Function to set admin claims
 exports.setAdminClaim = functions.https.onCall(async (data, context) => {

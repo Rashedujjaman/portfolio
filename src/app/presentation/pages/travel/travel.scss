@@ -129,44 +129,56 @@
   }
 
   .travel-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
+    display:grid; 
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); 
+    gap:1.75rem; 
+    width:100%; 
+    max-width:760px; 
+  /* Using existing slideInUp keyframes (fadeInUp not defined in this file) */
+  animation: slideInUp 0.8s ease-out 0.2s both;
 
-    .stat-card {
-      background: var(--onGradient);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: center;
-      transition: all 0.3s ease;
-      animation: fadeInUp 0.8s ease-out 0.2s both;
-
-      &:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.15); }
-
-      .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-
-      .stat-content {
-        .stat-number {
-          display: block;
-          opacity: 0;
-          transform: translateY(30px);
-          animation: travelStatRise .7s cubic-bezier(.21,.8,.35,1) forwards;
-          font-size: 2rem;
-          font-weight: 700;
-          color: #ffd700;
-          margin-bottom: 0.25rem;
-        }
-
-        .stat-label { display: block; font-size: 0.9rem; opacity: .8; text-transform: uppercase; letter-spacing: 1px; }
-      }
+    .stat-card { background: var(--onGradient); backdrop-filter: blur(10px); border-radius: 24px; padding:1.4rem 1rem 1.2rem; text-align:center; border:1px solid rgba(255,255,255,0.18); position:relative; overflow:hidden; transition: transform .35s ease, background .35s ease; cursor:default; 
+      &:before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0) 70%); opacity:0; transition:opacity .4s ease; }
+      &:hover { transform:translateY(-6px); background:rgba(255,255,255,0.18); &:before{opacity:1;} }
+      .stat-icon { font-size:1.75rem; margin-bottom:.35rem; }
+      .stat-number { display:block; font-size:2rem; font-weight:700; color:#ffd700; line-height:1.1; }
+      .stat-label { display:block; font-size:.75rem; letter-spacing:1px; text-transform:uppercase; opacity:.85; font-weight:600; }
     }
+    // .stat-card {
+    //   background: var(--onGradient);
+    //   backdrop-filter: blur(10px);
+    //   border-radius: 24px;
+    //   padding: 1.4rem 1rem 1.2rem;
+    //   text-align: center;
+    //   border: 1px solid rgba(255,255,255,0.18);
+    //   position: relative;
+    //   overflow: hidden;
+    //   transition: transform .35s ease, background .35s ease;
+    //   cursor: default;
+    //   &:before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0) 70%); opacity:0; transition:opacity .4s ease; }
+    //   &:hover { transform:translateY(-6px); background:rgba(255,255,255,0.18); &:before{opacity:1;} }
+    //   .stat-icon { font-size:1.75rem; margin-bottom:.35rem; }
+    //   .stat-number { display:block; font-size:2rem; font-weight:700; color:#ffd700; line-height:1.1; }
+    //   .stat-label { display:block; font-size:.75rem; letter-spacing:1px; text-transform:uppercase; opacity:.85; font-weight:600; }
+    // }
 
-    @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    @media (max-width:600px){ grid-template-columns:repeat(2,1fr); gap:1rem; .stat-card{padding:1rem .75rem;} }
   }
+
+  // .hero-stats { 
+  //   display:grid; 
+  //   grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); 
+  //   gap:1.75rem; width:100%; max-width:760px; 
+  //   animation: fadeInUp 0.8s ease-out 0.2s both; 
+  // }
+
+  // .stat-card { background: var(--onGradient); backdrop-filter: blur(10px); border-radius: 24px; padding:1.4rem 1rem 1.2rem; text-align:center; border:1px solid rgba(255,255,255,0.18); position:relative; overflow:hidden; transition: transform .35s ease, background .35s ease; cursor:default; 
+  //   &:before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), rgba(255,255,255,0) 70%); opacity:0; transition:opacity .4s ease; }
+  //   &:hover { transform:translateY(-6px); background:rgba(255,255,255,0.18); &:before{opacity:1;} }
+  //   .stat-icon { font-size:1.75rem; margin-bottom:.35rem; }
+  //   .stat-number { display:block; font-size:2rem; font-weight:700; color:#ffd700; line-height:1.1; }
+  //   .stat-label { display:block; font-size:.75rem; letter-spacing:1px; text-transform:uppercase; opacity:.85; font-weight:600; }
+  // }
 }
 
 // Animated world map lines (placed outside so it targets actual SVG paths inside .parallax-bg)
@@ -174,14 +186,27 @@
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
   animation: drawErase 14s linear infinite;
+  stroke: rgba(255,255,255,0.6);
+  stroke-width: 2;
 }
 .travel-hero .parallax-bg.world-map .continent-line.line-2 { animation-delay: 3s; }
 
-// Stagger stat-number rise (first four only)
-.travel-hero .travel-stats .stat-card:nth-child(1) .stat-number { animation-delay: .05s; }
-.travel-hero .travel-stats .stat-card:nth-child(2) .stat-number { animation-delay: .15s; }
-.travel-hero .travel-stats .stat-card:nth-child(3) .stat-number { animation-delay: .25s; }
-.travel-hero .travel-stats .stat-card:nth-child(4) .stat-number { animation-delay: .35s; }
+// Real world outline animation
+.travel-hero .parallax-bg.world-map .world-outline .continent {
+  fill: rgba(255,255,255,0.05);
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: outlineDraw 12s ease-in-out infinite;
+}
+.travel-hero .parallax-bg.world-map .world-outline .continent.north-america { animation-delay: 0.2s; }
+.travel-hero .parallax-bg.world-map .world-outline .continent.south-america { animation-delay: 0.9s; }
+.travel-hero .parallax-bg.world-map .world-outline .continent.europe { animation-delay: 1.6s; }
+.travel-hero .parallax-bg.world-map .world-outline .continent.africa { animation-delay: 2.3s; }
+.travel-hero .parallax-bg.world-map .world-outline .continent.asia { animation-delay: 3.0s; }
+.travel-hero .parallax-bg.world-map .world-outline .continent.australia { animation-delay: 3.7s; }
+.travel-hero .parallax-bg.world-map .world-outline .continent.antarctica { animation-delay: 4.4s; }
+
+// Removed staggered rise animation to match Experience hero simplicity
 // Section Headers
 
 // Section Headers
@@ -991,12 +1016,6 @@
   }
 }
 
-// Travel hero stat rise animation
-@keyframes travelStatRise {
-  0% { opacity: 0; transform: translateY(30px) scale(.97); }
-  60% { opacity: 1; transform: translateY(-4px) scale(1.02); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
 
 // Draw then erase effect for map lines
 @keyframes drawErase {
@@ -1005,6 +1024,15 @@
   40% { stroke-dashoffset: 0; opacity: 1; }
   60% { stroke-dashoffset: 0; opacity: 1; }
   85% { stroke-dashoffset: 1000; opacity: .9; }
+  100% { stroke-dashoffset: 1000; opacity: 0; }
+}
+
+@keyframes outlineDraw {
+  0% { stroke-dashoffset: 1000; opacity: 0; }
+  10% { opacity: .85; }
+  40% { stroke-dashoffset: 0; opacity: 1; }
+  60% { stroke-dashoffset: 0; opacity: 1; }
+  90% { stroke-dashoffset: 1000; opacity: 0; }
   100% { stroke-dashoffset: 1000; opacity: 0; }
 }
 

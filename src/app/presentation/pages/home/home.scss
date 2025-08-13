@@ -2,6 +2,55 @@
   min-height: 100vh;
 }
 
+// --------------------------------------------------
+// Skeleton placeholders for hero dynamic data
+// --------------------------------------------------
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15) 25%, rgba(255,255,255,0.25) 37%, rgba(255,255,255,0.15) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+  &.skeleton-avatar { width: 140px; height: 140px; border-radius: 50%; margin-bottom: 1.25rem; }
+  &.skeleton-title { width: clamp(240px,40vw,520px); height: 48px; margin-bottom: 1rem; }
+  &.skeleton-subtitle { width: clamp(200px,32vw,380px); height: 24px; margin-bottom: 1.25rem; }
+  &.skeleton-text { width: clamp(260px,46vw,640px); height: 14px; margin-bottom: 8px; &:last-child{width: clamp(200px,32vw,420px);} }
+  &.skeleton-social { width: 46px; height: 46px; border-radius: 50%; margin-right: 12px; }
+}
+
+.social-links-skeleton { display: flex; margin-top: 1.25rem; }
+
+// Inline overlay group so actual text doesn't shift
+.hero-inline-skeletons { 
+  position: absolute; 
+  top: 0; left: 0; right: 0; 
+  display: flex; 
+  flex-direction: column; 
+  pointer-events: none; 
+  mix-blend-mode: overlay; 
+  padding-top: 0.25rem;
+  .skeleton-title { position: relative; }
+}
+
+// Grouped hero skeleton layout
+.hero-skeleton-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  padding-top: 0.25rem;
+  .skeleton-avatar { margin-bottom: 1.25rem; }
+  .skeleton-title { margin-bottom: 0.75rem; }
+  .skeleton-subtitle { margin-bottom: 1rem; }
+  .skeleton-text { &:last-child { margin-bottom: 1.2rem; } }
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 // Hero Section
 .hero-section {
   background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);

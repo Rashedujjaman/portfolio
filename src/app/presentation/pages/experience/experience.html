@@ -1,4 +1,4 @@
-<div class="experience-page" *ngIf="!isLoading; else loadingTemplate">
+<div class="experience-page">
   <!-- Hero Section -->
   <section class="experience-hero">
     <div class="hero-background">
@@ -265,11 +265,3 @@
     </div>
   </section>
 </div>
-
-<!-- Loading Template -->
-<ng-template #loadingTemplate>
-  <div class="loading-container">
-    <div class="loading-spinner"></div>
-    <p>Loading experience data...</p>
-  </div>
-</ng-template>
