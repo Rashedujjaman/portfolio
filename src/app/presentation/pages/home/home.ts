@@ -167,4 +167,8 @@ export class Home implements OnInit, OnDestroy {
   get isLoading(): boolean {
     return this.isLoadingProfile || this.isLoadingProjects;
   }
+
+  isWebCategory(project: Project): boolean {
+    return project.category === 'web-application' || (project as any).category === 'web-application';
+  }
 }

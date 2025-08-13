@@ -85,32 +85,29 @@
       <p *ngIf="featuredProjects.length > 0">Here are some of my recent and notable projects</p>
       <p *ngIf="featuredProjects.length === 0">No featured projects available yet.</p>
       
-      <div class="projects-grid" *ngIf="featuredProjects.length > 0">
-        <div class="project-card" *ngFor="let project of featuredProjects">
-          <div class="project-image" *ngIf="project.images && project.images.length > 0">
-            <img [src]="project.images[0]" [alt]="project.title">
-          </div>
-          <div class="project-content">
-            <h3>{{ project.title }}</h3>
-            <p>{{ project.shortDescription }}</p>
-            <div class="project-tech">
-              <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 3)">
-                {{ tech }}
-              </span>
-              <span class="tech-more" *ngIf="project.technologies.length > 3">
-                +{{ project.technologies.length - 3 }} more
-              </span>
-            </div>
-            <div class="project-links">
-              <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="btn btn-sm btn-primary">
-                Live Demo
-              </a>
-              <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" class="btn btn-sm btn-outline">
-                GitHub
-              </a>
+      <div class="featured-list" *ngIf="featuredProjects.length > 0">
+        <article class="featured-row" *ngFor="let project of featuredProjects">
+          <div class="row-main">
+            <header class="row-header">
+              <div class="meta">
+                <span class="category-tag" [attr.data-category]="project.category">{{ project.category | titlecase }}</span>
+                <span class="status-badge" [attr.data-status]="project.status">{{ project.status | titlecase }}</span>
+                <span class="featured-pill" *ngIf="project.featured">Featured</span>
+              </div>
+              <h3 class="title">{{ project.title }}</h3>
+            </header>
+            <p class="desc">{{ project.shortDescription }}</p>
+            <div class="tech-tags">
+              <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 6)">{{ tech }}</span>
+              <span class="tech-more" *ngIf="project.technologies.length > 6">+{{ project.technologies.length - 6 }}</span>
             </div>
           </div>
-        </div>
+          <div class="row-actions">
+            <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" rel="noopener" class="btn btn-sm btn-primary">Live Demo</a>
+            <a *ngIf="project.githubUrl" [href]="project.githubUrl" target="_blank" rel="noopener" class="btn btn-sm btn-outline">GitHub</a>
+            <a routerLink="/projects" class="btn btn-sm btn-outline subtle">All Projects</a>
+          </div>
+        </article>
       </div>
 
       <div class="featured-actions" *ngIf="featuredProjects.length > 0">
@@ -126,15 +123,14 @@
       <div class="about-content">
         <div class="about-text">
           <p>{{ profile?.bio || 'A brief overview of my professional journey and interests' }}</p>
-          
           <div class="skills-preview" *ngIf="profile?.skills && profile!.skills!.length > 0">
             <h3>Core Skills</h3>
             <div class="skills-tags">
-              <span class="skill-tag" *ngFor="let skill of profile!.skills.slice(0, 6)">
+              <span class="skill-tag" *ngFor="let skill of profile!.skills.slice(0, 20)">
                 {{ skill }}
               </span>
-              <span class="skills-more" *ngIf="profile!.skills.length > 6">
-                +{{ profile!.skills.length - 6 }} more
+              <span class="skills-more" *ngIf="profile!.skills.length > 20">
+                +{{ profile!.skills.length - 20 }} more
               </span>
             </div>
           </div>
@@ -143,17 +139,16 @@
             <i class="location-icon">📍</i>
             <span>{{ profile!.location }}</span>
           </div>
-        </div>
-        
-        <div class="about-actions">
-          <button class="btn btn-primary" routerLink="/experience">View Experience</button>
-          <a *ngIf="profile?.resumeUrl" 
-             [href]="profile!.resumeUrl" 
-             target="_blank" 
-             class="btn btn-outline">
-            Download Resume
-          </a>
-        </div>
+          <div class="about-actions">
+            <button class="btn btn-primary" routerLink="/experience">View Experience</button>
+            <a *ngIf="profile?.resumeUrl" 
+                [href]="profile!.resumeUrl" 
+                target="_blank" 
+                class="btn btn-outline">
+              Download Resume
+            </a>
+          </div>
+        </div>      
       </div>
     </div>
   </section>
