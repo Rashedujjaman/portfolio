@@ -12,7 +12,8 @@
     "rules": "storage.rules"
   },
   "hosting": {
-    "public": "dist/portfolio-app",
+    "site": "rashedujjaman-reza",
+    "public": "dist/portfolio-app/browser",
     "ignore": [
       "firebase.json",
       "**/.*",

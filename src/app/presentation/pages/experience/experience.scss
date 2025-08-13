@@ -416,9 +416,9 @@
 
   .card-body {
     .experience-description {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-muted);
       margin-bottom: 1.5rem;
       text-align: justify;
     }
@@ -1012,41 +1012,296 @@
 @media (max-width: 768px) {
   .experience-hero {
     padding: 4rem 0 2rem;
+    min-height: 50vh;
+    
+    .container {
+      padding: 0 0.75rem;
+    }
+    
+    .hero-badge {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
     
     .hero-title {
       font-size: 2rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    
+    .hero-description {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      padding: 0 0.5rem;
     }
     
     .hero-stats {
       gap: 1.5rem;
+      padding: 0 0.5rem;
       
-      .stat-item .stat-number {
-        font-size: 2rem;
+      .stat-item {
+        .stat-number {
+          font-size: 2rem;
+        }
+        
+        .stat-label {
+          font-size: 0.8rem;
+        }
       }
     }
   }
 
-  .section-header .section-title {
-    font-size: 2rem;
+  .section-header {
+    margin-bottom: 2.5rem;
+    padding: 0 0.75rem;
+    
+    .section-title {
+      font-size: 2rem;
+      line-height: 1.2;
+    }
+    
+    .section-subtitle {
+      font-size: 0.95rem;
+      padding: 0 0.25rem;
+    }
   }
 
   .timeline-section {
     padding: 4rem 0;
+    
+    .container {
+      padding: 0 0.5rem;
+    }
+    
+    .timeline-container {
+      padding-left: 0.5rem;
+    }
+  }
+
+  .timeline-item {
+    margin-bottom: 3rem;
+    
+    &.alternate,
+    &:not(.alternate) {
+      .timeline-content {
+        margin-left: 3.5rem;
+        margin-right: 0;
+        width: calc(100% - 4rem);
+      }
+      
+      .timeline-dot {
+        left: 0.25rem;
+        right: auto;
+        width: 45px;
+        height: 45px;
+        
+        .dot-inner {
+          font-size: 1.1rem;
+          border-width: 3px;
+        }
+      }
+    }
+  }
+
+  .timeline-line {
+    left: 1.5rem;
+    width: 3px;
+  }
+
+  .experience-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+    
+    .card-header {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      
+      .company-logo {
+        width: 45px;
+        height: 45px;
+        flex-shrink: 0;
+      }
+      
+      .experience-meta {
+        flex: 1;
+        min-width: 0; // Allow text to wrap properly
+        
+        .position-title {
+          font-size: 1.1rem;
+          line-height: 1.3;
+          margin-bottom: 0.375rem;
+        }
+        
+        .company-name {
+          font-size: 0.95rem;
+          margin-bottom: 0.5rem;
+        }
+        
+        .experience-details {
+          font-size: 0.8rem;
+          gap: 0.25rem;
+          
+          .location, .duration {
+            word-break: break-word;
+          }
+        }
+      }
+      
+      .current-badge {
+        position: static;
+        flex-shrink: 0;
+        margin-left: auto;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+      }
+    }
+    
+    .card-body {
+      .experience-description {
+        font-size: 0.9rem;
+        text-align: left;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        text-align: justify;
+      }
+      
+      .achievements {
+        margin-bottom: 1rem;
+        
+        .achievements-title {
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+        
+        .achievement-item {
+          font-size: 0.8rem;
+          margin-bottom: 0.375rem;
+          line-height: 1.4;
+        }
+      }
+      
+      .technologies {
+        .tech-title {
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+        }
+        
+        .tech-tags {
+          gap: 0.25rem;
+          
+          .tech-tag {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+          }
+        }
+      }
+    }
   }
 
   .education-section {
     padding: 4rem 0;
+    
+    .container {
+      padding: 0 0.75rem;
+    }
+  }
+
+  .education-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0;
+  }
+
+  .education-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+    
+    .education-content {
+      .degree-title {
+        font-size: 1.1rem;
+        line-height: 1.3;
+      }
+      
+      .field-of-study {
+        font-size: 0.95rem;
+      }
+      
+      .institution {
+        font-size: 0.9rem;
+      }
+      
+      .education-meta {
+        flex-direction: column;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+      }
+      
+      .education-description {
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+    }
+    
+    .education-logo {
+      width: 35px;
+      height: 35px;
+    }
   }
 
   .skills-section {
     padding: 4rem 0;
+    
+    .container {
+      padding: 0 0.75rem;
+    }
+    
+    .skills-cloud {
+      gap: 0.5rem;
+      
+      .skill-bubble {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        min-width: auto;
+      }
+    }
   }
 
   .cta-section {
     padding: 4rem 0;
     
-    .cta-content h2 {
-      font-size: 2rem;
+    .container {
+      padding: 0 0.75rem;
+    }
+    
+    .cta-content {
+      text-align: center;
+      padding: 0 0.5rem;
+      
+      h2 {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+      }
+      
+      p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+      
+      .cta-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        
+        .btn {
+          width: 100%;
+          max-width: 280px;
+          padding: 0.75rem 1.5rem;
+        }
+      }
     }
   }
 }
