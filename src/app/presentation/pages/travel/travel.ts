@@ -205,6 +205,8 @@ export class Travel implements OnInit, OnDestroy {
       'china': '🇨🇳',
       'india': '🇮🇳',
       'australia': '🇦🇺',
+      'malaysia': '🇲🇾',
+      'nepal': '🇳🇵',
       'brazil': '🇧🇷',
       'thailand': '🇹🇭',
       'singapore': '🇸🇬',

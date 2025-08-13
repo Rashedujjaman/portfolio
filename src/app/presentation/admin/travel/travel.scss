@@ -10,21 +10,21 @@
     align-items: center;
     margin-bottom: 32px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border);
 
-    .back-btn {
-        background: #f5f5f5;
-        border: 1px solid #ddd;
+  .back-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
         padding: 8px 16px;
         border-radius: 6px;
         cursor: pointer;
         font-size: 14px;
-        color: #666;
+    color: var(--text-muted);
         transition: all 0.2s;
 
         &:hover {
-            background: #e9e9e9;
-            color: #333;
+      background: var(--hover);
+      color: var(--text);
         }
     }
 
@@ -32,7 +32,7 @@
         margin: 0;
         font-size: 2rem;
         font-weight: 600;
-        color: #333;
+        color: var(--text);
       }
 
   }
@@ -44,30 +44,27 @@
     margin-bottom: 32px;
 
     .stat-card {
-      background: white;
+      background: var(--surface);
       border-radius: 12px;
       padding: 24px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      border: 1px solid #f0f0f0;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-      }
+  &:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
       .stat-value {
         font-size: 2rem;
         font-weight: 600;
-        color: #1976d2;
+        color: var(--info);
         margin-bottom: 8px;
         line-height: 1;
       }
 
       .stat-label {
         font-size: 0.875rem;
-        color: #666;
+        color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-weight: 500;
@@ -86,15 +83,15 @@
     .loading-spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
+      border: 4px solid var(--border);
+      border-top: 4px solid var(--primary);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 16px;
     }
 
     p {
-      color: #666;
+      color: var(--text-muted);
       font-size: 1rem;
       margin: 0;
     }
@@ -106,16 +103,13 @@
     gap: 24px;
 
     .travel-card {
-      background: white;
+      background: var(--surface);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow-sm);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-      }
+  &:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
       .travel-image {
         position: relative;
@@ -163,7 +157,7 @@
           position: absolute;
           top: 12px;
           left: 12px;
-          background: rgba(0, 0, 0, 0.7);
+          background: rgba(0, 0, 0, 0.6);
           color: white;
           padding: 4px 8px;
           border-radius: 4px;
@@ -186,7 +180,7 @@
           border-radius: 6px;
           font-size: 0.75rem;
           font-weight: 600;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          box-shadow: var(--shadow-sm);
           z-index: 2;
         }
       }
@@ -201,7 +195,7 @@
             margin: 0 0 8px 0;
             font-size: 1.25rem;
             font-weight: 600;
-            color: #333;
+            color: var(--text);
             line-height: 1.3;
           }
 
@@ -209,7 +203,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #666;
+            color: var(--text-muted);
             font-size: 0.95rem;
 
             .country-flag {
@@ -227,7 +221,7 @@
             gap: 8px;
             margin-bottom: 8px;
             font-size: 0.9rem;
-            color: #555;
+            color: var(--text-muted);
 
             &:last-child {
               margin-bottom: 0;
@@ -245,7 +239,7 @@
 
           p {
             margin: 0;
-            color: #666;
+            color: var(--text-muted);
             line-height: 1.5;
             font-size: 0.95rem;
           }
@@ -259,8 +253,8 @@
             align-items: center;
 
             .highlight-tag {
-              background: #e3f2fd;
-              color: #1565c0;
+              background: rgba(59, 130, 246, .12);
+              color: var(--info);
               padding: 2px 8px;
               border-radius: 4px;
               font-size: 0.8rem;
@@ -268,7 +262,7 @@
             }
 
             .more-highlights {
-              color: #999;
+              color: var(--text-muted);
               font-size: 0.8rem;
               font-style: italic;
             }
@@ -280,10 +274,10 @@
         display: flex;
         gap: 8px;
         padding: 16px 20px;
-        border-top: 1px solid #f0f0f0;
-        background: #fafafa;
+        border-top: 1px solid var(--border);
+        background: var(--surface-2);
 
-        .btn {
+  .btn {
           flex: 1;
           text-align: center;
         }
@@ -294,7 +288,7 @@
   .empty-state {
     text-align: center;
     padding: 80px 32px;
-    color: #666;
+    color: var(--text-muted);
 
     .empty-icon {
       font-size: 4rem;
@@ -304,11 +298,11 @@
     h2 {
       font-size: 1.5rem;
       margin: 0 0 16px 0;
-      color: #333;
+      color: var(--text);
       font-weight: 500;
     }
 
-    p {
+  p {
       font-size: 1rem;
       margin: 0 0 32px 0;
       line-height: 1.5;
@@ -339,35 +333,26 @@
     }
 
     &.btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
+      color: var(--on-primary);
 
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-      }
+  &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     }
 
     &.btn-outline {
-      background: white;
-      color: #667eea;
-      border: 2px solid #667eea;
+      background: var(--surface);
+      color: var(--primary);
+      border: 2px solid var(--primary);
 
-      &:hover:not(:disabled) {
-        background: #667eea;
-        color: white;
-      }
+  &:hover:not(:disabled) { background: var(--primary); color: var(--on-primary); }
     }
 
     &.btn-danger-outline {
-      background: white;
-      color: #e53e3e;
-      border: 2px solid #e53e3e;
+      background: var(--surface);
+      color: var(--danger);
+      border: 2px solid var(--danger);
 
-      &:hover:not(:disabled) {
-        background: #e53e3e;
-        color: white;
-      }
+  &:hover:not(:disabled) { background: var(--danger); color: var(--on-danger); }
     }
   }
 }

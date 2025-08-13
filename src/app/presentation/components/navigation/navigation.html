@@ -34,11 +34,17 @@
          class="nav-link"
          (click)="closeMenu()">Contact</a>
     </div>
-    
-    <div class="nav-toggle" (click)="toggleMenu()">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
+
+    <div class="nav-actions">
+      <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="'Switch to ' + (theme === 'light' ? 'dark' : 'light') + ' mode'">
+        <span class="icon" *ngIf="theme === 'light'">🌙</span>
+        <span class="icon" *ngIf="theme === 'dark'">☀️</span>
+      </button>
+      <div class="nav-toggle" (click)="toggleMenu()">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
     </div>
   </div>
 </nav>

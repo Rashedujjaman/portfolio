@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Profile } from '../../../domain/entities/profile.entity';
 import { GetProfileUseCase } from '../../../domain/use-cases/profile.use-case';
+import { ThemeService, ThemeMode } from '../../../core/theme.service';
 
 @Component({
   selector: 'app-navigation',
@@ -17,11 +18,16 @@ export class Navigation implements OnInit, OnDestroy {
   
   isMenuOpen = false;
   profile: Profile | null = null;
+  theme: ThemeMode = 'light';
 
   private getProfileUseCase = inject(GetProfileUseCase);
 
+  constructor(private themeService: ThemeService) {}
+
   ngOnInit() {
     this.loadProfile();
+    this.theme = this.themeService.getTheme();
+    this.themeService.theme$.pipe(takeUntil(this.destroy$)).subscribe(t => this.theme = t);
   }
 
   ngOnDestroy() {
@@ -48,5 +54,9 @@ export class Navigation implements OnInit, OnDestroy {
 
   closeMenu() {
     this.isMenuOpen = false;
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }

@@ -1,14 +1,11 @@
 // Travel Page Styles
 
-.travel-page {
-  min-height: 100vh;
-  color: #333;
-}
+.travel-page { min-height: 100vh; color: var(--text); }
 
 // Hero Section with World Map
 .travel-hero {
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
   color: white;
   padding: 6rem 0 4rem;
   overflow: hidden;
@@ -59,36 +56,112 @@
           top: 15%;
           left: 10%;
           animation-delay: 0s;
+          font-size: 5rem;
         }
 
         &.icon-2 {
           top: 25%;
-          right: 15%;
-          animation-delay: 2s;
+          right: 10%;
+          animation-delay: 1s;
+          font-size: 3rem;
         }
 
         &.icon-3 {
-          bottom: 30%;
+          top: 30%;
           left: 20%;
-          animation-delay: 4s;
+          animation-delay: 2s;
+          font-size: 2rem;
         }
 
         &.icon-4 {
-          top: 60%;
+          top: 20%;
           right: 25%;
-          animation-delay: 6s;
+          animation-delay: 3s;
+          font-size: 2rem;
         }
 
         &.icon-5 {
-          bottom: 20%;
-          right: 10%;
-          animation-delay: 8s;
+          bottom: 10%;
+          right: 5%;
+          animation-delay: 3s;
+          font-size: 4rem;
         }
 
         &.icon-6 {
-          top: 40%;
+          bottom: 15%;
+          left: 15%;
+          animation-delay: 2s;
+          font-size: 4rem;
+        }
+
+        &.icon-7 {
+          top: 50%;
+          right: 25%;
+          animation-delay: 1s;
+          font-size: 1.5rem;
+        }
+
+        &.icon-8 {
+          bottom: 40%;
           left: 5%;
-          animation-delay: 10s;
+          animation-delay: 0s;
+          font-size: 1.5rem;
+        }
+
+        &.icon-9 {
+          bottom: 20%;
+          right: 15%;
+          animation-delay: 2s;
+          font-size: 3.5rem;
+        }
+
+        &.icon-10 {
+          top: 20%;
+          left: 50%;
+          animation-delay: 6s;
+          font-size: 3.5rem;
+        }
+
+        &.icon-11 {
+          top: 40%;
+          right: 35%;
+          animation-delay: 0s;
+          font-size: 3rem;
+        }
+
+        &.icon-12 {
+          top: 40%;
+          left: 35%;
+          animation-delay: 0s;
+          font-size: 4.5rem;
+        }
+
+        &.icon-13 {
+          top: 50%;
+          left: 50%;
+          animation-delay: 8s;
+          font-size: 3rem;
+        }
+
+        &.icon-14 {
+          bottom: 1%;
+          left: 25%;
+          animation-delay: 5s;
+          font-size: 3.5rem;
+        }
+
+        &.icon-15 {
+          bottom: 1%;
+          right: 25%;
+          animation-delay: 2s;
+          font-size: 3rem;
+        }
+
+        &.icon-16 {
+          top: 5px;
+          right: 50%;
+          animation-delay: 3s;
+          font-size: 1.5rem;
         }
       }
     }
@@ -174,7 +247,7 @@
     margin: 0 auto;
 
     .stat-card {
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--onGradient);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 1.5rem;
@@ -222,83 +295,83 @@
 .section-header {
   text-align: center;
   margin-bottom: 4rem;
+}
 
-  .section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: var(--primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
-  .section-subtitle {
-    font-size: 1.1rem;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto;
-  }
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--text);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 // Countries Section
-.countries-section {
-  padding: 6rem 0;
-  background: #f8fafc;
-}
+.countries-section { 
+  padding: 6rem 0; 
+  background: var(--bg); 
 
-.countries-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.country-card {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem 1rem;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: 2px solid transparent;
-  opacity: 0;
-  animation: slideInUp 0.6s ease-out forwards;
-
-  &:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
-    border-color: #667eea;
+  .countries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
   }
 
-  .country-flag {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    animation: bounce 2s ease-in-out infinite;
-  }
+  .country-card {
+    background: var(--surfaceContainer);
+    border-radius: 20px;
+    padding: 2rem 1rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+    opacity: 0;
+    animation: slideInUp 0.6s ease-out forwards;
 
-  .country-name {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 0.5rem;
-    text-transform: capitalize;
-  }
+    &:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+      border-color: var(--gradient-1);
+    }
 
-  .country-trips {
-    font-size: 0.9rem;
-    color: #667eea;
-    font-weight: 500;
+    .country-flag {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    .country-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      text-transform: capitalize;
+    }
+
+    .country-trips {
+      font-size: 0.9rem;
+      color: var(--secondary);
+      font-weight: 500;
+    }
   }
 }
 
 // Featured Travels Section
-.featured-travels {
-  padding: 6rem 0;
-  background: white;
+.featured-travels { 
+  padding: 6rem 0; 
+  background: var(--surface); 
 }
 
 .travels-grid {
@@ -315,13 +388,13 @@
 }
 
 .travel-card {
-  background: white;
+  background: var(--surface);
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   cursor: pointer;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   opacity: 0;
   animation: slideInUp 0.8s ease-out forwards;
 
@@ -332,7 +405,7 @@
 
   .travel-image {
     position: relative;
-    height: 250px;
+    max-height: 400px;
     overflow: hidden;
 
     .image-slideshow,
@@ -399,19 +472,27 @@
       z-index: 2;
 
       .travel-duration {
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
+        background: var(--surfaceContainer);
+        color: var(--onSurface);
         padding: 0.25rem 0.75rem;
         border-radius: 20px;
-        font-size: 0.8rem;
+        font-size: 1rem;
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .travel-flag {
-        background: rgba(255, 255, 255, 0.9);
-        padding: 0.25rem 0.5rem;
+        background: var(--surfaceContainer);
+        height: 50px;
+        width: 50px;
         border-radius: 50%;
-        font-size: 1.2rem;
+        font-size: 1rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
@@ -425,7 +506,7 @@
       .travel-title {
         font-size: 1.4rem;
         font-weight: 700;
-        color: #1f2937;
+      color: var(--text);
         margin-bottom: 0.5rem;
       }
 
@@ -433,13 +514,13 @@
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        color: #667eea;
+      color: var(--gradient-1);
         font-weight: 500;
       }
     }
 
     .travel-description {
-      color: #6b7280;
+    color: var(--text-muted);
       line-height: 1.6;
       margin-bottom: 1.5rem;
     }
@@ -462,7 +543,7 @@
 
       .more-highlights {
         font-size: 0.8rem;
-        color: #9ca3af;
+      color: var(--text-muted);
         font-style: italic;
         margin-top: 0.5rem;
       }
@@ -485,10 +566,7 @@
 }
 
 // All Travels Timeline
-.all-travels {
-  padding: 6rem 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-}
+.all-travels { padding: 6rem 0; background: var(--bg); }
 
 .timeline-travels {
   max-width: 800px;
@@ -503,7 +581,7 @@
     top: 0;
     bottom: 0;
     width: 2px;
-    background: linear-gradient(to bottom, #667eea, #764ba2);
+  background: linear-gradient(to bottom, var(--gradient-1), var(--gradient-2));
     border-radius: 1px;
 
     @media (max-width: 768px) {
@@ -525,7 +603,7 @@
     width: 1.5rem;
     height: 1.5rem;
     background: white;
-    border: 2px solid #667eea;
+  border: 2px solid var(--gradient-1);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -540,13 +618,13 @@
 
   .timeline-content {
     margin-left: 4rem;
-    background: white;
+  background: var(--surface);
     padding: 1.5rem;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 
     @media (max-width: 768px) {
       margin-left: 3rem;
@@ -554,42 +632,39 @@
 
     &:hover {
       transform: translateX(10px);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-      border-color: #667eea;
+  box-shadow: var(--shadow-md);
+  border-color: var(--gradient-1);
     }
 
-    .timeline-date {
+  .timeline-date {
       font-size: 0.8rem;
-      color: #667eea;
+  color: var(--gradient-1);
       font-weight: 600;
       margin-bottom: 0.5rem;
     }
 
-    .timeline-title {
+  .timeline-title {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #1f2937;
+  color: var(--text);
       margin-bottom: 0.25rem;
     }
 
-    .timeline-location {
+  .timeline-location {
       font-size: 0.9rem;
-      color: #6b7280;
+  color: var(--text-muted);
       margin-bottom: 0.25rem;
     }
 
-    .timeline-duration {
+  .timeline-duration {
       font-size: 0.8rem;
-      color: #9ca3af;
+  color: var(--text-muted);
     }
   }
 }
 
 // Hobbies Section
-.hobbies-section {
-  padding: 6rem 0;
-  background: white;
-}
+.hobbies-section { padding: 6rem 0; background: var(--surface); }
 
 .hobbies-grid {
   display: grid;
@@ -605,11 +680,11 @@
 }
 
 .hobby-card {
-  background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+  background: linear-gradient(145deg, var(--surface-1), var(--surface-2));
   border-radius: 20px;
   padding: 2rem;
   position: relative;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   transition: all 0.3s ease;
   opacity: 0;
   animation: slideInUp 0.8s ease-out forwards;
@@ -625,13 +700,13 @@
     left: 2rem;
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.2rem;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-sm);
   }
 
   .hobby-content {
@@ -640,12 +715,12 @@
     .hobby-name {
       font-size: 1.3rem;
       font-weight: 700;
-      color: #1f2937;
+  color: var(--text);
       margin-bottom: 0.75rem;
     }
 
     .hobby-description {
-      color: #4b5563;
+  color: var(--text-muted);
       line-height: 1.6;
       margin-bottom: 1rem;
     }
@@ -657,7 +732,7 @@
       font-size: 0.85rem;
 
       .hobby-category {
-        background: #667eea;
+        background: var(--gradient-1);
         color: white;
         padding: 0.25rem 0.75rem;
         border-radius: 12px;
@@ -772,7 +847,7 @@
 
       .modal-location {
         font-size: 1.1rem;
-        color: #667eea;
+        color: var(--gradient-1);
         font-weight: 500;
       }
     }
@@ -834,11 +909,11 @@
           transition: all 0.2s ease;
 
           &:hover {
-            border-color: #667eea;
+            border-color: var(--gradient-1);
           }
 
           &.active {
-            border-color: #667eea;
+            border-color: var(--gradient-1);
             opacity: 1;
           }
 
@@ -862,26 +937,26 @@
         }
       }
 
-      .modal-details {
+  .modal-details {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         margin-bottom: 2rem;
 
-        .detail-item {
+  .detail-item {
           display: flex;
           justify-content: space-between;
           padding: 0.75rem;
-          background: #f8fafc;
+          background: var(--surface-1);
           border-radius: 10px;
 
           .detail-label {
             font-weight: 600;
-            color: #374151;
+            color: var(--text);
           }
 
           .detail-value {
-            color: #667eea;
+            color: var(--gradient-1);
             font-weight: 500;
           }
         }
@@ -933,8 +1008,8 @@
   .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #e5e7eb;
-    border-top: 4px solid #667eea;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--gradient-1);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;

@@ -1,5 +1,5 @@
 .navbar {
-  background-color: #fff;
+  background-color: var(--surface);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -35,18 +35,18 @@
       height: 40px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #e2e8f0;
+      border: 2px solid var(--border);
       transition: border-color 0.3s ease;
 
       &:hover {
-        border-color: #667eea;
+        border-color: var(--gradient-1);
       }
     }
 
     .logo-text {
+      color: var(--text);
       font-size: 1.2rem;
       font-weight: 700;
-      color: #333;
       white-space: nowrap;
       
       @media (max-width: 768px) {
@@ -68,12 +68,12 @@
     left: -100%;
     top: 70px;
     flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.95);
+  background-color: var(--surface);
     backdrop-filter: blur(10px);
     width: 100%;
     text-align: center;
     transition: 0.3s;
-    box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 27px rgba(0, 0, 0, 0.2);
     padding: 2rem 0;
     min-height: calc(100vh - 70px);
     
@@ -84,7 +84,7 @@
 }
 
 .nav-link {
-  color: #333;
+  color: var(--text);
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
@@ -99,14 +99,14 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: linear-gradient(45deg, #667eea, #764ba2);
+  background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2));
     transition: all 0.3s ease;
     transform: translateX(-50%);
   }
   
   &:hover,
   &.active {
-    color: #667eea;
+  color: var(--primary);
     
     &::after {
       width: 100%;
@@ -137,15 +137,39 @@
   .bar {
     width: 25px;
     height: 3px;
-    background-color: #333;
+    background-color: var(--text);
     margin: 2px 0;
     transition: 0.3s;
     border-radius: 2px;
   }
   
   &:hover .bar {
-    background-color: #667eea;
+    background-color: var(--gradient-1);
   }
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.theme-toggle {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s ease, border-color .2s ease, transform .15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+
+  .icon { line-height: 1; font-size: 16px; }
+
+  &:hover { background: rgba(0,0,0,0.04); transform: translateY(-1px); }
 }
 
 // Responsive Design

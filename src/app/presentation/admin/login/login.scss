@@ -3,12 +3,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
   padding: 2rem;
 }
 
 .login-card {
-  background: white;
+  background: var(--surface);
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   padding: 3rem;
@@ -25,7 +25,7 @@
 }
 
 .login-subtitle {
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 2rem;
   font-size: 1rem;
 }
@@ -41,21 +41,21 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: var(--text);
   font-weight: 500;
 }
 
 .form-group input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid #e1e5e9;
+  border: 2px solid var(--border);
   border-radius: 5px;
   font-size: 1rem;
   transition: border-color 0.3s ease;
   
   &:focus {
     outline: none;
-    border-color: #667eea;
+  border-color: var(--gradient-1);
   }
   
   &.error {
@@ -73,7 +73,7 @@
 .login-btn {
   width: 100%;
   padding: 0.75rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
   color: white;
   border: none;
   border-radius: 5px;
@@ -96,11 +96,11 @@
   margin-top: 2rem;
   text-align: center;
   padding-top: 2rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
   
   p {
     margin-bottom: 1rem;
-    color: #666;
+  color: var(--text-muted);
     font-size: 0.9rem;
   }
   

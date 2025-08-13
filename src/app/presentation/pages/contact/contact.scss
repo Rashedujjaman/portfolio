@@ -1,11 +1,11 @@
 .contact-page {
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--bg);
 }
 
 // Hero Section
 .contact-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--gradient-1) 0%, var(--gradient-2) 100%);
   color: white;
   padding: 4rem 0;
   text-align: center;
@@ -18,7 +18,7 @@
       font-size: 3rem;
       font-weight: 700;
       margin-bottom: 1rem;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px var(--overlay);
 
       @media (max-width: 768px) {
         font-size: 2rem;
@@ -55,12 +55,12 @@
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: #333;
+  color: var(--text);
   }
 
   > p {
     font-size: 1.1rem;
-    color: #666;
+  color: var(--text-muted);
     line-height: 1.6;
     margin-bottom: 2rem;
   }
@@ -74,14 +74,14 @@
       gap: 1rem;
       margin-bottom: 2rem;
       padding: 1.5rem;
-      background: white;
+      background: var(--surface);
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-sm);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        box-shadow: var(--shadow-md);
       }
 
       .method-icon {
@@ -93,33 +93,28 @@
       .method-content {
         flex: 1;
 
-        h3 {
-          font-size: 1.2rem;
-          font-weight: 600;
-          margin-bottom: 0.5rem;
-          color: #333;
-        }
+  h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
 
         a {
-          color: #667eea;
+          color: var(--primary);
           text-decoration: none;
           font-weight: 500;
           font-size: 1rem;
 
           &:hover {
-            color: #5a67d8;
+            filter: brightness(1.05);
             text-decoration: underline;
           }
         }
 
         > span {
-          color: #333;
+          color: var(--text);
           font-weight: 500;
           font-size: 1rem;
         }
 
         p {
-          color: #666;
+          color: var(--text-muted);
           font-size: 0.9rem;
           margin: 0.5rem 0 0 0;
         }
@@ -128,12 +123,7 @@
   }
 
   .social-section {
-    h3 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: #333;
-    }
+  h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
 
     .social-links {
       display: grid;
@@ -145,18 +135,18 @@
         align-items: center;
         gap: 0.75rem;
         padding: 0.75rem 1rem;
-        background: white;
+        background: var(--surface);
         border-radius: 8px;
         text-decoration: none;
-        color: #333;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        color: var(--text);
+        box-shadow: var(--shadow-sm);
         transition: all 0.3s ease;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border);
 
         &:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-          border-color: #667eea;
+          box-shadow: var(--shadow-md);
+          border-color: var(--primary);
         }
 
         .social-icon {
@@ -180,30 +170,24 @@
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 2rem;
-    color: #333;
+  color: var(--text);
   }
 
   .contact-form {
-    background: white;
+    background: var(--surface);
     padding: 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
 
     .form-group {
       margin-bottom: 1.5rem;
 
-      label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: #333;
-        font-size: 0.95rem;
-      }
+  label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text); font-size: 0.95rem; }
 
       .form-control {
         width: 100%;
         padding: 0.75rem 1rem;
-        border: 2px solid #e2e8f0;
+        border: 2px solid var(--border);
         border-radius: 8px;
         font-size: 1rem;
         transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -211,18 +195,13 @@
 
         &:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px var(--ring);
         }
 
-        &.ng-invalid.ng-touched {
-          border-color: #e53e3e;
-          box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
-        }
+  &.ng-invalid.ng-touched { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25); }
 
-        &::placeholder {
-          color: #a0aec0;
-        }
+  &::placeholder { color: var(--text-muted); }
       }
 
       textarea.form-control {
@@ -242,7 +221,7 @@
     .form-actions {
       margin-top: 2rem;
 
-      .btn {
+  .btn {
         width: 100%;
         padding: 1rem 2rem;
         border: none;
@@ -253,13 +232,13 @@
         transition: all 0.3s ease;
 
         &.btn-primary {
-          background: linear-gradient(45deg, #667eea, #764ba2);
-          color: white;
+          background: linear-gradient(45deg, var(--gradient-1), var(--gradient-2));
+          color: var(--on-primary);
 
           &:hover:not(:disabled) {
-            background: linear-gradient(45deg, #5a67d8, #6b46c1);
+            filter: brightness(1.05);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: var(--shadow-md);
           }
 
           &:disabled {
@@ -276,22 +255,14 @@
   .status-message {
     margin-top: 1.5rem;
 
-    .alert {
+  .alert {
       padding: 1rem 1.5rem;
       border-radius: 8px;
       font-weight: 500;
 
-      &.alert-success {
-        background-color: #f0fff4;
-        color: #22543d;
-        border: 1px solid #9ae6b4;
-      }
+  &.alert-success { background-color: rgba(34,197,94,.12); color: var(--on-success); border: 1px solid rgba(34,197,94,.35); }
 
-      &.alert-error {
-        background-color: #fed7d7;
-        color: #742a2a;
-        border: 1px solid #fc8181;
-      }
+  &.alert-error { background-color: rgba(239,68,68,.12); color: var(--on-danger); border: 1px solid rgba(239,68,68,.35); }
     }
   }
 }
@@ -299,7 +270,7 @@
 // Additional Information
 .contact-additional {
   padding: 3rem 0;
-  background: white;
+  background: var(--surface);
 
   .additional-info {
     display: grid;
@@ -309,22 +280,13 @@
     .info-card {
       text-align: center;
       padding: 2rem 1.5rem;
-      background: #f8fafc;
+      background: var(--surface-2);
       border-radius: 12px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
 
-      h3 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: #333;
-      }
+  h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
 
-      p {
-        color: #666;
-        line-height: 1.6;
-        margin: 0;
-      }
+  p { color: var(--text-muted); line-height: 1.6; margin: 0; }
     }
   }
 }
@@ -341,17 +303,14 @@
   .loading-spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid #e2e8f0;
-    border-top: 4px solid #667eea;
+    border: 4px solid var(--border);
+    border-top: 4px solid var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
   }
 
-  p {
-    color: #666;
-    font-size: 1.1rem;
-  }
+  p { color: var(--text-muted); font-size: 1.1rem; }
 }
 
 @keyframes spin {

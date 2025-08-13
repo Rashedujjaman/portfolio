@@ -7,6 +7,80 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
 
+/* Theme variables */
+:root {
+  --bg: #fafafa;
+  --text: #1a1a1a;
+  --surface: #ffffff;
+  --surface-1: #fbfdff;
+  --surface-2: #f3f6fb;
+  --onSurface: #333333;
+  --surfaceContainer: #f0f0f0;
+  --onSurfaceContainer: #1c1c1c;
+  --muted: #666666;
+  --text-muted: #666666; /* alias for clarity */
+  --border: #e5e5e5;
+  --primary: #000000;
+  --secondary: #22c55e;
+  --tertiary: #06b6d4;
+  --on-primary: #ffffff;
+  --on-secondary: #052e16;
+  --on-tertiary: #042f2e;
+  --success: #22c55e;
+  --on-success: #052e16;
+  --warning: #f59e0b;
+  --on-warning: #3b2500;
+  --danger: #ef4444;
+  --on-danger: #3f0005;
+  --info: #3b82f6;
+  --on-info: #001a4d;
+  --gradient-1: #667eea;
+  --gradient-2: #764ba2;
+  --ring: rgba(102, 126, 234, 0.35);
+  --hover: rgba(15, 23, 42, 0.04);
+  --active: rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,.12);
+}
+
+[data-theme='dark'] {
+  --bg: #0b1220;
+  --text: #e5e7eb;
+  --surface: #0f172a;
+  --surface-1: #111a2e;
+  --surface-2: #0e1729;
+  --onSurface: #e5e7eb;
+  --surfaceContainer: #1f2937;
+  --onSurfaceContainer: #e5e7eb;
+  --muted: #9ca3af;
+  --text-muted: #94a3b8;
+  --border: #1f2937;
+  --primary: #ffffff;
+  --secondary: #34d399;
+  --tertiary: #22d3ee;
+  --on-primary: #0b1220;
+  --on-secondary: #06261a;
+  --on-tertiary: #072a2a;
+  --success: #22d3a3;
+  --on-success: #072a22;
+  --warning: #fbbf24;
+  --on-warning: #2a1a05;
+  --danger: #f87171;
+  --on-danger: #36070a;
+  --info: #60a5fa;
+  --on-info: #041228;
+  --gradient-1: #3a3d58;
+  --gradient-2: #3a2e52;
+  --onGradient: #ffffff1a;
+  --ring: rgba(124, 136, 255, 0.45);
+  --hover: rgba(148, 163, 184, 0.08);
+  --active: rgba(148, 163, 184, 0.14);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.35);
+  --shadow-md: 0 6px 16px rgba(0,0,0,.45);
+  --shadow-lg: 0 18px 40px rgba(0,0,0,.55);
+}
+
 // Global styles
 * {
   box-sizing: border-box;
@@ -18,6 +92,8 @@ html, body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
 }
 
 // Custom Material Design overrides
@@ -26,9 +102,17 @@ html, body {
 }
 
 .mat-mdc-icon-button {
-  color: rgba(0, 0, 0, 0.54);
+  color: var(--text-muted);
 }
 
 .mat-mdc-card {
   border-radius: 8px;
 }
+
+/* Utilities */
+.surface { background: var(--surface); }
+.surface-1 { background: var(--surface-1); }
+.surface-2 { background: var(--surface-2); }
+.text-muted { color: var(--text-muted); }
+.bordered { border: 1px solid var(--border); }
+.ring { outline: 0; box-shadow: 0 0 0 3px var(--ring); }
