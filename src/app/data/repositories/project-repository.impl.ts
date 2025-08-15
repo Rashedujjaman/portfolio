@@ -16,7 +16,7 @@ export class ProjectRepositoryImpl extends ProjectRepository {
   }
 
   getProjects(): Observable<Project[]> {
-    const orderBy = this.firebaseDataSource.createOrderByCondition('createdAt', 'desc');
+    const orderBy = this.firebaseDataSource.createOrderByCondition('startDate', 'desc');
     return this.firebaseDataSource.getAll<Project>(this.COLLECTION_NAME, [orderBy]);
   }
 
