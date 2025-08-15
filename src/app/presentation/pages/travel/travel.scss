@@ -323,7 +323,7 @@
 
   .travel-image {
     position: relative;
-    max-height: 400px;
+    height: 400px;
     overflow: hidden;
 
     .image-slideshow,
@@ -413,6 +413,10 @@
         justify-content: center;
       }
     }
+
+    @media (max-width: 768px) {
+      height: 200px;
+    }
   }
 
   .travel-content {
@@ -438,9 +442,10 @@
     }
 
     .travel-description {
-    color: var(--text-muted);
+      color: var(--text-muted);
       line-height: 1.6;
       margin-bottom: 1.5rem;
+      text-align: justify;
     }
 
     .travel-highlights {
@@ -479,6 +484,10 @@
         align-items: center;
         gap: 0.25rem;
       }
+    }
+
+    @media (max-width: 768px) {
+      padding: 1rem;
     }
   }
 }
