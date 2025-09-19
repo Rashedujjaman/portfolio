@@ -14,7 +14,15 @@
         <div class="shape shape-square shape-8"></div>
       </div>
       <div class="particles">
-        <div class="particle" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]"></div>
+        <div
+          class="particle"
+          *ngFor="
+            let i of [
+              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+              20
+            ]
+          "
+        ></div>
       </div>
     </div>
 
@@ -25,17 +33,26 @@
           <span>Projects & Builds</span>
         </div>
 
-        <h1 id="projects-hero-title" class="hero-title" aria-label="Projects portfolio">
+        <h1
+          id="projects-hero-title"
+          class="hero-title"
+          aria-label="Projects portfolio"
+        >
           <span class="title-line">Crafting</span>
           <span class="title-line gradient-text">Digital Solutions</span>
         </h1>
 
         <p class="hero-description">
-          Exploring ideas through code, design, experimentation & continuous iteration
+          Exploring ideas through code, design, experimentation & continuous
+          iteration
         </p>
 
         <!-- Stats Grid -->
-        <div class="hero-stats" aria-label="Project statistics" *ngIf="projects">
+        <div
+          class="hero-stats"
+          aria-label="Project statistics"
+          *ngIf="projects"
+        >
           <div class="stat-card">
             <div class="stat-icon">📦</div>
             <div class="stat-content">
@@ -70,7 +87,10 @@
           <label>Category</label>
           <select [(ngModel)]="selectedCategory" (change)="applyFilters()">
             <option value="all">All Categories</option>
-            <option *ngFor="let category of categories" [value]="category.value">
+            <option
+              *ngFor="let category of categories"
+              [value]="category.value"
+            >
               {{ category.label }}
             </option>
           </select>
@@ -78,17 +98,22 @@
         <div class="filter-group">
           <label>Status</label>
           <div class="status-filters">
-            <button 
-              *ngFor="let status of ['all', 'completed', 'in-progress', 'planned']"
+            <button
+              *ngFor="
+                let status of ['all', 'completed', 'in-progress', 'planned']
+              "
               class="status-btn"
               [class.active]="selectedStatus === status"
-              (click)="filterByStatus(status)">
-              {{ status === 'all' ? 'All' : (status | titlecase) }}
+              (click)="filterByStatus(status)"
+            >
+              {{ status === "all" ? "All" : (status | titlecase) }}
             </button>
           </div>
         </div>
         <div class="results-info">
-          {{ filteredProjects.length }} project{{ filteredProjects.length !== 1 ? 's' : '' }}
+          {{ filteredProjects.length }} project{{
+            filteredProjects.length !== 1 ? "s" : ""
+          }}
         </div>
       </div>
     </div>
@@ -97,7 +122,6 @@
   <!-- Projects Grid -->
   <section class="projects-section">
     <div class="container">
-      
       <!-- Loading State -->
       <div class="loading-state" *ngIf="isLoading">
         <div class="loading-animation">
@@ -107,102 +131,174 @@
       </div>
 
       <!-- Empty State -->
-      <div class="empty-state" *ngIf="!isLoading && filteredProjects.length === 0">
+      <div
+        class="empty-state"
+        *ngIf="!isLoading && filteredProjects.length === 0"
+      >
         <div class="empty-content">
           <div class="empty-icon">🔍</div>
           <h3>No projects found</h3>
-          <p>Try adjusting your filters or check back later for new projects.</p>
+          <p>
+            Try adjusting your filters or check back later for new projects.
+          </p>
           <!-- <button class="reset-btn" (click)="resetFilters()">Reset Filters</button> -->
         </div>
       </div>
 
       <!-- Projects List -->
-      <div class="projects-list" *ngIf="!isLoading && filteredProjects.length > 0">
-        <article class="project-item" *ngFor="let project of filteredProjects; let i = index">
-          
+      <div
+        class="projects-list"
+        *ngIf="!isLoading && filteredProjects.length > 0"
+      >
+        <article
+          class="project-item"
+          *ngFor="let project of filteredProjects; let i = index"
+        >
           <div>
-          <!-- Project Header -->
-          <header class="project-header">
-            <div class="project-meta">
-              <span class="category-tag" [attr.data-category]="project.category">
-                {{ getCategoryLabel(project.category) }}
-              </span>
-              <span class="featured-badge" *ngIf="project.featured">Featured</span>
-            </div>
-            <h3 class="project-title">{{ project.title }}</h3>
-            <p class="project-description">{{ project.shortDescription }}</p>
-          </header>
-
-          <!-- Project Details -->
-          <div class="project-details">
-            <div class="tech-stack">
-              <div class="tech-label">Tech Stack</div>
-              <div class="tech-tags">
-                <span class="tech-tag" *ngFor="let tech of project.technologies.slice(0, 6)">
-                  {{ tech }}
+            <!-- Project Header -->
+            <header class="project-header">
+              <div class="project-meta">
+                <span
+                  class="category-tag"
+                  [attr.data-category]="project.category"
+                >
+                  {{ getCategoryLabel(project.category) }}
                 </span>
-                <span class="tech-more" *ngIf="project.technologies.length > 6">
-                  +{{ project.technologies.length - 6 }}
-                </span>
+                <span class="featured-badge" *ngIf="project.featured"
+                  >Featured</span
+                >
               </div>
-            </div>
+              <h3 class="project-title">{{ project.title }}</h3>
+              <p class="project-description">{{ project.shortDescription }}</p>
+            </header>
 
-            <div class="project-info">
-              <div class="info-item">
-                <span class="info-label">Status</span>
-                <span class="status-badge" [attr.data-status]="project.status">
-                  {{ getStatusLabel(project.status) }}
-                </span>
+            <!-- Project Details -->
+            <div class="project-details">
+              <div class="tech-stack">
+                <div class="tech-label">Tech Stack</div>
+                <div class="tech-tags">
+                  <span
+                    class="tech-tag"
+                    *ngFor="let tech of project.technologies.slice(0, 6)"
+                  >
+                    {{ tech }}
+                  </span>
+                  <span
+                    class="tech-more"
+                    *ngIf="project.technologies.length > 6"
+                  >
+                    +{{ project.technologies.length - 6 }}
+                  </span>
+                </div>
               </div>
-              <div class="info-item" *ngIf="project.startDate">
-                <span class="info-label">Date</span>
-                <span class="info-value">{{ project.startDate | date:'MMM yyyy' }}</span>
+
+              <div class="project-info">
+                <div class="info-item">
+                  <span class="info-label">Status</span>
+                  <span
+                    class="status-badge"
+                    [attr.data-status]="project.status"
+                  >
+                    {{ getStatusLabel(project.status) }}
+                  </span>
+                </div>
+                <div class="info-item" *ngIf="project.startDate">
+                  <span class="info-label">Date</span>
+                  <span class="info-value">{{
+                    project.startDate | date : "MMM yyyy"
+                  }}</span>
+                </div>
               </div>
-            </div>
 
-            <div class="project-actions">
-              <a *ngIf="project.liveUrl" 
-                 [href]="project.liveUrl" 
-                 target="_blank" 
-                 class="action-btn primary"
-                 rel="noopener">
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <polyline points="15,3 21,3 21,9" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <line x1="10" y1="14" x2="21" y2="3" stroke="currentColor" stroke-width="2"/>
-                </svg>
-                Live Demo
-              </a>
-              
-              <a *ngIf="project.githubUrl" 
-                 [href]="project.githubUrl" 
-                 target="_blank" 
-                 class="action-btn secondary"
-                 rel="noopener">
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-                Source Code
-              </a>
+              <div class="project-actions">
+                <a
+                  *ngIf="project.liveUrl"
+                  [href]="project.liveUrl"
+                  target="_blank"
+                  class="action-btn primary"
+                  rel="noopener"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path
+                      d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      fill="none"
+                    />
+                    <polyline
+                      points="15,3 21,3 21,9"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      fill="none"
+                    />
+                    <line
+                      x1="10"
+                      y1="14"
+                      x2="21"
+                      y2="3"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                  </svg>
+                  Live Demo
+                </a>
 
-              <button *ngIf="!project.liveUrl && !project.githubUrl" 
-                      class="action-btn secondary" 
-                      disabled>
-                <svg viewBox="0 0 24 24" width="18" height="18">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" fill="none"/>
-                </svg>
-                Coming Soon
-              </button>
+                <a
+                  *ngIf="project.githubUrl"
+                  [href]="project.githubUrl"
+                  target="_blank"
+                  class="action-btn secondary"
+                  rel="noopener"
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <path
+                      d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      fill="none"
+                    />
+                  </svg>
+                  Source Code
+                </a>
+
+                <button
+                  *ngIf="!project.liveUrl && !project.githubUrl"
+                  class="action-btn secondary"
+                  disabled
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      fill="none"
+                    />
+                    <path
+                      d="M12 6v6l4 2"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      fill="none"
+                    />
+                  </svg>
+                  Coming Soon
+                </button>
+              </div>
             </div>
           </div>
-          </div>
-                    <!-- Project Visual -->
-          <div class="project-visual" [attr.data-category]="project.category" *ngIf="project.images && project.images.length > 0">
-            <div class="image-container"
-                 (mouseenter)="pauseAutoSlide(i)"
-                 (mouseleave)="resumeAutoSlide(i)">
-              <img 
+          <!-- Project Visual -->
+          <div
+            class="project-visual"
+            [attr.data-category]="project.category"
+            *ngIf="project.images && project.images.length > 0"
+          >
+            <div
+              class="image-container"
+              (mouseenter)="pauseAutoSlide(i)"
+              (mouseleave)="resumeAutoSlide(i)"
+            >
+              <img
                 *ngFor="let image of project.images; let imageIndex = index"
                 [src]="image"
                 [alt]="project.title + ' screenshot ' + (imageIndex + 1)"
@@ -210,33 +306,70 @@
                 class="project-image"
                 [class.active]="imageIndex === (currentSlides[i] || 0)"
                 (load)="onImageLoad($event, project)"
-                loading="lazy">
-              
+                loading="lazy"
+              />
+
               <!-- Edge Navigation Buttons -->
-              <button class="edge-nav prev" *ngIf="project.images.length > 1" (click)="previousSlide(i)" aria-label="Previous image">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <button
+                class="edge-nav prev"
+                *ngIf="project.images.length > 1"
+                (click)="previousSlide(i)"
+                aria-label="Previous image"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    d="M15 18l-6-6 6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
               </button>
-              <button class="edge-nav next" *ngIf="project.images.length > 1" (click)="nextSlide(i)" aria-label="Next image">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <button
+                class="edge-nav next"
+                *ngIf="project.images.length > 1"
+                (click)="nextSlide(i)"
+                aria-label="Next image"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18">
+                  <path
+                    d="M9 18l6-6-6-6"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
               </button>
 
               <!-- Compact Dots -->
               <div class="image-dots compact" *ngIf="shouldShowDots(project)">
-                <button 
+                <button
                   *ngFor="let img of project.images; let idx = index"
                   class="dot"
                   [class.active]="idx === (currentSlides[i] || 0)"
                   (click)="setActiveSlide(i, idx)"
-                  [attr.aria-label]="'View image ' + (idx + 1)">
-                </button>
+                  [attr.aria-label]="'View image ' + (idx + 1)"
+                ></button>
               </div>
 
               <!-- Progress Bar for many images -->
-              <div class="image-progress" *ngIf="shouldShowProgressBar(project)">
+              <div
+                class="image-progress"
+                *ngIf="shouldShowProgressBar(project)"
+              >
                 <div class="bar">
-                  <div class="fill" [style.width.%]="getSlideProgress(i, project)"></div>
+                  <div
+                    class="fill"
+                    [style.width.%]="getSlideProgress(i, project)"
+                  ></div>
                 </div>
-                <div class="count">{{ (currentSlides[i] || 0) + 1 }}/{{ project.images.length }}</div>
+                <div class="count">
+                  {{ (currentSlides[i] || 0) + 1 }}/{{ project.images.length }}
+                </div>
               </div>
             </div>
           </div>

@@ -1,31 +1,35 @@
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { GetProjectsUseCase } from '../../../domain/use-cases/project.use-case';
-import { Project, ProjectCategory, ProjectStatus } from '../../../domain/entities/project.entity';
+import {
+  Project,
+  ProjectCategory,
+  ProjectStatus,
+} from '../../../domain/entities/project.entity';
 
 @Component({
   selector: 'app-projects',
   imports: [CommonModule, FormsModule],
   templateUrl: './projects.html',
-  styleUrl: './projects.scss'
+  styleUrl: './projects.scss',
 })
 export class Projects implements OnInit, OnDestroy {
   projects: Project[] = [];
   featuredProjects: Project[] = [];
   filteredProjects: Project[] = [];
   isLoading = true;
-  
+
   // Slideshow tracking
   currentSlides: { [key: number]: number } = {};
-  
+
   // Image layout detection
   imageLayouts: { [key: string]: string } = {};
-  
+
   // Filters
   selectedCategory: string = 'all';
   selectedStatus: string = 'all';
-  
+
   // Categories for filtering
   categories = [
     { value: 'all', label: 'All Projects' },
@@ -34,7 +38,7 @@ export class Projects implements OnInit, OnDestroy {
     { value: 'desktop-app', label: 'Desktop Apps' },
     { value: 'api', label: 'APIs' },
     { value: 'library', label: 'Libraries' },
-    { value: 'other', label: 'Other' }
+    { value: 'other', label: 'Other' },
   ];
 
   private getProjectsUseCase = inject(GetProjectsUseCase);
@@ -48,14 +52,14 @@ export class Projects implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    Object.values(this.slideIntervals).forEach(id => clearInterval(id));
+    Object.values(this.slideIntervals).forEach((id) => clearInterval(id));
   }
 
   private loadProjects() {
     this.getProjectsUseCase.execute().subscribe({
       next: (projects) => {
         this.projects = projects;
-        this.featuredProjects = projects.filter(p => p.featured);
+        this.featuredProjects = projects.filter((p) => p.featured);
         this.filteredProjects = [...projects];
         this.isLoading = false;
         this.initializeAutoSlides();
@@ -63,7 +67,7 @@ export class Projects implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error loading projects:', error);
         this.isLoading = false;
-      }
+      },
     });
   }
 
@@ -112,17 +116,21 @@ export class Projects implements OnInit, OnDestroy {
     let filtered = [...this.projects];
 
     if (this.selectedCategory !== 'all') {
-      filtered = filtered.filter(project => project.category === this.selectedCategory);
+      filtered = filtered.filter(
+        (project) => project.category === this.selectedCategory
+      );
     }
 
     if (this.selectedStatus !== 'all') {
-      filtered = filtered.filter(project => project.status === this.selectedStatus);
+      filtered = filtered.filter(
+        (project) => project.status === this.selectedStatus
+      );
     }
 
     this.filteredProjects = filtered;
 
     // restart intervals after filtering
-    Object.values(this.slideIntervals).forEach(id => clearInterval(id));
+    Object.values(this.slideIntervals).forEach((id) => clearInterval(id));
     this.slideIntervals = {};
     this.initializeAutoSlides();
   }
@@ -135,9 +143,10 @@ export class Projects implements OnInit, OnDestroy {
   previousSlide(projectIndex: number, silent?: boolean) {
     const project = this.filteredProjects[projectIndex];
     if (!project?.images || project.images.length <= 1) return;
-    
+
     const currentSlide = this.currentSlides[projectIndex] ?? 0;
-    const newSlide = currentSlide === 0 ? project.images.length - 1 : currentSlide - 1;
+    const newSlide =
+      currentSlide === 0 ? project.images.length - 1 : currentSlide - 1;
     this.setActiveSlide(projectIndex, newSlide);
     if (!silent) this.restartSlideTimer(projectIndex);
   }
@@ -145,9 +154,10 @@ export class Projects implements OnInit, OnDestroy {
   nextSlide(projectIndex: number, silent?: boolean) {
     const project = this.filteredProjects[projectIndex];
     if (!project?.images || project.images.length <= 1) return;
-    
+
     const currentSlide = this.currentSlides[projectIndex] ?? 0;
-    const newSlide = currentSlide === project.images.length - 1 ? 0 : currentSlide + 1;
+    const newSlide =
+      currentSlide === project.images.length - 1 ? 0 : currentSlide + 1;
     this.setActiveSlide(projectIndex, newSlide);
     if (!silent) this.restartSlideTimer(projectIndex);
   }
@@ -163,7 +173,11 @@ export class Projects implements OnInit, OnDestroy {
   }
 
   shouldShowDots(project: Project): boolean {
-    return !!project.images && project.images.length > 1 && project.images.length <= this.dotDisplayLimit;
+    return (
+      !!project.images &&
+      project.images.length > 1 &&
+      project.images.length <= this.dotDisplayLimit
+    );
   }
 
   shouldShowProgressBar(project: Project): boolean {
@@ -194,7 +208,7 @@ export class Projects implements OnInit, OnDestroy {
 
   getImageClass(project: Project): string {
     const layout = this.detectImageLayout(project);
-    
+
     switch (layout) {
       case 'mobile-layout':
         return 'mobile-image';
@@ -208,7 +222,7 @@ export class Projects implements OnInit, OnDestroy {
   onImageLoad(event: Event, project: Project) {
     const img = event.target as HTMLImageElement;
     const aspectRatio = img.naturalWidth / img.naturalHeight;
-    
+
     // Determine layout based on aspect ratio
     let layout: string;
     if (aspectRatio < 0.8) {
@@ -226,9 +240,15 @@ export class Projects implements OnInit, OnDestroy {
     this.imageLayouts[project.id] = layout;
 
     // Update the container class dynamically
-    const container = img.closest('.project-image-container, .card-image-container');
+    const container = img.closest(
+      '.project-image-container, .card-image-container'
+    );
     if (container) {
-      container.classList.remove('mobile-layout', 'web-layout', 'adaptive-layout');
+      container.classList.remove(
+        'mobile-layout',
+        'web-layout',
+        'adaptive-layout'
+      );
       container.classList.add(layout);
     }
 
@@ -267,7 +287,7 @@ export class Projects implements OnInit, OnDestroy {
 
     // For card containers (smaller)
     const isCard = img.closest('.card-image-container');
-    const CARD_FRAME_PADDING_X = 16; // 8px left + 8px right  
+    const CARD_FRAME_PADDING_X = 16; // 8px left + 8px right
     const CARD_FRAME_PADDING_Y = 24; // 12px top + 12px bottom
     const CARD_MIN_FRAME_WIDTH = 120;
     const CARD_MAX_FRAME_WIDTH = 180;
@@ -290,23 +310,23 @@ export class Projects implements OnInit, OnDestroy {
     displayHeight = displayWidth / aspectRatio;
 
     // Ensure we don't exceed maximum dimensions
-    if (displayWidth > (maxWidth - paddingX)) {
+    if (displayWidth > maxWidth - paddingX) {
       displayWidth = maxWidth - paddingX;
       displayHeight = displayWidth / aspectRatio;
     }
 
-    if (displayHeight > (maxHeight - paddingY)) {
+    if (displayHeight > maxHeight - paddingY) {
       displayHeight = maxHeight - paddingY;
       displayWidth = displayHeight * aspectRatio;
     }
 
     // Ensure we meet minimum dimensions
-    if (displayWidth < (minWidth - paddingX)) {
+    if (displayWidth < minWidth - paddingX) {
       displayWidth = minWidth - paddingX;
       displayHeight = displayWidth / aspectRatio;
     }
 
-    if (displayHeight < (minHeight - paddingY)) {
+    if (displayHeight < minHeight - paddingY) {
       displayHeight = minHeight - paddingY;
       displayWidth = displayHeight * aspectRatio;
     }
@@ -327,23 +347,31 @@ export class Projects implements OnInit, OnDestroy {
     // This method would update the DOM to show the active slide
     // For simplicity, we'll handle this with CSS classes
     setTimeout(() => {
-      const slideContainer = document.querySelectorAll('.image-slideshow')[projectIndex];
+      const slideContainer =
+        document.querySelectorAll('.image-slideshow')[projectIndex];
       if (slideContainer) {
         const slides = slideContainer.querySelectorAll('.slide-image');
-        const indicators = slideContainer.querySelectorAll('.indicator, .slide-dot');
-        
+        const indicators = slideContainer.querySelectorAll(
+          '.indicator, .slide-dot'
+        );
+
         slides.forEach((slide, index) => {
           slide.classList.toggle('active', index === activeSlideIndex);
-          
+
           // For mobile images, adjust frame size when slide becomes active
-          if (index === activeSlideIndex && slide.classList.contains('mobile-image')) {
-            const project = this.filteredProjects[projectIndex] || this.featuredProjects[projectIndex];
+          if (
+            index === activeSlideIndex &&
+            slide.classList.contains('mobile-image')
+          ) {
+            const project =
+              this.filteredProjects[projectIndex] ||
+              this.featuredProjects[projectIndex];
             if (project) {
               this.adjustDeviceFrameSize(slide as HTMLImageElement, project);
             }
           }
         });
-        
+
         indicators.forEach((indicator, index) => {
           indicator.classList.toggle('active', index === activeSlideIndex);
         });
@@ -352,7 +380,7 @@ export class Projects implements OnInit, OnDestroy {
   }
 
   getCompletedProjectsCount(): number {
-    return this.projects.filter(p => p.status === 'completed').length;
+    return this.projects.filter((p) => p.status === 'completed').length;
   }
 
   getStatusLabel(status: ProjectStatus): string {

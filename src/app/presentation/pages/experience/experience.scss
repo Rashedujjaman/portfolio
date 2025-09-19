@@ -614,7 +614,57 @@
 }
 
 // Skills Section
-.skills-section { padding: 6rem 0; background: var(--bg); }
+.skills-section { 
+  padding: 6rem 0; 
+  background: var(--bg); 
+
+  .section-header{
+    position: relative;
+    .section-title{
+      background: var(--text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .section-subtitle{
+      color: var(--text-muted);
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+      border-radius: 2px;
+    }
+
+    &::before {
+      content: 'SKILLS';
+      position: absolute;
+      bottom: 150%;
+      right: 50%;
+      width: 120px;
+      height: 120px;
+      background: url('/stamp.png') no-repeat center/contain;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #b91c1c;
+      text-transform: uppercase;
+      transform: translate(50%, 50%) rotate(15deg);
+      letter-spacing: 2px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
 
 .skills-cloud {
   display: flex;
@@ -628,11 +678,11 @@
 
 .skill-bubble {
   position: relative;
-  background: white;
+  background: var(--surfaceContainer);
   padding: 1rem 1.5rem;
   border-radius: 50px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   opacity: 0;
@@ -682,12 +732,12 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(-10px);
-  background: rgba(0, 0, 0, 0.95);
+  background: var(--surface-2);
   backdrop-filter: blur(10px);
-  color: white;
+  color: var(--text);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px var(--muted);
   min-width: 280px;
   max-width: 320px;
   opacity: 0;
@@ -710,7 +760,7 @@
     left: 50%;
     transform: translateX(-50%);
     border: 8px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.95);
+    border-top-color: var(--surfaceContainer);
   }
 
   .tooltip-header {
@@ -724,7 +774,6 @@
     .skill-name {
       font-size: 1.1rem;
       font-weight: 700;
-      color: #ffffff;
     }
 
     .skill-level {
@@ -737,27 +786,27 @@
 
       &.skill-level-expert {
         background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
+        color: var(--on-primary);
       }
 
       &.skill-level-advanced {
         background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: white;
+        color: var(--on-primary);
       }
 
       &.skill-level-intermediate {
         background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
+        color: var(--on-primary);
       }
 
       &.skill-level-beginner {
         background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
+        color: var(--on-primary);
       }
 
       &.skill-level-learning {
         background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-        color: white;
+        color: var(--on-primary);
       }
     }
   }
@@ -777,7 +826,7 @@
       }
 
       .stat-text {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--text-muted);
       }
 
       &:last-child {
@@ -789,7 +838,7 @@
   .experience-progress {
     .progress-label {
       font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.7);
+      // color: var(--text-muted);
       margin-bottom: 0.5rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -797,11 +846,12 @@
     }
 
     .progress-bar {
-      background: rgba(255, 255, 255, 0.2);
+      background: var(--surface-2);
       height: 6px;
       border-radius: 3px;
       overflow: hidden;
       margin-bottom: 0.5rem;
+      border: 1px solid var(--border);
 
       .progress-fill {
         height: 100%;
@@ -850,7 +900,7 @@
 
     .progress-text {
       font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--text-muted);
       text-align: center;
       font-weight: 500;
     }
@@ -1253,18 +1303,93 @@
 
   .skills-section {
     padding: 4rem 0;
-    
+
     .container {
       padding: 0 0.75rem;
-    }
-    
-    .skills-cloud {
-      gap: 0.5rem;
-      
-      .skill-bubble {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-        min-width: auto;
+
+      .section-header{
+        .section-title{
+          font-size: 1.5rem;
+          line-height: 1.2;
+          margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle{
+          font-size: 0.8rem;
+        }
+
+        &::before {
+          bottom: 170%;
+          right: 50%;
+          width: 80px;
+          height: 80px;
+        }
+      }
+
+      .skills-cloud {
+        gap: 0.5rem;
+        
+        .skill-bubble {
+          padding: 0.4rem 0.8rem;
+          font-size: 0.8rem;
+          min-width: auto;
+
+          // Enhanced Skill Tooltip
+          .skill-tooltip {
+            padding: 0.5rem;
+            min-width: 180px;
+            max-width: 200px;
+
+            .tooltip-header {
+              margin-bottom: .5rem;
+              padding-bottom: 0.5rem;
+              border-bottom: 1px solid var(--border);
+
+              .skill-name {
+                font-size: .75rem;
+                font-weight: 600;
+              }
+
+              .skill-level {
+                padding: 0.15rem 0.5rem;
+                border-radius: 20px;
+                font-size: 0.6rem;
+              }
+            }
+
+            .tooltip-stats {
+              margin-bottom: 1rem;
+
+              .stat-row {
+                margin-bottom: 0;
+                font-size: 0.7rem;
+
+                .stat-icon {
+                  font-size: .7rem;
+                }
+              }
+            }
+
+            .experience-progress {
+              .progress-label {
+                font-size: 0.7rem;
+                margin-bottom: 0.25rem;
+              }
+
+              .progress-bar {
+                background: var(--surface-2);
+                height: 5px;
+                border-radius: 3px;
+                overflow: hidden;
+                margin-bottom: 0.25rem;
+              }
+
+              .progress-text {
+                font-size: 0.6rem;
+              }
+            }
+          }
+        }
       }
     }
   }
