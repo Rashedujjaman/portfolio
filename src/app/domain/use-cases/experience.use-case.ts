@@ -6,7 +6,7 @@ import { ExperienceRepository } from '../repositories/experience.repository';
 import { SkillSyncService } from '../../core/skill-sync.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetExperiencesUseCase {
   private experienceRepository = inject(ExperienceRepository);
@@ -17,7 +17,7 @@ export class GetExperiencesUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetExperienceByIdUseCase {
   private experienceRepository = inject(ExperienceRepository);
@@ -28,18 +28,22 @@ export class GetExperienceByIdUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AddExperienceUseCase {
   private experienceRepository = inject(ExperienceRepository);
   private skillSyncService = inject(SkillSyncService);
 
-  execute(experience: Omit<Experience, 'id' | 'createdAt' | 'updatedAt'>): Observable<Experience> {
+  execute(
+    experience: Omit<Experience, 'id' | 'createdAt' | 'updatedAt'>
+  ): Observable<Experience> {
     return this.experienceRepository.createExperience(experience).pipe(
-      tap(createdExperience => {
+      tap((createdExperience) => {
         // Sync new technologies to profile skills (fire and forget)
         if (createdExperience.technologies?.length) {
-          this.skillSyncService.syncSkillsToProfile(createdExperience.technologies).subscribe();
+          this.skillSyncService
+            .syncSkillsToProfile(createdExperience.technologies)
+            .subscribe();
         }
       })
     );
@@ -47,7 +51,7 @@ export class AddExperienceUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UpdateExperienceUseCase {
   private experienceRepository = inject(ExperienceRepository);
@@ -55,10 +59,12 @@ export class UpdateExperienceUseCase {
 
   execute(id: string, experience: Partial<Experience>): Observable<Experience> {
     return this.experienceRepository.updateExperience(id, experience).pipe(
-      tap(updatedExperience => {
+      tap((updatedExperience) => {
         // Sync new technologies to profile skills (fire and forget)
         if (updatedExperience.technologies?.length) {
-          this.skillSyncService.syncSkillsToProfile(updatedExperience.technologies).subscribe();
+          this.skillSyncService
+            .syncSkillsToProfile(updatedExperience.technologies)
+            .subscribe();
         }
       })
     );
@@ -66,7 +72,7 @@ export class UpdateExperienceUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeleteExperienceUseCase {
   private experienceRepository = inject(ExperienceRepository);
@@ -83,15 +89,15 @@ export class DeleteExperienceUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetCurrentExperienceUseCase {
   private experienceRepository = inject(ExperienceRepository);
 
   execute(): Observable<Experience | null> {
     return this.experienceRepository.getExperiences().pipe(
-      map(experiences => {
-        return experiences.find(exp => exp.current) || null;
+      map((experiences) => {
+        return experiences.find((exp) => exp.current) || null;
       })
     );
   }

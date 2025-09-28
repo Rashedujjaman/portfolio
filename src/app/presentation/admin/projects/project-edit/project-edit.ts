@@ -1,14 +1,27 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { GetProjectsUseCase, CreateProjectUseCase, UpdateProjectUseCase } from '../../../../domain/use-cases/project.use-case';
-import { Project, ProjectStatus, ProjectCategory } from '../../../../domain/entities/project.entity';
-import { ProjectRepositoryImpl } from '../../../../data/repositories/project-repository.impl';
+import {
+  GetProjectsUseCase,
+  CreateProjectUseCase,
+  UpdateProjectUseCase,
+} from '../../../../domain/use-cases/project.use-case';
+import {
+  Project,
+  ProjectStatus,
+  ProjectCategory,
+} from '../../../../domain/entities/project.entity';
 import { StorageService } from '../../../../core/storage.service';
 
 interface ImageState {
@@ -22,30 +35,30 @@ interface ImageState {
 @Component({
   selector: 'app-project-edit',
   imports: [
-    CommonModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    MatButtonModule, 
-    MatIconModule
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './project-edit.html',
-  styleUrls: ['./project-edit.scss']
+  styleUrls: ['./project-edit.scss'],
 })
 export class ProjectEditComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   projectForm: FormGroup;
   project: Project | null = null;
   isNewProject = true;
   isSaving = false;
   isLoading = false;
-  
+
   // Image management with transaction safety
   imageStates: ImageState[] = [];
   uploadingImages = false;
   uploadProgress: { [key: string]: number } = {};
   pendingUploads: string[] = []; // Track uploaded URLs for potential rollback
-  
+
   // Status
   statusMessage = '';
   hasError = false;
@@ -57,14 +70,13 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     private getProjectsUseCase: GetProjectsUseCase,
     private createProjectUseCase: CreateProjectUseCase,
     private updateProjectUseCase: UpdateProjectUseCase,
-    private projectRepository: ProjectRepositoryImpl,
     private storageService: StorageService
   ) {
     this.projectForm = this.createForm();
   }
 
   ngOnInit() {
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       if (params['id'] && params['id'] !== 'new') {
         this.isNewProject = false;
         this.loadProject(params['id']);
@@ -91,38 +103,43 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       technologiesInput: [''],
       demoUrl: [''],
       githubUrl: [''],
-      featured: [false]
+      featured: [false],
+      startDate: [new Date(), [Validators.required]],
+      endDate: [new Date()],
     });
   }
 
   private initializeNewProject() {
     this.projectForm.patchValue({
       status: 'in-progress',
-      featured: false
+      featured: false,
     });
     this.imageStates = [];
   }
 
   private loadProject(id: string) {
     this.isLoading = true;
-    this.getProjectsUseCase.execute().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (projects) => {
-        this.project = projects.find(p => p.id === id) || null;
-        if (this.project) {
-          this.populateForm(this.project);
-          this.initializeImageStates(this.project.images);
-        } else {
-          this.showError('Project not found');
-          this.goBack();
-        }
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading project:', error);
-        this.showError('Error loading project');
-        this.isLoading = false;
-      }
-    });
+    this.getProjectsUseCase
+      .execute()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (projects) => {
+          this.project = projects.find((p) => p.id === id) || null;
+          if (this.project) {
+            this.populateForm(this.project);
+            this.initializeImageStates(this.project.images);
+          } else {
+            this.showError('Project not found');
+            this.goBack();
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading project:', error);
+          this.showError('Error loading project');
+          this.isLoading = false;
+        },
+      });
   }
 
   private populateForm(project: Project) {
@@ -135,15 +152,27 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       technologiesInput: project.technologies.join(', '),
       demoUrl: project.liveUrl || '',
       githubUrl: project.githubUrl || '',
-      featured: project.featured
+      featured: project.featured,
+      startDate: project.startDate
+        ? this.formatDateForInput(project.startDate)
+        : null,
+      endDate: project.endDate
+        ? this.formatDateForInput(project.endDate)
+        : null,
     });
   }
 
+  private formatDateForInput(date: Date): string {
+    // Convert Date to YYYY-MM-DD format for HTML date input
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return dateObj.toISOString().split('T')[0];
+  }
+
   private initializeImageStates(imageUrls: string[]) {
-    this.imageStates = imageUrls.map(url => ({
+    this.imageStates = imageUrls.map((url) => ({
       url,
       isNew: false,
-      isUploaded: true
+      isUploaded: true,
     }));
   }
 
@@ -153,19 +182,21 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     if (files.length === 0) return;
 
     // Validate files
-    const validFiles = files.filter(file => this.validateImageFile(file));
+    const validFiles = files.filter((file) => this.validateImageFile(file));
     if (validFiles.length !== files.length) {
-      this.showError('Some files were rejected. Please select valid image files (JPG, PNG, GIF, WebP) under 5MB each.');
+      this.showError(
+        'Some files were rejected. Please select valid image files (JPG, PNG, GIF, WebP) under 5MB each.'
+      );
     }
 
     // Add new files to image states
-    validFiles.forEach(file => {
+    validFiles.forEach((file) => {
       const blobUrl = URL.createObjectURL(file);
       this.imageStates.push({
         url: blobUrl,
         isNew: true,
         file,
-        isUploaded: false
+        isUploaded: false,
       });
     });
 
@@ -174,7 +205,13 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
   }
 
   private validateImageFile(file: File): boolean {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const validTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+    ];
     if (!validTypes.includes(file.type)) return false;
     if (file.size > 5 * 1024 * 1024) return false; // 5MB limit
     return true;
@@ -182,7 +219,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   removeImage(index: number) {
     const imageState = this.imageStates[index];
-    
+
     if (imageState.isNew && imageState.url.startsWith('blob:')) {
       // New image - just remove from state and cleanup blob URL
       URL.revokeObjectURL(imageState.url);
@@ -191,7 +228,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       // Existing image - mark for deletion (don't actually delete until save)
       this.imageStates[index] = {
         ...imageState,
-        isDeleted: true
+        isDeleted: true,
       };
     }
   }
@@ -201,7 +238,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     if (this.imageStates[index].isDeleted) {
       this.imageStates[index] = {
         ...this.imageStates[index],
-        isDeleted: false
+        isDeleted: false,
       };
     }
   }
@@ -232,8 +269,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
       // Step 3: Prepare final image URLs (excluding deleted ones)
       const finalImageUrls = this.imageStates
-        .filter(state => !state.isDeleted)
-        .map(state => state.url);
+        .filter((state) => !state.isDeleted)
+        .map((state) => state.url);
 
       // Step 4: Update project with all data including final image URLs
       await this.updateProjectWithImages(projectId!, formValue, finalImageUrls);
@@ -241,15 +278,18 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       // Step 5: Clean up deleted images from storage (only after successful save)
       await this.cleanupDeletedImages();
 
-      this.showSuccess(this.isNewProject ? 'Project created successfully!' : 'Project updated successfully!');
+      this.showSuccess(
+        this.isNewProject
+          ? 'Project created successfully!'
+          : 'Project updated successfully!'
+      );
       this.goBack();
-
     } catch (error: any) {
       console.error('Save error:', error);
-      
+
       // Rollback: Clean up any uploaded images on failure
       await this.rollbackUploadedImages();
-      
+
       this.showError(`Error saving project: ${error.message}`);
     } finally {
       this.isSaving = false;
@@ -270,20 +310,25 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       githubUrl: formValue.githubUrl || undefined,
       featured: formValue.featured,
       images: [],
-      startDate: new Date()
+      startDate: formValue.startDate
+        ? new Date(formValue.startDate)
+        : new Date(),
+      endDate: formValue.endDate ? new Date(formValue.endDate) : undefined,
     };
 
     return new Promise((resolve, reject) => {
       this.createProjectUseCase.execute(newProject).subscribe({
         next: (project) => resolve(project),
-        error: (error) => reject(error)
+        error: (error) => reject(error),
       });
     });
   }
 
   private async uploadNewImages(projectId: string): Promise<void> {
-    const newImages = this.imageStates.filter(state => state.isNew && !state.isDeleted && !state.isUploaded);
-    
+    const newImages = this.imageStates.filter(
+      (state) => state.isNew && !state.isDeleted && !state.isUploaded
+    );
+
     if (newImages.length === 0) return;
 
     this.uploadingImages = true;
@@ -292,8 +337,14 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       if (!imageState.file) continue;
 
       try {
-        const uniqueFilename = this.storageService.generateUniqueFilename(imageState.file.name, 'project');
-        const storagePath = this.storageService.getProjectImagePath(projectId, uniqueFilename);
+        const uniqueFilename = this.storageService.generateUniqueFilename(
+          imageState.file.name,
+          'project'
+        );
+        const storagePath = this.storageService.getProjectImagePath(
+          projectId,
+          uniqueFilename
+        );
 
         const downloadUrl = await this.storageService.uploadFile(
           imageState.file,
@@ -312,14 +363,17 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
         if (imageState.url.startsWith('blob:')) {
           URL.revokeObjectURL(imageState.url);
         }
-
       } catch (error) {
         throw new Error(`Failed to upload ${imageState.file.name}: ${error}`);
       }
     }
   }
 
-  private async updateProjectWithImages(projectId: string, formValue: any, imageUrls: string[]): Promise<void> {
+  private async updateProjectWithImages(
+    projectId: string,
+    formValue: any,
+    imageUrls: string[]
+  ): Promise<void> {
     const updateData = {
       title: formValue.title,
       shortDescription: formValue.shortDescription,
@@ -331,20 +385,26 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       githubUrl: formValue.githubUrl || undefined,
       featured: formValue.featured,
       images: imageUrls,
-      updatedAt: new Date()
+      startDate: formValue.startDate
+        ? new Date(formValue.startDate)
+        : new Date(),
+      endDate: formValue.endDate ? new Date(formValue.endDate) : undefined,
+      updatedAt: new Date(),
     };
 
     return new Promise((resolve, reject) => {
       this.updateProjectUseCase.execute(projectId, updateData).subscribe({
         next: () => resolve(),
-        error: (error) => reject(error)
+        error: (error) => reject(error),
       });
     });
   }
 
   private async cleanupDeletedImages(): Promise<void> {
-    const deletedImages = this.imageStates.filter(state => state.isDeleted && !state.isNew);
-    
+    const deletedImages = this.imageStates.filter(
+      (state) => state.isDeleted && !state.isNew
+    );
+
     for (const imageState of deletedImages) {
       try {
         if (imageState.url.includes('firebase')) {
@@ -370,18 +430,21 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   private parseTechnologies(input: string): string[] {
     return input
-      ? input.split(',').map(tech => tech.trim()).filter(tech => tech)
+      ? input
+          .split(',')
+          .map((tech) => tech.trim())
+          .filter((tech) => tech)
       : [];
   }
 
   private markFormGroupTouched() {
-    Object.keys(this.projectForm.controls).forEach(key => {
+    Object.keys(this.projectForm.controls).forEach((key) => {
       this.projectForm.get(key)?.markAsTouched();
     });
   }
 
   private cleanupBlobUrls() {
-    this.imageStates.forEach(state => {
+    this.imageStates.forEach((state) => {
       if (state.url.startsWith('blob:')) {
         URL.revokeObjectURL(state.url);
       }
@@ -395,7 +458,9 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   cancel() {
     if (this.hasUnsavedChanges()) {
-      if (confirm('You have unsaved changes. Are you sure you want to leave?')) {
+      if (
+        confirm('You have unsaved changes. Are you sure you want to leave?')
+      ) {
         this.goBack();
       }
     } else {
@@ -405,8 +470,10 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   private hasUnsavedChanges(): boolean {
     // Check if form is dirty or if there are pending image changes
-    return this.projectForm.dirty || 
-           this.imageStates.some(state => state.isNew || state.isDeleted);
+    return (
+      this.projectForm.dirty ||
+      this.imageStates.some((state) => state.isNew || state.isDeleted)
+    );
   }
 
   // Status messages
@@ -429,14 +496,14 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   // Utility getters for template
   get visibleImages() {
-    return this.imageStates.filter(state => !state.isDeleted);
+    return this.imageStates.filter((state) => !state.isDeleted);
   }
 
   get deletedImages() {
-    return this.imageStates.filter(state => state.isDeleted);
+    return this.imageStates.filter((state) => state.isDeleted);
   }
 
   get hasNewImages() {
-    return this.imageStates.some(state => state.isNew && !state.isDeleted);
+    return this.imageStates.some((state) => state.isNew && !state.isDeleted);
   }
 }

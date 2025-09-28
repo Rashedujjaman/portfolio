@@ -1,10 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Project } from '../entities/project.entity';
 import { ProjectRepository } from '../repositories/project.repository';
+import { SkillSyncService } from '../../core/skill-sync.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetProjectsUseCase {
   private projectRepository = inject(ProjectRepository);
@@ -15,7 +17,7 @@ export class GetProjectsUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetFeaturedProjectsUseCase {
   private projectRepository = inject(ProjectRepository);
@@ -26,7 +28,7 @@ export class GetFeaturedProjectsUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GetProjectUseCase {
   private projectRepository = inject(ProjectRepository);
@@ -37,34 +39,62 @@ export class GetProjectUseCase {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CreateProjectUseCase {
   private projectRepository = inject(ProjectRepository);
+  private skillSyncService = inject(SkillSyncService);
 
-  execute(project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Observable<Project> {
-    return this.projectRepository.createProject(project);
+  execute(
+    project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>
+  ): Observable<Project> {
+    return this.projectRepository.createProject(project).pipe(
+      tap((createdProject) => {
+        // Sync new technologies to profile skills (fire and forget)
+        if (createdProject.technologies?.length) {
+          this.skillSyncService
+            .syncSkillsToProfile(createdProject.technologies)
+            .subscribe();
+        }
+      })
+    );
   }
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UpdateProjectUseCase {
   private projectRepository = inject(ProjectRepository);
+  private skillSyncService = inject(SkillSyncService);
 
   execute(id: string, project: Partial<Project>): Observable<Project> {
-    return this.projectRepository.updateProject(id, project);
+    return this.projectRepository.updateProject(id, project).pipe(
+      tap((updatedProject) => {
+        // Sync new technologies to profile skills (fire and forget)
+        if (updatedProject.technologies?.length) {
+          this.skillSyncService
+            .syncSkillsToProfile(updatedProject.technologies)
+            .subscribe();
+        }
+      })
+    );
   }
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DeleteProjectUseCase {
   private projectRepository = inject(ProjectRepository);
+  private skillSyncService = inject(SkillSyncService);
 
   execute(id: string): Observable<void> {
-    return this.projectRepository.deleteProject(id);
+    return this.projectRepository.deleteProject(id).pipe(
+      tap(() => {
+        // Cleanup unused skills from profile (fire and forget)
+        this.skillSyncService.cleanupUnusedSkills().subscribe();
+      })
+    );
   }
 }
